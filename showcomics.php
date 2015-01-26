@@ -175,7 +175,7 @@ if(!isset($_GET['noheader']))
 	if(count($_GET)==1)
 		echo "<p><a href=\"?\">Back to comic selection</a></p>\n";
 	elseif(count($_GET)>1)
-		echo "<p><a href=\"?comic=$comic\">Back to {$comicinfo['navn']}</a></p>\n";
+		echo "<p><a href=\"?comic=$comic\">Back to {$comicinfo['name']}</a></p>\n";
 ?>
 </body>
 </html><?Php
