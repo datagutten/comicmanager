@@ -11,7 +11,7 @@ class comicmanager
 		ini_set('display_errors',1);
 		require 'config_db.php';
 		require 'config.php';
-		if(file_exists('config_jodal_comics.php'))
+		if(file_exists(dirname(__FILE__).'/config_jodal_comics.php'))
 		{
 			require_once 'class_jodal_comics.php';
 			$this->comics=new comics;
