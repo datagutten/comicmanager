@@ -87,7 +87,7 @@ elseif(isset($comicinfo))
 		}
 		elseif($_GET['view']=='category')
 		{
-			$st_show=$comicmanager->db->prepare("SELECT * FROM {$comicinfo['id']} WHERE kategori=? ORDER BY date");
+			$st_show=$comicmanager->db->prepare("SELECT * FROM {$comicinfo['id']} WHERE category=? ORDER BY date");
 			$st_show->execute(array($_GET['value']));
 			$hidedupes=true;
 		}
