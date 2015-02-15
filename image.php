@@ -1,5 +1,5 @@
 <?php
-$size = getimagesize($filename);
+$size = getimagesize($_GET['file']);
 //header('Content-type: image/png');
 header("Content-type: {$size['mime']}");
 
