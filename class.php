@@ -11,6 +11,7 @@ class comicmanager
 		ini_set('display_errors',1);
 		require 'config_db.php';
 		require 'config.php';
+
 		if(file_exists(dirname(__FILE__).'/config_jodal_comics.php'))
 		{
 			require_once 'class_jodal_comics.php';
@@ -51,7 +52,21 @@ class comicmanager
 		}
 		return $output;
 	}
-
+	public function categories($comic,$only_visible=false)
+	{
+		if(!$only_visible)
+			$st_categories=$this->db->prepare($q="SELECT id,name FROM {$comic}_categories ORDER BY name ASC");
+		else
+			$st_categories=$this->db->prepare($q="SELECT id,name FROM {$comic}_categories WHERE visible=1 ORDER BY name ASC");
+		if(!$st_categories->execute())
+		{
+			$errorinfo=$st_categories->errorInfo();
+			trigger_error("SQL error while fetching categories: $errorinfo[2]",E_USER_WARNING);
+			return false;
+		}
+		else
+			return $st_categories->fetchAll(PDO::FETCH_KEY_PAIR);
+	}
 	public function comicinfo($comic,$keyfield=false) //Get information about a comic
 	{
 		$st_comic=$this->db->prepare("SELECT * FROM comic_info WHERE id=?");
@@ -92,6 +107,7 @@ class comicmanager
 		}
 	
 	}
+
 	public function typecheck($filename,$typereturn=false) //Try different extensions for a file name
 	{
 		$types=array('jpg','gif','png');
