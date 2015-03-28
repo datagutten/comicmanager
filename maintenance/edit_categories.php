@@ -47,7 +47,7 @@ function addfield() //Create a new table row with an empty field
 	newcount++;
 }
 </script>
-<form action="edit_categories.php" method="post">
+<form method="post">
 <?Php
 require '../class.php';
 
