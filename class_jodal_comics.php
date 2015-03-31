@@ -1,7 +1,6 @@
 <?Php
 class comics
 {
-	private $db;
 	public $image_host;
 	public $ch;
 	public $site;
