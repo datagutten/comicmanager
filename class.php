@@ -115,32 +115,25 @@ class comicmanager
 		{
 			if(file_exists($filename.'.'.$type))
 			{
-				$filename=$filename.".$type";
+				$file=$filename.".$type";
 				break;
 			}
 		}
-		if($typereturn===true)
-			$filename=$type;
-		return $filename;
+		if(!isset($file)) //File not found
+			return false;
+		if($typereturn===true) //Return only extension
+			return $type;
+		return $file;
 	}
 	public function showpicture($row,$keyfield,$comic=NULL,$noheader=false,$jodal=false)
 	{
 		if($comic==NULL && isset($_GET['comic']))
 			$comic=$_GET['comic'];
 
-		if($row['date']=='0') //Hvis filen ikke har dato, bruk id som dato
-		{
-			$row['date']=$row['id'];
-			$folder='';
-			if($row['id']=='0')
-				$row['date']='custom_'.$row['customid'];
-		}
-		else
-			$folder=substr($row['date'],0,6);
 		if(!$noheader) //Make header
 		{
-			echo $row['date'];
-			echo ' - ';
+			if(!empty($row['date']))
+				echo $row['date'].' - ';
 			if($keyfield=='id')
 				$idlink='&amp;id=true';
 			else
@@ -158,15 +151,29 @@ class comicmanager
 			echo "<br />\n";
 		}
 
-		$comics_date=preg_replace('/([0-9]{4})([0-9]{2})([0-9]{2})/','$1-$2-$3',$row['date']); //Rewrite date for comics
-
-		if(is_object($this->comics) && ($image=$this->comics->release_single($row['site'],$comics_date))!==false) //Check if the strip is found on comics
-			echo "<img src=\"$image\" alt=\"{$row['date']}\" /><br />\n";
-		elseif(file_exists($imagefile=$this->typecheck($this->filepath."/{$row['site']}/$folder/{$row['date']}")))
-			echo "<img src=\"image.php?file=$imagefile\" width=\"800\" /><br />\n";
-		else //Remote picture host
-			echo "<img src=\"{$this->picture_host}bilde.php?site={$row['site']}&amp;folder=$folder&amp;date={$row['date']}\" alt=\"{$row['date']}\"/><br>\n";
-		echo "\n"; //Extra line break to separate strips
+		if(!empty($row['date'])) //Show strip by date
+		{
+			$comics_date=preg_replace('/([0-9]{4})([0-9]{2})([0-9]{2})/','$1-$2-$3',$row['date']); //Rewrite date for comics
+			if(is_object($this->comics)) //Check if the strip is found on comics
+				$image=$this->comics->release_single($row['site'],$comics_date);
+			if(!isset($image) || $image===false) //Image not found on comics, try to find local file
+				$image=$this->typecheck($this->filepath."/{$row['site']}/".substr($row['date'],0,6)."/{$row['date']}");
+		}
+		else //Show strip by id
+		{
+			if(!empty($row['id']))
+				$image=$this->typecheck($this->filepath."/{$row['site']}/{$row['id']}");
+			if(isset($row['customid']) && (!isset($image) || $image===false)) //Image not found by id, try customid
+				$image=$this->typecheck($this->filepath."/{$row['site']}/custom_{$row['customid']}");
+		}
+		if($image===false)
+			echo "No image found<br />\n";
+		else
+		{
+			if(substr($image,0,4)!='http')
+				$image="image.php?file=".$image;
+			echo "<img src=\"$image\" alt=\"\" /><br />\n";
+		}
 	}
 }
 ?>
