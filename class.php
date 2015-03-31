@@ -12,10 +12,10 @@ class comicmanager
 		require 'config_db.php';
 		require 'config.php';
 
-		if(file_exists(dirname(__FILE__).'/config_jodal_comics.php'))
+		if(isset($comics_site) && isset($comics_key))
 		{
 			require_once 'class_jodal_comics.php';
-			$this->comics=new comics;
+			$this->comics=new comics($comics_site,$comics_key);
 		}
 		if(!file_exists($filepath))
 			trigger_error("Invalid image file path: $filepath",E_USER_ERROR);
@@ -158,7 +158,9 @@ class comicmanager
 			echo "<br />\n";
 		}
 
-		if(is_object($this->comics) && ($image=$this->comics->image($row['site'],$row['date']))!==false) //Check if the strip is found on comics
+		$comics_date=preg_replace('/([0-9]{4})([0-9]{2})([0-9]{2})/','$1-$2-$3',$row['date']); //Rewrite date for comics
+
+		if(is_object($this->comics) && ($image=$this->comics->release_single($row['site'],$comics_date))!==false) //Check if the strip is found on comics
 			echo "<img src=\"$image\" alt=\"{$row['date']}\" /><br />\n";
 		elseif(file_exists($imagefile=$this->typecheck($this->filepath."/{$row['site']}/$folder/{$row['date']}")))
 			echo "<img src=\"image.php?file=$imagefile\" width=\"800\" /><br />\n";
