@@ -29,7 +29,7 @@ if($comicinfo!==false)
 	$dom->createElement_simple('input',$form,array('type'=>'hidden','name'=>'comic','value'=>$comicinfo['id'])); //Comic id
 	if($comicinfo['has_categories']==0)
 		$dom->createElement_simple('input',$form,array('type'=>'hidden','name'=>'mode','value'=>'id')); //No categories, mode is always id
-	else
+	else //Select action (category or id)
 	{
 		$div_mode=$dom->createElement_simple('div',$form,array('id'=>'mode'));
 		$dom->createElement_simple('p',$div_mode,'','Select action:');
@@ -42,7 +42,6 @@ if($comicinfo!==false)
 		$dom->createElement_simple('label',$form,array('for'=>'id'),'ID');
 		$dom->createElement_simple('br',$form);
 	}
-	
 
 	//Select site
 	$sites=$st_sites->fetchAll(PDO::FETCH_COLUMN);
@@ -59,9 +58,11 @@ if($comicinfo!==false)
 			$dom->createElement_simple('br',$div_sites);
 		}
 	}
+
+	//Date
 	$p_datefilter=$dom->createElement_simple('p',$form,'','Date filter: ');
 	$dom->createElement_simple('input',$p_datefilter,array('type'=>'text','name'=>'datefilter'));
-
+	//Submit button
 	$dom->createElement_simple('input',$form,array('type'=>'submit','value'=>'Submit'));
 
 	echo $dom->saveXML($dom->documentElement);
