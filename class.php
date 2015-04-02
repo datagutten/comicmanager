@@ -5,6 +5,7 @@ class comicmanager
 	public $filepath;
 	public $picture_host;
 	public $comics;
+	public $comic; //Current comic
 	public function __construct()
 	{
 		error_reporting(E_ALL);
@@ -89,6 +90,7 @@ class comicmanager
 				default: trigger_error("Invalid key field: $keyfield",E_USER_ERROR);
 			}
 		}
+		$this->comic=$comicinfo['id'];
 		return $comicinfo;
 	}
 	public function comicinfo_get()
