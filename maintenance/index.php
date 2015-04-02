@@ -10,7 +10,7 @@
 <?Php
 require '../class.php';
 $comicmanager=new comicmanager;
-$tools=array('propagate_categories.php'=>"Propagate category to all copies of a strip",'id_to_customid.php'=>"Set id as customid",'multiple_categories.php'=>'Find strips with multiple categories');
+$tools=array('propagate_categories.php'=>"Propagate category to all copies of a strip",'id_to_customid.php'=>"Set id as customid",'multiple_categories.php'=>'Find strips with multiple categories','propagate_id.php'=>"Propagate id to all copies of a strip");
 
 $comicinfo=$comicmanager->comicinfo_get();
 if($comicinfo!==false)
