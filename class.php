@@ -141,10 +141,10 @@ class comicmanager
 
 			$urlfields=array_merge($_GET,array('comic'=>$comic,'view'=>'singlestrip','value'=>$row[$keyfield]));
 
-			if(!isset($_GET['key']) && isset($row[$keyfield]))
-				echo '<a href="showcomics.php?'.http_build_query($urlfields,'','&amp;').'">'.$row[$keyfield].'</a>';
+			if(isset($row[$keyfield]))
+				echo '<a href="/comicmanager/showcomics.php?'.http_build_query($urlfields,'','&amp;').'">'.$row[$keyfield].'</a>';
 			else
-				echo $row[$keyfield];
+				echo $row['uid'];
 			if(isset($row['tittel']))
 				echo ' - '.$row['tittel'];
 			echo ' - '.$row['site'];
@@ -171,7 +171,7 @@ class comicmanager
 		else
 		{
 			if(substr($image,0,4)!='http')
-				$image="image.php?file=".$image;
+				$image="/comicmanager/image.php?file=".$image;
 			echo "<img src=\"$image\" alt=\"\" /><br />\n";
 		}
 	}
