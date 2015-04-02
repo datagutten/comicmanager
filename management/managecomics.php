@@ -22,8 +22,8 @@ function change_to_text(id)
 </head>
 <body>
 <?php
-require 'maintenance_class.php';
-$comicmanager=new maintenance;
+require 'class_management.php';
+$comicmanager=new management;
 
 $comicinfo=$comicmanager->comicinfo_get();
 if($comicinfo===false)
