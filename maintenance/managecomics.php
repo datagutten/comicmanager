@@ -10,6 +10,15 @@ if((isset($_GET['comic']) && isset($_GET['mode']) && isset($_GET['site']))!==tru
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo ucfirst($_GET['comic'])." ".$_GET['mode']; ?></title>
+<script type="text/javascript">
+function change_to_text(id)
+{
+	input=document.getElementById(id);
+	input.removeAttribute('inputmode');
+	input.removeAttribute('pattern');
+	input.setAttribute('type','text');
+}
+</script>
 </head>
 <body>
 <?php
@@ -113,7 +122,7 @@ elseif($releasetype=='file')
 }
 
 $st_check=$comicmanager->db->prepare("SELECT * FROM $comic WHERE site=? AND date=?");
-foreach ($releases as $release)
+foreach ($releases as $key_release=>$release)
 {
 	$file=$release['file'];
 	//$date=$release['date'];
@@ -150,7 +159,9 @@ foreach ($releases as $release)
 	echo '<input name="date[]" type="hidden" value="'.$release['date'].'" />'."\n";
 
 	if($_GET['mode']=='id') //Id input
-		echo 'ID: <input type="number" min="0" inputmode="numeric" pattern="[0-9]*" name="value[]">'."\n";
+		echo 'ID: <input type="number" id="input'.$key_release.'" min="0" inputmode="numeric" pattern="[0-9]*" name="value[]">'.
+		'<span onClick="change_to_text(\'input'.$key_release.'\')">Change to text</span>'.
+		"\n";
 	elseif($_GET['mode']=='category') //Show category select
 	{
 		echo 'Category:<br />';
