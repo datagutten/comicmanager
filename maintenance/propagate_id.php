@@ -10,10 +10,9 @@ if($comicinfo!==false)
 	{
 		$comic=$comicinfo['id'];
 		$keyfield=$comicinfo['keyfield'];
+
 		$st_update=$comicmanager->db->prepare("UPDATE $comic SET id=? WHERE uid=?");
-	
-		$q="SELECT customid,id FROM $comic WHERE id IS NOT NULL AND $keyfield IS NOT NULL GROUP BY $keyfield"; 
-		$st_strips=$comicmanager->db->query($q); //Get all unique strips with category
+		$st_strips=$comicmanager->db->query($q="SELECT customid,id FROM $comic WHERE id IS NOT NULL AND $keyfield IS NOT NULL GROUP BY $keyfield"); //Get all unique strips with category
 		/*if(!is_object($st_strips)); 
 		{
 			$errorinfo=$comicmanager->db->errorInfo();
