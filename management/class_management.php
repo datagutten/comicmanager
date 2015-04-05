@@ -9,10 +9,8 @@ class management extends comicmanager
 		require_once '../tools/DOMDocument_createElement_simple.php';
 		$this->dom=new DOMDocumentCustom;
 	}
-	public function filereleases_date($site,$datefilter=false) //Used by managecomics
+	public function filereleases_date($site,$filter_year=false,$filter_month=false) //Used by managecomics
 	{
-		if(is_string($datefilter))
-			$datefilter=str_replace('%','',$datefilter);
 		if(!file_exists($basepath=$this->filepath.'/'.$site))
 			return false;
 		$dir=scandir($basepath=$this->filepath.'/'.$site); //Get months
@@ -20,10 +18,14 @@ class management extends comicmanager
 
 		foreach ($dir as $month)
 		{
-			if(!empty($datefilter) && strpos($month,$datefilter)===false)
-				continue;
 			if(!is_dir($basepath.'/'.$month))
 				return false; //No month folder
+
+			if($filter_year!==false && substr($month,0,4)!=$filter_year) //Filter by year
+				continue;
+			if($filter_month!==false && substr($month,2,2)!=$filter_month) //Filter by month
+				continue;
+			
 			$monthdir=scandir($basepath.'/'.$month); //Get the files for this month
 
 			foreach ($monthdir as $file)

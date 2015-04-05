@@ -60,8 +60,31 @@ if($comicinfo!==false)
 	}
 
 	//Date
-	$p_datefilter=$dom->createElement_simple('p',$form,'','Date filter: ');
-	$dom->createElement_simple('input',$p_datefilter,array('type'=>'text','name'=>'datefilter'));
+	$p_date=$dom->createElement_simple('p',$form,'','Enter date: ');
+	$dom->createElement_simple('br',$p_date);
+	$dom->createElement_simple('label',$p_date,array('for'=>'month'),'Month: ');
+	$dom->createElement_simple('br',$p_date);
+	$dom->createElement_simple('input',$p_date,array('type'=>'text','name'=>'month','id'=>'month'));
+	$dom->createElement_simple('br',$p_date);
+	$dom->createElement_simple('label',$p_date,array('for'=>'year'),'Year: ');	
+	$dom->createElement_simple('br',$p_date);
+	$dom->createElement_simple('input',$p_date,array('type'=>'text','name'=>'year','id'=>'year'));
+	
+	//Source
+	if(is_object($comicmanager->comics))
+	{
+		$p_source=$dom->createElement_simple('p',$form,'','Source: ');
+		$dom->createElement_simple('br',$p_source);
+		foreach(array('jodal'=>'Jodal comics','file'=>'Local files') as $source_id=>$source_name) //Loop to make it easier to add more sources in the future
+		{
+			$dom->createElement_simple('input',$p_source,array('type'=>'radio','name'=>'source','value'=>$source_id,'id'=>'source_'.$source_id));
+			$dom->createElement_simple('label',$p_source,array('for'=>'source_'.$source_id),$source_name);
+			$dom->createElement_simple('br',$p_source);
+		}
+	}
+	else
+		$dom->createElement_simple('input',$form,array('type'=>'hidden','name'=>'source','value'=>'file'));
+
 	//Submit button
 	$dom->createElement_simple('input',$form,array('type'=>'submit','value'=>'Submit'));
 

@@ -1,8 +1,8 @@
 <?php
-if((isset($_GET['comic']) && isset($_GET['mode']) && isset($_GET['site']))!==true)
+if((isset($_GET['comic']) && isset($_GET['mode']) && isset($_GET['site']) && isset($_GET['source']))!==true)
 {
 	header('Location: managecomics_front.php');
-	die('comic, mode and site must be specified');
+	die('comic, mode, site and source must be specified');
 }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -97,29 +97,34 @@ echo '<input type="submit" name="button" id="button" value="Submit" />';
 if($_GET['mode']=='category') //Get categories
 	$categories=$comicmanager->categories($comicinfo['id'],true);
 
-if((!isset($releasetype) || $releasetype=='jodal') && is_object($comicmanager->comics)) //Fetch releases from jodal
+//Filter by year and/or month
+if(empty($_GET['year']))
+	$filter_year=false;
+else
+	$filter_year=$_GET['year'];
+if(empty($_GET['month']))
+	$filter_month=false;
+else
+	$filter_month=$_GET['month'];
+
+if($_GET['source']=='jodal' && is_object($comicmanager->comics)) //Fetch releases from jodal
 {
-	$releases=$comicmanager->comics->releases($site,$datefilter);
-}
-elseif($releasetype=='file')
-{
-	if(!isset($datefilter))
-		$datefilter=false;
-	$releases=$comicmanager->filereleases_date($site,$datefilter);
-	if($releases===false && file_exists($comicmanager->filepath.'/'.$site))
-	{
-		$files=scandir($comicmanager->filepath.'/'.$site);
-		foreach($files as $key=>$file)
-		{
-			if(!is_file($comicmanager->filepath.'/'.$site.'/'.$file))
-				continue;
-			$releases[$key]['date']='';
-			$releases[$key]['file']=$comicmanager->filepath.'/'.$site.'/'.$file;
-		}
-	}
+	if(!empty($_GET['year']) && empty($_GET['month']))
+		$releases=$comicmanager->comics->releases_year($site,$_GET['year']);
+	elseif(!empty($_GET['year']) && !empty($_GET['month']))
+		$releases=$comicmanager->comics->releases_month($site,$_GET['year'],$_GET['month']);
 	else
-		$releases=$comicmanager->comics->releases($site,$datefilter);
+		trigger_error("Year and/or month must be specified",E_USER_ERROR); //Filtering is required when using jodal comics
 }
+elseif($_GET['source']=='file')
+{	
+	$releases=$comicmanager->filereleases_date($site,$filter_year,$filter_month);
+
+	if($releases===false)
+		trigger_error("No file releases found",E_USER_ERROR);
+}
+else
+	trigger_error("Invalid source: {$_GET['source']}",E_USER_ERROR);
 
 $st_check=$comicmanager->db->prepare("SELECT * FROM $comic WHERE site=? AND date=?");
 foreach ($releases as $key_release=>$release)
