@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Add  comic</title>
+<title>Add comic</title>
 </head>
 
 <body>
