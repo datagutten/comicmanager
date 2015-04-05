@@ -24,12 +24,11 @@ function change_key_field(new_key_field)
 
 <body>
 <?php
-require '../class.php';
-$comicmanager=new comicmanager;
+require 'class_management.php';
+$comicmanager=new management;
 $comicinfo=$comicmanager->comicinfo_get();
 
-require '../tools/DOMDocument_createElement_simple.php';
-$dom=new DOMDocumentCustom;
+$dom=$comicmanager->dom;
 $dom->formatOutput = true;
 
 if($comicinfo!==false)
@@ -60,6 +59,7 @@ if($comicinfo!==false)
 			$keyfield=$_GET['keyfield'];
 		$key=preg_replace('/[^a-z0-9]+/i','',$_GET['key']); //Clean key
 		
+		//Prepare SQL statements
 		$st_strip=$comicmanager->db->prepare("SELECT * FROM $comic WHERE $keyfield=? ORDER BY date DESC");
 		$st_update_category=$comicmanager->db->prepare("UPDATE $comic SET category=? WHERE $keyfield=?");
 	
@@ -67,17 +67,30 @@ if($comicinfo!==false)
 		{
 			$st_strip->execute(array($key));
 			$strips=$st_strip->fetchAll(PDO::FETCH_ASSOC);
-	
-			foreach($_POST['strip'] as $key_strip=>$strip)
+
+			foreach($_POST['strip'] as $strip_key=>$strip_fields)
 			{
-				foreach($strip as $key_field=>$field)
+				foreach($strip_fields as $field_key=>$field_value) //Loop through the fields
 				{
-					if($strips[$key_strip][$key_field]==$field)
+					if(!array_key_exists($field_key,$strips[$strip_key])) //Check if form field is a db field
+					{
+						echo "Invalid field: $field_key ($strip_key)<br />\n";
 						continue;
-					echo "UPDATE $comic SET $key_field=$field WHERE uid={$strip['uid']};\n";		
+					}
+					if($strips[$strip_key][$field_key]==$field_value) //Check if information in database is different from the form
+						continue;
+					if(empty($field_value))
+						$field_value='NULL';
+					echo "UPDATE $comic SET $field_key=$field_value WHERE uid={$strip_fields['uid']};<br />\n";
+					$st_update_field=$comicmanager->db->prepare("UPDATE $comic SET $field_key=? WHERE uid=?");
+					if(!$st_update_field->execute(array($field_value,$strip_fields['uid'])))
+					{
+						$errorinfo=$st_update_field->errorInfo();
+						trigger_error("SQL error: {$errorinfo[2]}",E_USER_WARNING);
+					}
 				}
 			}
-			if(!empty($_POST['category']) && is_numeric($_POST['category']))
+			if((is_numeric($_POST['category']) && !isset($_POST['current_category'])) || (isset($_POST['current_category']) && $_POST['category']!=$_POST['current_category'])) //Update category if non-empty, numeric and changed
 			{
 				echo "UPDATE $comic SET category={$_POST['category']} WHERE $keyfield=$key;<br />\n";
 				$st_update_category->execute(array($_POST['category'],$key));
@@ -87,52 +100,58 @@ if($comicinfo!==false)
 		
 		//Re-read from database after form submit
 		$st_strip->execute(array($_GET['key']));
-		$strips=$st_strip->fetchAll(PDO::FETCH_ASSOC);
-
-		$comicmanager->showpicture($strips[0],$keyfield);
-		
-		$form=$dom->createElement_simple('form',$dom,array('method'=>'post')); //Create form
-		if($comicinfo['has_categories']==1)
+		if($st_strip->rowCount()>0)
 		{
-			$categories=$comicmanager->categories($comic);
-			$strips_categories=array_unique(array_column($strips,'category')); //Get categories for the strips
-			if(count($strips_categories)>1)
+			$strips=$st_strip->fetchAll(PDO::FETCH_ASSOC);
+	
+			$comicmanager->showpicture($strips[0],$keyfield);
+			
+			$form=$dom->createElement_simple('form',$dom,array('method'=>'post')); //Create form
+			if($comicinfo['has_categories']==1)
 			{
-				echo "<p>Strip got multiple categories:<br />\n";
-				foreach($strips_categories as $category_id)
+				$categories=$comicmanager->categories($comic);
+				$strips_categories=array_unique(array_column($strips,'category')); //Get categories for the strips
+				if(count($strips_categories)>1)
 				{
-					echo $categories[$category_id]."<br />\n";
+					echo "<p>Strip got multiple categories:<br />\n";
+					foreach($strips_categories as $category_id)
+					{
+						echo $categories[$category_id]."<br />\n";
+					}
+					echo "</p>\n";
+					$category_preselect=false;
 				}
-				echo "</p>\n";
+				else
+				{
+					$category_preselect=$strips_categories[0];
+					$comicmanager->dom->createElement_simple('input',$form,array('type'=>'hidden','name'=>'current_category','value'=>$category_preselect)); //Hidden field with category before change
+				}
+
+				$comicmanager->categoryselect('category',$form,$category_preselect); //Category select
 			}
 			
-			//Category select
-			$select=$dom->createElement_simple('select',$form,array('name'=>'category'));
-			$option_default=$dom->createElement_simple('option',$select,array('selected'=>'selected'),"Change category");
-			foreach ($categories as $category_id=>$category_name)
-			{
-				$option=$dom->createElement_simple('option',$select,array('value'=>$category_id),$category_name);
-			}
-		}
+			$table=$dom->createElement_simple('table',$form); //Create the table
+			$tr_keys=$dom->createElement_simple('tr',$table); //Create the header row
 		
-		$table=$dom->createElement_simple('table',$form); //Create the table
-		$tr_keys=$dom->createElement_simple('tr',$table); //Create the header row
-	
-		foreach($strips as $key_strip=>$strip)
-		{
-			$tr=$dom->createElement_simple('tr',$table); //Make a row
-			foreach($strip as $key_field=>$field)
+			foreach($strips as $key_strip=>$strip)
 			{
-				if($key_strip==0)
-					$dom->createElement_simple('td',$tr_keys,'',$key_field); //Add the field name to the header row
-				
-				$td=$dom->createElement_simple('td',$tr);
-				$dom->createElement_simple('input',$td,array('type'=>'text','name'=>'strip['.$key_strip.']['.$key_field.']','value'=>$field));
+				$tr=$dom->createElement_simple('tr',$table); //Make a row
+				foreach($strip as $key_field=>$field)
+				{
+					if($key_strip==0)
+						$dom->createElement_simple('td',$tr_keys,'',$key_field); //Add the field name to the header row
+					
+					$td=$dom->createElement_simple('td',$tr);
+					$dom->createElement_simple('input',$td,array('type'=>'text','name'=>'strip['.$key_strip.']['.$key_field.']','value'=>$field));
+				}
 			}
+			$dom->createElement_simple('input',$form,array('name'=>'submit','type'=>'submit'));
+			echo $dom->saveXML($form);
 		}
-		$dom->createElement_simple('input',$form,array('name'=>'submit','type'=>'submit'));
-		echo $dom->saveXML($form);
-		}
+		else
+			echo "Strip not found";
+	}
+
 }
 ?>
 </body>
