@@ -44,21 +44,34 @@ class comics
 		else
 			return json_decode($data,true);
 	}
-	function releases($slug,$year,$limit=365) //Henting av bilder fra jodal
+	function releases_year($slug,$year)
 	{
 		if(strlen($year)!=4 || !is_numeric($year))
 		{
 			trigger_error("Year should be four digits",E_USER_WARNING);
 			return false;
 		}
-		$releases=$this->request("/api/v1/releases/?comic__slug=$slug&pub_date__year=$year&limit=$limit");
+		$releases=$this->request("/api/v1/releases/?comic__slug=$slug&pub_date__year=$year&limit=366");
 		if($releases===false)
 			return false;
-		foreach(array_reverse($releases['objects']) as $release)
+		else
+			return $this->format_releases($releases);
+	}
+	function releases_month($slug,$year,$month)
+	{
+		list($start,$end)=$this->month($month,$year);
+
+		if(strlen($year)!=4 || !is_numeric($year))
 		{
-			$rows[]=array('date'=>str_replace('-','',$release['pub_date']),'file'=>$release['images'][0]['file']);
+			trigger_error("Year should be four digits",E_USER_WARNING);
+			return false;
 		}
-		return $rows;
+		$releases=$this->request("/api/v1/releases/?comic__slug=$slug&pub_date__gte=$start&pub_date__lte=$end&limit=31");
+
+		if($releases===false)
+			return false;
+		else
+			return $this->format_releases($releases);
 	}
 	function release_single($slug,$date)
 	{
@@ -68,5 +81,23 @@ class comics
 			return false;
 		else
 			return $release['objects'][0]['images'][0]['file'];
+	}
+	function format_releases($releases) //Make the release array structure similar to the file functions
+	{
+		foreach(array_reverse($releases['objects']) as $release)
+		{
+			$rows[]=array('date'=>str_replace('-','',$release['pub_date']),'file'=>$release['images'][0]['file']);
+		}
+		return $rows;
+	}
+	private function month($month,$year) //Find first and last day of month
+	{
+		$start=new DateTime("$year-$month-1");
+		$end=clone $start;
+		$end->add(new DateInterval('P1M')); //Add 1 month
+		$end->sub(new DateInterval('P1D')); //Subtract 1 day to get last day of month
+
+		return array($start->format('Y-m-d'),$end->format('Y-m-d'));
+		//list($start,$end)=$this->month($month,$year)
 	}
 }
