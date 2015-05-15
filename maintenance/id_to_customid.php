@@ -27,6 +27,9 @@ else
 				echo "$query<br />\n";
 			else
 				echo $query."\n";
+			if(isset($_GET['updatedb']))
+				$comicmanager->db->query($query);
 		}
 	}
+	echo "<p><a href=\"?comic=$comic&amp;tool=id_to_customid.php&amp;updatedb\">Update database</a></p>\n";
 }
