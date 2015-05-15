@@ -8,10 +8,16 @@ else
 {
 	$comic=$comicinfo['id'];
 	
-	$st=$comicmanager->db->query('SELECT * FROM $comic WHERE id!=0 AND (customid IS NULL OR id!=customid) GROUP by id ORDER BY id');
+	$st=$comicmanager->db->query("SELECT * FROM $comic WHERE id!=0 AND (customid IS NULL OR id!=customid) GROUP by id ORDER BY id");
+	if($st===false)
+	{
+		$errorinfo=$comicmanager->db->errorInfo();
+		trigger_error("SQL error: ".$errorinfo[2],E_USER_ERROR);
+	}
 	$st_id=$comicmanager->db->query("SELECT distinct customid FROM $comic ORDER BY id");
 	$customidlist=$st_id->fetchAll(PDO::FETCH_COLUMN);
 	//print_r($idlist);
+
 	$rows=$st->fetchAll(PDO::FETCH_ASSOC);
 
 	foreach($rows as $row)
