@@ -8,7 +8,7 @@ else
 {
 	$comic=$comicinfo['id'];
 	
-	$st=$comicmanager->db->query('SELECT * FROM pondus WHERE id!=0 AND (customid IS NULL OR id!=customid) GROUP by id ORDER BY id');
+	$st=$comicmanager->db->query('SELECT * FROM $comic WHERE id!=0 AND (customid IS NULL OR id!=customid) GROUP by id ORDER BY id');
 	$st_id=$comicmanager->db->query("SELECT distinct customid FROM $comic ORDER BY id");
 	$customidlist=$st_id->fetchAll(PDO::FETCH_COLUMN);
 	//print_r($idlist);
