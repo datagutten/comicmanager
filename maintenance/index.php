@@ -10,7 +10,7 @@
 <?Php
 require '../class.php';
 $comicmanager=new comicmanager;
-$tools=array('propagate_categories.php'=>"Propagate category to all copies of a strip",'id_to_customid.php'=>"Set id as customid",'multiple_categories.php'=>'Find strips with multiple categories','propagate_id.php'=>"Propagate id to all copies of a strip");
+$tools=array('id_to_customid.php'=>'Set id as customid','propagate_categories.php'=>"Propagate category to all copies of a strip",'multiple_categories.php'=>'Find strips with multiple categories','propagate_id.php'=>"Propagate id to all copies of a strip",'traceid.php'=>'Trace ID','comparemonths.php'=>'Compare months');
 
 $comicinfo=$comicmanager->comicinfo_get();
 if($comicinfo!==false)
@@ -26,6 +26,7 @@ if($comicinfo!==false)
 	}
 	elseif(isset($tools[$_GET['tool']]))
 	{
+		echo "<h3>{$_GET['tool']}</h3>\n";
 		require $_GET['tool'];
 	}
 	else
