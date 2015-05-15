@@ -24,8 +24,8 @@ if($comicinfo!==false && $comicinfo['has_categories']==1)
 		if(isset($categories[$strip[$keyfield]]))
 		{
 			$key=$strip[$keyfield];
-			echo $key."\n";
-			echo "UPDATE $comic SET category={$categories[$key]} WHERE uid={$strip['uid']}\n";
+			echo $key."<br />\n";
+			echo "UPDATE $comic SET category={$categories[$key]} WHERE uid={$strip['uid']}<br />\n";
 			$st_update->execute(array($categories[$strip[$keyfield]],$strip['uid']));
 		}
 	}
