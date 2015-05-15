@@ -110,7 +110,7 @@ if($comicinfo!==false)
 			if($comicinfo['has_categories']==1)
 			{
 				$categories=$comicmanager->categories($comic);
-				$strips_categories=array_unique(array_column($strips,'category')); //Get categories for the strips
+				$strips_categories=array_filter(array_unique(array_column($strips,'category'))); //Get categories for the strips
 				if(count($strips_categories)>1)
 				{
 					echo "<p>Strip got multiple categories:<br />\n";
@@ -123,7 +123,8 @@ if($comicinfo!==false)
 				}
 				else
 				{
-					$category_preselect=$strips_categories[0];
+					$category_preselect=array_values($strips_categories);
+					$category_preselect=$category_preselect[0];
 					$comicmanager->dom->createElement_simple('input',$form,array('type'=>'hidden','name'=>'current_category','value'=>$category_preselect)); //Hidden field with category before change
 				}
 
