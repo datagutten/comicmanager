@@ -6,6 +6,9 @@ class comicmanager
 	public $picture_host;
 	public $comics;
 	public $comic; //Current comic
+	public $comic_info; //Array with info about comics
+	public $comic_info_db; //Array with info about comics, default value from db
+
 	public function __construct()
 	{
 		error_reporting(E_ALL);
@@ -81,6 +84,8 @@ class comicmanager
 		if($comicinfo===false)
 			trigger_error("Invalid comic id: $comic",E_USER_ERROR);
 		
+		$this->comic_info_db[$comicinfo['id']]=$comicinfo;
+
 		if($keyfield!==false)
 		{
 			switch($keyfield) //Check if the keyfield is valid
@@ -91,6 +96,7 @@ class comicmanager
 			}
 		}
 		$this->comic=$comicinfo['id'];
+		$this->comic_info[$comicinfo['id']]=$comicinfo;
 		return $comicinfo;
 	}
 	public function comicinfo_get()
@@ -107,7 +113,6 @@ class comicmanager
 			echo $this->selectcomic();
 			return false;
 		}
-	
 	}
 
 	public function typecheck($filename,$typereturn=false) //Try different extensions for a file name
