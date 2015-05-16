@@ -174,7 +174,7 @@ class comicmanager
 		{
 			if(substr($image,0,4)!='http')
 				$image="/comicmanager/image.php?file=".$image;
-			echo "<img src=\"$image\" alt=\"\" /><br />\n";
+			echo "<img src=\"$image\" alt=\"\" style=\"max-width: 1000px;\"/><br />\n";
 		}
 	}
 }
