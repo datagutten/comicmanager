@@ -28,6 +28,7 @@ if($comicinfo!==false)
 	{
 		echo "<h3>{$_GET['tool']}</h3>\n";
 		require $_GET['tool'];
+		echo "<p><a href=\"?comic=$comic\">Back to tool selection</a></p>\n";
 	}
 	else
 		echo "Invalid tool: {$_GET['tool']}";
