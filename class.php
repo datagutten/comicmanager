@@ -132,21 +132,26 @@ class comicmanager
 			return $type;
 		return $file;
 	}
-	public function showpicture($row,$keyfield,$comic=NULL,$noheader=false,$jodal=false)
+	public function showpicture($row,$keyfield=false,$comic=false,$noheader=false,$jodal=false)
 	{
-		if($comic==NULL && isset($_GET['comic']))
-			$comic=$_GET['comic'];
+		if(!is_array($row))
+		{
+			trigger_error("Invalid row",E_USER_WARNING);
+			return false;
+		}
+		if($comic===false)
+			$comic=$this->comic;
+		if($keyfield===false)
+			$keyfield=$this->comic_info[$comic];
 
 		if(!$noheader) //Make header
 		{
 			if(!empty($row['date']))
 				echo $row['date'].' - ';
-			if($keyfield=='id')
-				$idlink='&amp;id=true';
-			else
-				$idlink='';
 
-			$urlfields=array_merge($_GET,array('comic'=>$comic,'view'=>'singlestrip','value'=>$row[$keyfield]));
+			$urlfields=array('comic'=>$comic,'view'=>'singlestrip','value'=>$row[$keyfield]);
+			if($keyfield!=$this->comic_info_db[$comic]['keyfield']) //Check if current key field is different from the default
+				$urlfields['keyfield']=$keyfield;
 
 			if(isset($row[$keyfield]))
 				echo '<a href="/comicmanager/showcomics.php?'.http_build_query($urlfields,'','&amp;').'">'.$row[$keyfield].'</a>';
