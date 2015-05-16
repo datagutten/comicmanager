@@ -80,7 +80,7 @@ if($comicinfo!==false)
 					if($strips[$strip_key][$field_key]==$field_value) //Check if information in database is different from the form
 						continue;
 					if(empty($field_value))
-						$field_value='NULL';
+						$field_value=NULL;
 					echo "UPDATE $comic SET $field_key=$field_value WHERE uid={$strip_fields['uid']};<br />\n";
 					$st_update_field=$comicmanager->db->prepare("UPDATE $comic SET $field_key=? WHERE uid=?");
 					if(!$st_update_field->execute(array($field_value,$strip_fields['uid'])))
