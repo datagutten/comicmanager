@@ -186,6 +186,8 @@ foreach ($releases as $key_release=>$release)
 }
 
 echo '<input type="submit" name="button" id="button2" value="Submit" /></form>';
+echo "\n";
+echo "<p><a href=\"../showcomics.php?comic=$comic\">Show {$comicinfo['name']}</a></p>\n";
 ?>
 </body>
 </html>
