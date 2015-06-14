@@ -172,7 +172,6 @@ class comicmanager
 				$image=$this->comics_release_single_cache($row['site'],$comics_date);
 			if(!isset($image) || $image===false) //Image not found on comics, try to find local file
 				$image=$this->typecheck($file=$this->filepath."/{$row['site']}/".substr($row['date'],0,6)."/{$row['date']}");
-				var_dump($file);
 		}
 		else //Show strip by id
 		{
@@ -187,7 +186,7 @@ class comicmanager
 		{
 			if(substr($image,0,4)!='http')
 				$image="/comicmanager/image.php?file=".$image;
-			echo "<img src=\"$image\" alt=\"\" style=\"max-width: 1000px;\"/><br />\n";
+			echo "<img src=\"$image\" alt=\"\" style=\"max-width: 1000px; max-height: 400px;\"/><br />\n";
 		}
 	}
 	function comics_release_single_cache($slug,$date)
