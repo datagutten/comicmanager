@@ -111,7 +111,9 @@ if($comicinfo!==false)
 			{
 				$categories=$comicmanager->categories($comic);
 				$strips_categories=array_filter(array_unique(array_column($strips,'category'))); //Get categories for the strips
-				if(count($strips_categories)>1)
+				if(empty($strips_categories))
+					$category_preselect=false;
+				elseif(count($strips_categories)>1)
 				{
 					echo "<p>Strip got multiple categories:<br />\n";
 					foreach($strips_categories as $category_id)
