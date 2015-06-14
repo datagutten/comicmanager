@@ -5,6 +5,7 @@ class comicmanager
 	public $filepath;
 	public $picture_host;
 	public $comics;
+	public $comics_media;
 	public $comic; //Current comic
 	public $comic_info; //Array with info about comics
 	public $comic_info_db; //Array with info about comics, default value from db
@@ -20,6 +21,7 @@ class comicmanager
 		{
 			require_once 'class_jodal_comics.php';
 			$this->comics=new comics($comics_site,$comics_key);
+			$this->comics_media=$comics_media;
 		}
 		if(!file_exists($filepath))
 			trigger_error("Invalid image file path: $filepath",E_USER_ERROR);
@@ -167,9 +169,10 @@ class comicmanager
 		{
 			$comics_date=preg_replace('/([0-9]{4})([0-9]{2})([0-9]{2})/','$1-$2-$3',$row['date']); //Rewrite date for comics
 			if(is_object($this->comics)) //Check if the strip is found on comics
-				$image=$this->comics->release_single($row['site'],$comics_date);
+				$image=$this->comics_release_single_cache($row['site'],$comics_date);
 			if(!isset($image) || $image===false) //Image not found on comics, try to find local file
-				$image=$this->typecheck($this->filepath."/{$row['site']}/".substr($row['date'],0,6)."/{$row['date']}");
+				$image=$this->typecheck($file=$this->filepath."/{$row['site']}/".substr($row['date'],0,6)."/{$row['date']}");
+				var_dump($file);
 		}
 		else //Show strip by id
 		{
@@ -186,6 +189,23 @@ class comicmanager
 				$image="/comicmanager/image.php?file=".$image;
 			echo "<img src=\"$image\" alt=\"\" style=\"max-width: 1000px;\"/><br />\n";
 		}
+	}
+	function comics_release_single_cache($slug,$date)
+	{
+		$st_select=$this->db->prepare("SELECT file FROM comics_cache WHERE slug=? AND date=?");
+		$st_insert=$this->db->prepare("INSERT INTO comics_cache (checksum,slug,date,file) VALUES (?,?,?,?)");
+		$st_select->execute(array($slug,$date)); //Try to find image in local cache
+		if($st_select->rowCount()==0)
+		{
+			$image_url=$this->comics->release_single($slug,$date); //Query comics to get image url
+			if($image_url===false) //Release not found on comics
+				return false;
+			preg_match("^.+($slug.+/([a-f0-9]+)\..+)^",$image_url,$fileinfo); //Extract image hash from URL
+			$st_insert->execute(array($fileinfo[2],$slug,$date,$fileinfo[1])); //Add image hash to local cache table
+			return $image_url;
+		}
+	
+		return $this->comics_media.'/'.$st_select->fetch(PDO::FETCH_COLUMN);
 	}
 }
 ?>
