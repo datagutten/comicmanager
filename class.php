@@ -206,5 +206,10 @@ class comicmanager
 	
 		return $this->comics_media.'/'.$st_select->fetch(PDO::FETCH_COLUMN);
 	}
+	function filename($site,$date)
+	{
+		//Files are stored in [filepath]/site/month/date
+		return $this->filepath."/$site/".substr($date,0,6)."/$date";
+	}	
 }
 ?>
