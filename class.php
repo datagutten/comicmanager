@@ -186,7 +186,7 @@ class comicmanager
 		{
 			if(substr($image,0,4)!='http')
 				$image="/comicmanager/image.php?file=".$image;
-			echo "<img src=\"$image\" alt=\"\" style=\"max-width: 1000px; max-height: 400px;\"/><br />\n";
+			echo "<a href=\"$image\"><img src=\"$image\" alt=\"\" style=\"max-width: 1000px; max-height: 400px;\"/></a><br />\n";
 		}
 	}
 	function comics_release_single_cache($slug,$date)
