@@ -171,7 +171,7 @@ class comicmanager
 			if(is_object($this->comics)) //Check if the strip is found on comics
 				$image=$this->comics_release_single_cache($row['site'],$comics_date);
 			if(!isset($image) || $image===false) //Image not found on comics, try to find local file
-				$image=$this->typecheck($file=$this->filepath."/{$row['site']}/".substr($row['date'],0,6)."/{$row['date']}");
+				$image=$this->typecheck($this->filename($row['site'],$row['date']));
 		}
 		else //Show strip by id
 		{
@@ -206,10 +206,17 @@ class comicmanager
 	
 		return $this->comics_media.'/'.$st_select->fetch(PDO::FETCH_COLUMN);
 	}
-	function filename($site,$date)
+	function filename($site,$date,$create_dir=false,$date_is_timestamp=false)
 	{
 		//Files are stored in [filepath]/site/month/date
-		return $this->filepath."/$site/".substr($date,0,6)."/$date";
+		if($date_is_timestamp===true)
+			$date=date('Ymd',$timestamp);
+
+		$dir=$this->filepath.'/'.$site.'/'.substr($date,0,6);
+
+		if($create_dir!==false && !file_exists($dir))
+			mkdir($dir,0777,true);
+		return $dir.'/'.$date;
 	}	
 }
 ?>
