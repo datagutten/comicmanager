@@ -11,15 +11,17 @@ class management extends comicmanager
 	}
 	public function filereleases_date($site,$filter_year=false,$filter_month=false) //Used by managecomics
 	{
+
 		if(!file_exists($basepath=$this->filepath.'/'.$site))
 			return false;
+
 		$dir=scandir($basepath=$this->filepath.'/'.$site); //Get months
 		$dir=array_diff($dir,array('.','..','Thumbs.db'));
 
 		foreach ($dir as $month)
 		{
 			if(!is_dir($basepath.'/'.$month))
-				return false; //No month folder
+				continue;
 
 			if($filter_year!==false && substr($month,0,4)!=$filter_year) //Filter by year
 				continue;
@@ -38,8 +40,9 @@ class management extends comicmanager
 				}
 			}
 		}
-		if(!isset($rows))
-			die("No strips found<br />\n");
+		if(empty($rows))
+			continue;
+		
 		return $rows;
 	}
 	public function categoryselect($name='category',$parent,$preselect=false)
