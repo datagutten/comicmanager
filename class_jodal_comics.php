@@ -52,7 +52,7 @@ class comics
 			return false;
 		}
 		$releases=$this->request("/api/v1/releases/?comic__slug=$slug&pub_date__year=$year&limit=366");
-		if($releases===false)
+		if($releases===false || empty($releases['objects']))
 			return false;
 		else
 			return $this->format_releases($releases);
@@ -68,7 +68,7 @@ class comics
 		}
 		$releases=$this->request("/api/v1/releases/?comic__slug=$slug&pub_date__gte=$start&pub_date__lte=$end&limit=31");
 
-		if($releases===false)
+		if($releases===false || empty($releases['objects']))
 			return false;
 		else
 			return $this->format_releases($releases);
