@@ -13,10 +13,15 @@ if((isset($_GET['comic']) && isset($_GET['mode']) && isset($_GET['site']) && iss
 <script type="text/javascript">
 function change_to_text(id)
 {
-	input=document.getElementById(id);
+	input=document.getElementById('input'+id);
+	value=input.value;
 	input.removeAttribute('inputmode');
 	input.removeAttribute('pattern');
 	input.setAttribute('type','text');
+	input.value=value;
+
+	changelink=document.getElementById('changelink'+id);
+	changelink.setAttribute('style','display: none;');
 }
 </script>
 </head>
@@ -125,7 +130,6 @@ elseif($_GET['source']=='file')
 }
 else
 	trigger_error("Invalid source: {$_GET['source']}",E_USER_ERROR);
-
 if(empty($releases))
 	echo "<p>No releases found.<br /><a href=\"managecomics_front.php?comic={$_GET['comic']}\">Go back and try other options</a></p>\n";
 else
@@ -169,7 +173,7 @@ foreach ($releases as $key_release=>$release)
 
 	if($_GET['mode']=='id') //Id input
 		echo 'ID: <input type="number" id="input'.$key_release.'" min="0" inputmode="numeric" pattern="[0-9]*" name="value[]">'.
-		'<span onClick="change_to_text(\'input'.$key_release.'\')">Change to text</span>'.
+		'<span id="changelink'.$key_release.'" onClick="change_to_text(\''.$key_release.'\')">Change to text</span>'.
 		"\n";
 	elseif($_GET['mode']=='category') //Show category select
 	{
