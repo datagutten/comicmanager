@@ -25,6 +25,8 @@ if($comicinfo!==false)
 		{
 			echo "<a href=\"?comic=$comic&amp;tool=$file\">$name</a><br />\n";
 		}
+		echo "<p><a href=\"../showcomics.php?comic=$comic\">Show {$comicinfo['name']}</a></p>\n";
+		echo "<p><a href=\"../maintenance/?comic={$comicinfo['id']}\">Maintain {$comicinfo['name']}</a></p>\n";
 	}
 	elseif(isset($tools[$_GET['tool']]))
 	{

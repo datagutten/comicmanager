@@ -126,6 +126,10 @@ elseif($_GET['source']=='file')
 else
 	trigger_error("Invalid source: {$_GET['source']}",E_USER_ERROR);
 
+if(empty($releases))
+	echo "<p>No releases found.<br /><a href=\"managecomics_front.php?comic={$_GET['comic']}\">Go back and try other options</a></p>\n";
+else
+{
 $st_check=$comicmanager->db->prepare("SELECT * FROM $comic WHERE site=? AND date=?");
 foreach ($releases as $key_release=>$release)
 {
@@ -187,7 +191,9 @@ foreach ($releases as $key_release=>$release)
 
 echo '<input type="submit" name="button" id="button2" value="Submit" /></form>';
 echo "\n";
+}
 echo "<p><a href=\"../showcomics.php?comic=$comic\">Show {$comicinfo['name']}</a></p>\n";
+echo "<p><a href=\"index.php?comic={$comicinfo['id']}\">Manage {$comicinfo['name']}</a></p>\n";
 ?>
 </body>
 </html>

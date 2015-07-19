@@ -33,6 +33,8 @@ if($comicinfo!==false)
 	else
 		echo "Invalid tool: {$_GET['tool']}";
 	
+	echo "<p><a href=\"../showcomics.php?comic=$comic\">Show {$comicinfo['name']}</a></p>\n";
+	echo "<p><a href=\"../management/?comic={$comicinfo['id']}\">Manage {$comicinfo['name']}</a></p>\n";
 }
 ?>
 </body>
