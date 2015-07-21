@@ -29,41 +29,45 @@ $comicmanager=new management;
 $comicinfo=$comicmanager->comicinfo_get();
 
 $dom=$comicmanager->dom;
+
 $dom->formatOutput = true;
 
-if($comicinfo!==false)
+if($comicinfo!==false) //A valid comid is selected, show form to select strip
 {
 	$comic=$comicinfo['id'];
 	if(!isset($_GET['key']))
 	{
-		$form=$dom->createElement_simple('form',$dom,array('method'=>'get','id'=>'form'));
+		$form=$dom->createElement_simple('form',$dom,array('method'=>'get','id'=>'form')); //Create GET form
 		$dom->createElement_simple('input',$form,array('name'=>'comic','type'=>'hidden','value'=>$comicinfo['id'])); //Comic ID
-		$dom->createElement_simple('label',$form,array('for'=>'key','id'=>'label_key'),ucfirst($comicinfo['keyfield']).':');
+
+		$select=$dom->createElement_simple('select',$form,array('name'=>'keyfield')); //Create keyfield select
+		$possible_keyfields=array('id','uid');
+		if($comicinfo['keyfield']=='customid') //If the comics keyfield is customid, add it to the list of possible keys
+			$possible_keyfields[]='customid';
+
+		foreach($possible_keyfields as $option_value) //Add options to the select list
+		{
+			$dom->createElement_simple('option',$select,false,$option_value);
+		}
+
 		$input=$dom->createElement_simple('input',$form,array('type'=>'text','id'=>'key','name'=>'key'));
 
-		if($comicinfo['keyfield']=='customid')
-		{
-			$span_id_checkbox=$dom->createElement_simple('span',$form,array('id'=>'span_id'));
-			$dom->createElement_simple('input',$span_id_checkbox,array('type'=>'checkbox','id'=>'id_checkbox','onclick'=>"change_key_field('id')"));
-			$dom->createElement_simple('label',$span_id_checkbox,array('for'=>'id_checkbox','id'=>'label_id_checkbox'),'id');
-		}
-		
-		$dom->createElement_simple('input',$form,array('name'=>'submit','type'=>'submit'));
+		$dom->createElement_simple('input',$form,array('type'=>'submit'));
 		echo $dom->saveXML($form);
 	}
-	else
+	else //Strip selected
 	{
 		if(!isset($_GET['keyfield']))
 			$keyfield=$comicinfo['keyfield'];
 		else
 			$keyfield=$_GET['keyfield'];
 		$key=preg_replace('/[^a-z0-9]+/i','',$_GET['key']); //Clean key
-		
+
 		//Prepare SQL statements
 		$st_strip=$comicmanager->db->prepare("SELECT * FROM $comic WHERE $keyfield=? ORDER BY date DESC");
 		$st_update_category=$comicmanager->db->prepare("UPDATE $comic SET category=? WHERE $keyfield=?");
 	
-		if(isset($_POST['submit']))
+		if(isset($_POST['submit'])) //Edit form submitted
 		{
 			$st_strip->execute(array($key));
 			$strips=$st_strip->fetchAll(PDO::FETCH_ASSOC);
@@ -150,6 +154,7 @@ if($comicinfo!==false)
 			}
 			$dom->createElement_simple('input',$form,array('name'=>'submit','type'=>'submit'));
 			echo $dom->saveXML($form);
+			echo "<p><a href=\"?comic={$_GET['comic']}\">Edit another strip</a></p>\n";
 		}
 		else
 			echo "Strip not found";
