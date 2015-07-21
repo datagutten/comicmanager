@@ -95,7 +95,7 @@ elseif(isset($comicinfo))
 			trigger_error('Invalid view: '.$_GET['view'],E_USER_ERROR);
 	
 		$displayed_strips=array();
-		echo "Number of strips: ".$st_show->rowCount()."<br />\n";
+		$count=0; //Initialize counter variable
 		foreach($st_show->fetchAll(PDO::FETCH_ASSOC) as $row)
 		{
 			if(is_numeric($row[$keyfield]) && $hidedupes)
@@ -112,7 +112,10 @@ elseif(isset($comicinfo))
 			}
 			
 			$comicmanager->showpicture($row,$keyfield);
+			$count++;
 		}
+
+		echo "<p>Number of displayed strips: $count</p>\n";
 	}
 	else //Show default view
 	{
