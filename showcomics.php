@@ -58,9 +58,7 @@ elseif(isset($comicinfo))
 			}
 			else
 				die('Invalid key');
-			$st_show=$comicmanager->db->prepare($q="SELECT * FROM $comic WHERE $where");
-			if(!$st_show->execute())
-				die(print_r($st_show->errorInfo()));
+			$st_show=$comicmanager->query($q="SELECT * FROM $comic WHERE $where",false);
 		}
 		elseif($_GET['view']=='date') //Find by date
 		{
@@ -69,21 +67,15 @@ elseif(isset($comicinfo))
 			if(!preg_match('/^[0-9%]+$/',$_GET['value'],$matches))
 				die("Invalid date: ".$_GET['value']);
 			$st_show=$comicmanager->db->prepare($q="SELECT * FROM {$comicinfo['id']} WHERE date LIKE ? AND site=? ORDER BY date");
-	
-			if(!$st_show->execute(array($_GET['value'],$_GET['site'])))
-			{
-				$errorinfo=$st_show->errorInfo();
-				trigger_error("SQL error: $errorinfo[2]",E_USER_ERROR);
-			}
+			$comicmanager->execute($st_show,array($_GET['value'],$_GET['site']));
 			if($st_show->rowCount()==0)
 				die('No strips found for the specified date');
-	
 		}
 		elseif($_GET['view']=='range' && is_numeric($min=$_GET['from']) && is_numeric($max=$_GET['to'])) //Show a range (from key to key)
 		{
 			$where="$keyfield>=$min AND $keyfield<=$max GROUP BY $keyfield ORDER BY $keyfield";
 			$st_show=$comicmanager->db->prepare("SELECT * FROM {$comicinfo['id']} WHERE $keyfield>=? AND $keyfield<=? GROUP BY $keyfield ORDER BY $keyfield");
-			$st_show->execute(array($_GET['from'],$_GET['to']));
+			$comicmanager->execute($st_show,array($_GET['from'],$_GET['to']));
 		}
 		elseif($_GET['view']=='category')
 		{
@@ -96,7 +88,8 @@ elseif(isset($comicinfo))
 	
 		$displayed_strips=array();
 		$count=0; //Initialize counter variable
-		foreach($st_show->fetchAll(PDO::FETCH_ASSOC) as $row)
+
+		while($row=$st_show->fetch(PDO::FETCH_ASSOC))
 		{
 			if(is_numeric($row[$keyfield]) && $hidedupes)
 			{

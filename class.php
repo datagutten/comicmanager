@@ -32,6 +32,40 @@ class comicmanager
 		
 		$this->db = new PDO("mysql:host=$db_host;dbname=$db_name",$db_user,$db_password);
 	}
+	function query($q,$fetch='all')
+	{
+		$st=$this->db->query($q);
+
+		if($st===false)
+		{
+			$errorinfo=$this->db->errorInfo();
+			//trigger_error("SQL error: {$errorinfo[2]}",E_USER_WARNING);
+			throw new Exception("SQL error: {$errorinfo[2]}");
+			//return false;
+		}
+		elseif($fetch===false)
+			return $st;
+		elseif($fetch=='single')
+			return $st->fetch(PDO::FETCH_COLUMN);
+		elseif($fetch=='all')
+			return $st->fetchAll(PDO::FETCH_ASSOC);
+		elseif($fetch=='all_column')
+			return $st->fetchAll(PDO::FETCH_COLUMN);
+	}
+	function execute($st,$parameters,$fetch=false)
+	{
+		if($st->execute($parameters)===false)
+		{
+			$errorinfo=$st->errorInfo();
+			trigger_error("SQL error: {$errorinfo[2]}",E_USER_WARNING);
+			//throw new Exception("SQL error: {$errorinfo[2]}");
+			return false;
+		}
+		elseif($fetch=='single')
+			return $st->fetch(PDO::FETCH_COLUMN);
+		elseif($fetch=='all')
+			return $st->fetchAll(PDO::FETCH_ASSOC);
+	}
 	public function comiclist($onlyid=false) //Get all available series
 	{
 		$st=$this->db->query("SELECT * FROM comic_info ORDER BY name");
