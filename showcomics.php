@@ -176,7 +176,10 @@ elseif(isset($comicinfo))
 if(!isset($_GET['noheader']))
 {
 	if(count($_GET)==1)
-		echo "<p><a href=\"?\">Back to comic selection</a></p>\n";
+	{
+		echo "<p><a href=\"?\">Show another comic</a></p>\n";
+		echo "<p><a href=\"index.php?comic=$comic\">Main menu</a></p>\n";
+	}
 	elseif(count($_GET)>1)
 		echo "<p><a href=\"?comic=$comic\">Back to {$comicinfo['name']}</a></p>\n";
 ?>
