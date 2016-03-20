@@ -94,6 +94,7 @@ class comicmanager
 			{
 				case 'customid': $comicinfo['keyfield']='customid'; break;
 				case 'id': $comicinfo['keyfield']='id'; break;
+				case 'uid': $comicinfo['keyfield']='uid'; break;
 				default: trigger_error("Invalid key field: $keyfield",E_USER_ERROR);
 			}
 		}
@@ -165,6 +166,18 @@ class comicmanager
 			echo "<br />\n";
 		}
 
+		$image=$this->imagefile($row);
+		if($image===false)
+			echo "No image found<br />\n";
+		else
+		{
+			if(substr($image,0,4)!='http')
+				$image="/comicmanager/image.php?file=".$image;
+			echo "<a href=\"$image\"><img src=\"$image\" alt=\"\" style=\"max-width: 1000px; max-height: 400px;\"/></a><br />\n";
+		}
+	}
+	public function imagefile($row) //Find the image file for a database row
+	{
 		if(!empty($row['date'])) //Show strip by date
 		{
 			$comics_date=preg_replace('/([0-9]{4})([0-9]{2})([0-9]{2})/','$1-$2-$3',$row['date']); //Rewrite date for comics
@@ -180,14 +193,17 @@ class comicmanager
 			if(isset($row['customid']) && (!isset($image) || $image===false)) //Image not found by id, try customid
 				$image=$this->typecheck($this->filepath."/{$row['site']}/custom_{$row['customid']}");
 		}
-		if($image===false)
-			echo "No image found<br />\n";
+		if(empty($image))
+			return false;
 		else
-		{
-			if(substr($image,0,4)!='http')
-				$image="/comicmanager/image.php?file=".$image;
-			echo "<a href=\"$image\"><img src=\"$image\" alt=\"\" style=\"max-width: 1000px; max-height: 400px;\"/></a><br />\n";
-		}
+			return $image;
+	}
+	public function newest($keyfield,$key) //Find the newest release for a given strip
+	{
+		$st_newest=$this->db->prepare("SELECT * FROM {$this->comic} WHERE $keyfield=? ORDER BY date DESC LIMIT 1");
+		$st_newest->execute(array($key));
+		$row=$st_newest->fetch(PDO::FETCH_ASSOC);
+		return $row;
 	}
 	function comics_release_single_cache($slug,$date)
 	{
