@@ -57,7 +57,7 @@ require '../tools/DOMDocument_createElement_simple.php';
 $dom=new DOMDocumentCustom;
 $dom->formatOutput = true;
 
-if(is_array($comicinfo))
+if(is_array($comicinfo) && $comicinfo['has_categories']==1)
 {
 	$table=$comicinfo['id']."_categories";
 	$st_categories=$comicmanager->db->query($q="SELECT * FROM $table ORDER BY name ASC");
@@ -80,53 +80,30 @@ if(is_array($comicinfo))
 			if(!isset($categories_db[$id])) //New category
 			{
 				echo "INSERT INTO $table (name,visible) VALUES ($name,1)<br />\n";
-				if(!$st_insert->execute(array($name,1)))
-				{
-					$errorinfo=$comicmanager->db->errorInfo();
-					trigger_error("SQL error inserting category: $errorinfo[2]",E_USER_WARNING);
-				}
-				else
-				{
-					$id=$comicmanager->db->lastInsertId();
-					$categories_db[$id]=$name;
-					$visible_db[$id]=1;
-				}	
+				$comicmanager->execute($st,array($name,1));
+				$id=$comicmanager->db->lastInsertId();
+				$categories_db[$id]=$name;
+				$visible_db[$id]=1;
 			}
 			elseif($name!=$categories_db[$id]) //Check if name is changed
 			{
 				echo "UPDATE $table SET name=$name WHERE id=$id<br />\n";
-				if(!$st_update_name->execute(array($name,$id)))
-				{
-					$errorinfo=$st_update_name->errorInfo();
-					trigger_error("SQL error updating category name: $errorinfo[2]",E_USER_WARNING);
-				}
-				else
-					$categories_db[$id]=$name; //Update the name variable to avoid reloading from db
+				$comicmanager->execute($st_update_name,array($name,$id));
+				$categories_db[$id]=$name; //Update the name variable to avoid reloading from db
 			}
 			if(!isset($_POST['visible'][$id])) //Box not checked means not visible
 				$_POST['visible'][$id]=0;
 			if(is_numeric($_POST['visible'][$id]) && $_POST['visible'][$id]!=$visible_db[$id]) //Check if visible status is changed
 			{
 				echo "UPDATE $table SET visible={$_POST['visible'][$id]} WHERE id=$id<br />\n"; //Dummy query for troubleshooting
-
-				if(!$st_visible_update->execute(array($_POST['visible'][$id],$id)))
-				{
-					$errorinfo=$st_visible_update->errorInfo();
-					trigger_error("SQL error updating visibility: $errorinfo[2]",E_USER_WARNING);
-				}
-				else
-					$visible_db[$id]=$_POST['visible'][$id];
+				$comicmanager->execute($st_visible_update,array($_POST['visible'][$id],$id));
+				$visible_db[$id]=$_POST['visible'][$id];
 			}
 			if(isset($_POST['delete'][$id]))
 			{
 				echo "DELETE FROM $table WHERE id=$id<br />\n";
-				if(!$st_delete->execute(array($id)))
-				{
-					$errorinfo=$st_delete->errorInfo();
-					trigger_error("SQL error deleting category: $errorinfo[2]",E_USER_WARNING);
-				}
-				else
-					unset($categories_db[$id]);
+				$comicmanager->execute($st_delete,array($id));
+				unset($categories_db[$id]);
 			}
 
 		}
@@ -184,6 +161,8 @@ if(is_array($comicinfo))
 	echo $dom->saveXML($dom->documentElement);
 	echo '<input name="submit" type="submit">';
 }
+elseif($comicinfo['has_categories']==0)
+	echo $comicinfo['name'].' does not have categories';
 ?>
 </form>
 </body>
