@@ -25,7 +25,7 @@ class management extends comicmanager
 
 			if($filter_year!==false && substr($month,0,4)!=$filter_year) //Filter by year
 				continue;
-			if($filter_month!==false && substr($month,2,2)!=$filter_month) //Filter by month
+			if($filter_month!==false && substr($month,4,2)!=$filter_month) //Filter by month
 				continue;
 			
 			$monthdir=scandir($basepath.'/'.$month); //Get the files for this month
@@ -41,9 +41,9 @@ class management extends comicmanager
 			}
 		}
 		if(empty($rows))
-			continue;
-		
-		return $rows;
+			return false;
+		else
+			return $rows;
 	}
 	public function categoryselect($name='category',$parent,$preselect=false)
 	{
