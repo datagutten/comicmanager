@@ -34,6 +34,9 @@ elseif($comicinfo!==false)
 	$li=$dom->createElement_simple('li',$ul);
 	$a=$dom->createElement_simple('a',$li,array('href'=>'maintenance/?comic='.$comicinfo['id']),'Maintain');
 	
+	$p=$dom->createElement_simple('p',$body);
+	$a=$dom->createElement_simple('a',$p,array('href'=>'?'),'Change comic');
+
 	echo $dom->saveXML($body);
 }
 ?>
