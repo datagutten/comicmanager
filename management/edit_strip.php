@@ -159,7 +159,8 @@ if($comicinfo!==false) //A valid comid is selected, show form to select strip
 		else
 			echo "Strip not found";
 	}
-
+	echo "<p><a href=\"index.php?comic={$comicinfo['id']}\">Manage {$comicinfo['name']}</a></p>\n";
+	echo "<p><a href=\"../showcomics.php?comic={$comicinfo['id']}\">Show {$comicinfo['name']}</a></p>\n";
 }
 ?>
 </body>
