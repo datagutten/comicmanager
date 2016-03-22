@@ -10,7 +10,7 @@
 <?Php
 require '../class.php';
 $comicmanager=new comicmanager;
-$tools=array('edit_categories.php'=>"Add or edit categories",'managecomics_front.php'=>'Add id or category to strips','edit_strip.php'=>'Edit strip info');
+$tools=array('edit_categories.php'=>"Add or edit categories",'managecomics_front.php'=>'Add id or category to strips','edit_strip.php'=>'Edit strip info','add_id_files.php'=>'Add files with id as name to the database');
 if(isset($_GET['tool']))
 	echo "<h2>{$tools[$_GET['tool']]}</h2>\n";
 
