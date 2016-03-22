@@ -31,15 +31,26 @@
 <?Php
 if(isset($_POST['submit']))
 {
-	require 'maintenance_class.php';
-	$comicmanager=new maintenance;
+	require 'class_management.php';
+	$comicmanager=new comicmanager;
 	$comic=preg_replace('/[^a-z0-9]+/','',strtolower($_POST['comic'])); //Make a clean comic id
 	if(!isset($_POST['keyfield']))
 		$keyfield='id';
 	else
 		$keyfield=preg_replace('/[^a-z0-9]+/','',strtolower($_POST['keyfield'])); //Make a clean keyfield
 	if(isset($_POST['has_categories']) && $_POST['has_categories']==1)
+	{
 		$has_categories=1;
+		$q_categories='CREATE TABLE `'.$comic.'_categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `visible` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;';
+		$comicmanager->query($q_categories,false);
+
+		$comicmanager->query('ALTER TABLE `comicmanager`.`'.$comic.'` ADD COLUMN `category` INT(2) NULL DEFAULT NULL AFTER `id`;',false);
+	}
 	else
 		$has_categories=0;
 	
