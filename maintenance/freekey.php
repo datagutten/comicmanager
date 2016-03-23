@@ -20,12 +20,15 @@ if(is_array($comicinfo))
 	//print_r($list);
 	//die();
 	$count=0;
-	$max=$st_max->fetch(PDO::FETCH_COLUMN);
+	if(isset($_GET['max']) && is_numeric($_GET['max']))
+		$max=$_GET['max'];
+	else
+		$max=$st_max->fetch(PDO::FETCH_COLUMN);
 	//var_dump($max);
 	$key=1;
 	for ($i=1; $i<=$max; $i++)
 	{
-		if($list[$key]!=$i)
+		if(array_search($i,$list)===false)
 		{
 			echo $i.'<br>';
 			$count++;
