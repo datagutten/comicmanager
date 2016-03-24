@@ -154,10 +154,10 @@ if($comicinfo!==false) //A valid comid is selected, show form to select strip
 			}
 			$dom->createElement_simple('input',$form,array('name'=>'submit','type'=>'submit'));
 			echo $dom->saveXML($form);
-			echo "<p><a href=\"?comic={$_GET['comic']}\">Edit another strip</a></p>\n";
 		}
 		else
 			echo "Strip not found";
+		echo "<p><a href=\"?comic={$_GET['comic']}\">Edit another strip</a></p>\n";
 	}
 	echo "<p><a href=\"index.php?comic={$comicinfo['id']}\">Manage {$comicinfo['name']}</a></p>\n";
 	echo "<p><a href=\"../showcomics.php?comic={$comicinfo['id']}\">Show {$comicinfo['name']}</a></p>\n";
