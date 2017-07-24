@@ -56,6 +56,8 @@ elseif(isset($comicinfo))
 				$where="$keyfield=";
 				$where.=str_replace(','," OR $keyfield=",$_GET['value']);
 			}
+			elseif(strpos($_GET['value'],'%')!==false && preg_match('/^[a-zA-Z0-9%]+$/',$_GET['value']))
+				$where=sprintf("%s LIKE '%s'",$keyfield,$_GET['value']);
 			else
 				die('Invalid key');
 			$st_show=$comicmanager->query($q="SELECT * FROM $comic WHERE $where",false);
@@ -85,7 +87,7 @@ elseif(isset($comicinfo))
 		}
 		else
 			trigger_error('Invalid view: '.$_GET['view'],E_USER_ERROR);
-	
+
 		$displayed_strips=array();
 		$count=0; //Initialize counter variable
 
