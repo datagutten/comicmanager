@@ -14,7 +14,6 @@ class comicmanager
 	{
 		error_reporting(E_ALL);
 		ini_set('display_errors',1);
-		require 'config_db.php';
 		require 'config.php';
 
 		if(isset($comics_site) && isset($comics_key))
@@ -29,42 +28,18 @@ class comicmanager
 			$this->filepath=realpath($filepath);
 		if(isset($picture_host))
 			$this->picture_host=$picture_host;
-		
-		$this->db = new PDO("mysql:host=$db_host;dbname=$db_name",$db_user,$db_password);
+
+		require 'tools/pdo_helper.class.php';
+		$this->db=new pdo_helper;
+		$this->db->connect_db_config(__DIR__.'/config_db.php');
 	}
 	function query($q,$fetch='all')
 	{
-		$st=$this->db->query($q);
-
-		if($st===false)
-		{
-			$errorinfo=$this->db->errorInfo();
-			//trigger_error("SQL error: {$errorinfo[2]}",E_USER_WARNING);
-			throw new Exception("SQL error: {$errorinfo[2]}");
-			//return false;
-		}
-		elseif($fetch===false)
-			return $st;
-		elseif($fetch=='single')
-			return $st->fetch(PDO::FETCH_COLUMN);
-		elseif($fetch=='all')
-			return $st->fetchAll(PDO::FETCH_ASSOC);
-		elseif($fetch=='all_column')
-			return $st->fetchAll(PDO::FETCH_COLUMN);
+		return $this->db->query($q,$fetch);
 	}
 	function execute($st,$parameters,$fetch=false)
 	{
-		if($st->execute($parameters)===false)
-		{
-			$errorinfo=$st->errorInfo();
-			trigger_error("SQL error: {$errorinfo[2]}",E_USER_WARNING);
-			//throw new Exception("SQL error: {$errorinfo[2]}");
-			return false;
-		}
-		elseif($fetch=='single')
-			return $st->fetch(PDO::FETCH_COLUMN);
-		elseif($fetch=='all')
-			return $st->fetchAll(PDO::FETCH_ASSOC);
+		return $this->db->execute($st,$parameters,$fetch);
 	}
 	public function comiclist($onlyid=false) //Get all available series
 	{
@@ -253,7 +228,6 @@ class comicmanager
 			$st_insert->execute(array($fileinfo[2],$slug,$date,$fileinfo[1])); //Add image hash to local cache table
 			return $image_url;
 		}
-	
 		return $this->comics_media.'/'.$st_select->fetch(PDO::FETCH_COLUMN);
 	}
 	function filename($site,$date,$create_dir=false,$date_is_timestamp=false)
@@ -267,6 +241,6 @@ class comicmanager
 		if($create_dir!==false && !file_exists($dir))
 			mkdir($dir,0777,true);
 		return $dir.'/'.$date;
-	}	
+	}
 }
 ?>
