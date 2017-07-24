@@ -242,5 +242,9 @@ class comicmanager
 			mkdir($dir,0777,true);
 		return $dir.'/'.$date;
 	}
+	function next_customid()
+	{
+		return $this->query($q="SELECT max(customid)+1 FROM {$this->comic}",'column');
+	}
 }
 ?>
