@@ -106,7 +106,7 @@ elseif(isset($comicinfo))
 				}
 			}
 			
-			$comicmanager->showpicture($row,$keyfield);
+			echo $comicmanager->dom->saveXML($comicmanager->showpicture($row,$keyfield));
 			$count++;
 		}
 

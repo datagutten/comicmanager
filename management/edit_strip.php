@@ -107,10 +107,11 @@ if($comicinfo!==false) //A valid comid is selected, show form to select strip
 		if($st_strip->rowCount()>0)
 		{
 			$strips=$st_strip->fetchAll(PDO::FETCH_ASSOC);
-	
-			$comicmanager->showpicture($strips[0],$keyfield);
-			
+
 			$form=$dom->createElement_simple('form',$dom,array('method'=>'post')); //Create form
+			$picture=$comicmanager->showpicture($strips[0],$keyfield);
+			$form->appendChild($picture);
+
 			if($comicinfo['has_categories']==1)
 			{
 				$categories=$comicmanager->categories($comic);

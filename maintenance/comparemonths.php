@@ -39,7 +39,7 @@ for($i=0; $i<=40; $i++) //Loop through the days
 		{
 			$row=$st_strip->fetch();
 			echo $row['id'].' - ';	
-			$comicmanager->showpicture($row,$keyfield,$comic);
+			echo $comicmanager->dom->saveXML($comicmanager->showpicture($row,$keyfield,$comic));
 		}
 		else
 			echo "No strips found for {$site[$key]} ".date('Y-m-d',$time[$key]);

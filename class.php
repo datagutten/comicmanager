@@ -35,6 +35,10 @@ class comicmanager
 		$this->db->connect_db_config(__DIR__.'/config_db.php');
 		if($this->build_comic_list()===false)
 			die($this->error);
+
+		require 'tools/DOMDocument_createElement_simple.php';
+		$this->dom=new DOMDocumentCustom;
+		$this->dom->formatOutput=true;
 	}
 	function query($q,$fetch='all')
 	{
@@ -157,46 +161,53 @@ class comicmanager
 			return $type;
 		return $file;
 	}
-	public function showpicture($row,$keyfield=false,$comic=false,$noheader=false,$jodal=false)
+	public function showpicture($row,$keyfield=false,$comic=false,$noheader=false)
 	{
+		$div=$this->dom->createElement_simple('div',false,array('class'=>'release'));
 		if(!is_array($row))
 		{
-			trigger_error("Invalid row",E_USER_WARNING);
+			throw new exception('Release is not array');
 			return false;
 		}
 		if($comic===false)
 			$comic=$this->comic;
 		if($keyfield===false)
-			$keyfield=$this->comic_info[$comic];
+			$keyfield=$this->comic_info[$comic]['keyfield'];
 
 		if(!$noheader) //Make header
 		{
 			if(!empty($row['date']))
-				echo $row['date'].' - ';
-
-			$urlfields=array('comic'=>$comic,'view'=>'singlestrip','value'=>$row[$keyfield]);
-			if($keyfield!=$this->comic_info_db[$comic]['keyfield']) //Check if current key field is different from the default
-				$urlfields['keyfield']=$keyfield;
+				$this->dom->createElement_simple('span',$div,false,$row['date'].' - ');
 
 			if(isset($row[$keyfield]))
-				echo '<a href="/comicmanager/showcomics.php?'.http_build_query($urlfields,'','&amp;').'">'.$row[$keyfield].'</a>';
+			{
+				$urlfields=array('comic'=>$comic,'view'=>'singlestrip','keyfield'=>$keyfield,'value'=>$row[$keyfield]);
+				$this->dom->createElement_simple('a',$div,array('href'=>'/comicmanager/showcomics.php?'.http_build_query($urlfields,'','&')),$row[$keyfield]);
+			}
 			else
-				echo $row['uid'];
+				$this->dom->createElement_simple('span',$div,false,$row['uid']);
 			if(isset($row['tittel']))
-				echo ' - '.$row['tittel'];
-			echo ' - '.$row['site'];
-			echo "<br />\n";
+				$this->dom->createElement_simple('span',$div,false,' - '.$row['tittel']);
+			$this->dom->createElement_simple('span',$div,false,' - '.$row['site']);
+			$this->dom->createElement_simple('br',$div);
 		}
 
 		$image=$this->imagefile($row);
 		if($image===false)
-			echo "No image found<br />\n";
+		{
+			if(empty($this->error))
+				$this->dom->createElement_simple('p',$div,false,'No image found');
+			else
+				$this->dom->createElement_simple('p',$div,false,$this->error);
+		}
 		else
 		{
 			if(substr($image,0,4)!='http')
 				$image="/comicmanager/image.php?file=".$image;
-			echo "<a href=\"$image\"><img src=\"$image\" alt=\"\" style=\"max-width: 1000px; max-height: 400px;\"/></a><br />\n";
+			$a=$this->dom->createElement_simple('a',$div,array('href'=>$image));
+			$this->dom->createElement_simple('img',$a,array('src'=>$image,'style'=>'max-width: 1000px; max-height: 400px'));
 		}
+		return $div;
 	}
 	public function imagefile($row) //Find the image file for a database row
 	{
