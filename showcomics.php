@@ -57,7 +57,7 @@ elseif(isset($comicinfo))
 				$where.=str_replace(','," OR $keyfield=",$_GET['value']);
 			}
 			elseif(strpos($_GET['value'],'%')!==false && preg_match('/^[a-zA-Z0-9%]+$/',$_GET['value']))
-				$where=sprintf("%s LIKE '%s'",$keyfield,$_GET['value']);
+				$where=sprintf('%1$s LIKE \'%2$s\' ORDER BY %1$s',$keyfield,$_GET['value']);
 			else
 				die('Invalid key');
 			$st_show=$comicmanager->query($q="SELECT * FROM $comic WHERE $where",false);
