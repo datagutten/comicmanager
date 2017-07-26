@@ -7,6 +7,7 @@ class comicmanager
 	public $comics;
 	public $comics_media;
 	public $comic; //Current comic
+	public $comic_list; //Array with a list of all comics, id as key, name as value
 	public $comic_info; //Array with info about comics
 	public $comic_info_db; //Array with info about comics, default value from db
 
@@ -32,6 +33,8 @@ class comicmanager
 		require 'tools/pdo_helper.class.php';
 		$this->db=new pdo_helper;
 		$this->db->connect_db_config(__DIR__.'/config_db.php');
+		if($this->build_comic_list()===false)
+			die($this->error);
 	}
 	function query($q,$fetch='all')
 	{
@@ -41,31 +44,41 @@ class comicmanager
 	{
 		return $this->db->execute($st,$parameters,$fetch);
 	}
-	public function comiclist($onlyid=false) //Get all available series
+
+	//Get all available comics and populate $this->comic_list
+	public function build_comic_list()
 	{
-		$st=$this->db->query("SELECT * FROM comic_info ORDER BY name");
-		if($st===false)
+		$st=$this->db->query("SELECT id,name FROM comic_info ORDER BY name");
+		if($st->rowCount()===0)
 		{
-			$errorinfo=$this->db->errorInfo();
-			trigger_error("SQL error while fetching series; $errorinfo[2]",E_USER_ERROR);
+			$this->error='No comics in database';
 			return false;
 		}
-		if($onlyid)
-			$series=$st->fetchAll(PDO::FETCH_COLUMN);
-		else
-			$series=$st->fetchAll(PDO::FETCH_ASSOC);
-		return $series;
+		$this->comic_list=$st->fetchAll(PDO::FETCH_KEY_PAIR);
 	}
-	public function selectcomic() //Display links to select a comic
-	{
-		//$st=$this->db->query("SELECT * FROM tegneserieliste ORDER BY navn");
 
+	//Display links to select a comic
+	public function selectcomic()
+	{
 		$output="<h2>Select comic:</h2>\n";
-		foreach($this->comiclist() as $row)
+		foreach($this->comic_list as $id=>$name)
 		{
-			$output.="<p><a href=\"?comic={$row['id']}\">{$row['name']}</a></p>\n";
+			$output.="<p><a href=\"?comic={$id}\">{$name}</a></p>\n";
 		}
 		return $output;
+	}
+
+	//Find valid sites for a comic
+	function sites($comic=false)
+	{
+		if($comic===false) //Default to current comic
+			$comic=$this->comic;
+		elseif(!isset($this->comic_list[$comic]))
+		{
+			$this->error='Invalid comic: '.$comic;
+			return false;
+		}
+		return $this->db->query(sprintf('SELECT DISTINCT site FROM %s',$comic),'all_column');
 	}
 	public function categories($comic,$only_visible=false)
 	{
