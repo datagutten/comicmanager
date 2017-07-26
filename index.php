@@ -1,10 +1,7 @@
-
 <?Php
 require 'class.php';
 $comicmanager=new comicmanager;
-require 'tools/DOMDocument_createElement_simple.php';
-$dom=new DOMDocumentCustom;
-//$title='Show comics';
+$dom=$comicmanager->dom;
 if(isset($_GET['comic']))
 	$comicinfo=$comicmanager->comicinfo($_GET['comic']);
 ?>
