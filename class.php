@@ -84,20 +84,17 @@ class comicmanager
 		}
 		return $this->db->query(sprintf('SELECT DISTINCT site FROM %s',$comic),'all_column');
 	}
-	public function categories($comic,$only_visible=false)
+	public function categories($comic=false,$only_visible=false)
 	{
-		if(!$only_visible)
-			$st_categories=$this->db->prepare($q="SELECT id,name FROM {$comic}_categories ORDER BY name ASC");
+		if($comic===false)
+			$comic=$this->comic;
+		if($only_visible===false)
+			//$st_categories=$this->db->prepare($q="SELECT id,name FROM {$comic}_categories ORDER BY name ASC");
+			$st_categories=$this->db->query(sprintf('SELECT id,name FROM %s_categories ORDER BY name ASC',$this->comic));
 		else
-			$st_categories=$this->db->prepare($q="SELECT id,name FROM {$comic}_categories WHERE visible=1 ORDER BY name ASC");
-		if(!$st_categories->execute())
-		{
-			$errorinfo=$st_categories->errorInfo();
-			trigger_error("SQL error while fetching categories: $errorinfo[2]",E_USER_WARNING);
-			return false;
-		}
-		else
-			return $st_categories->fetchAll(PDO::FETCH_KEY_PAIR);
+			$st_categories=$this->db->query(sprintf('SELECT id,name FROM %s_categories WHERE visible=1 ORDER BY name ASC',$this->comic));
+
+		return $st_categories->fetchAll(PDO::FETCH_KEY_PAIR);
 	}
 	public function comicinfo($comic,$keyfield=false) //Get information about a comic
 	{
