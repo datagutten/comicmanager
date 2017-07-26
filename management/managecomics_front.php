@@ -9,10 +9,7 @@
 <?Php
 require '../class.php';
 $comicmanager=new comicmanager;
-
-require '../tools/DOMDocument_createElement_simple.php';
-$dom=new DOMDocumentCustom;
-$dom->formatOutput=true;
+$dom=$comicmanager->dom;
 
 $comicinfo=$comicmanager->comicinfo_get();
 if($comicinfo!==false)
