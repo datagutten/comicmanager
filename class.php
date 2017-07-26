@@ -206,7 +206,12 @@ class comicmanager
 			if(is_object($this->comics)) //Check if the strip is found on comics
 				$image=$this->comics_release_single_cache($row['site'],$comics_date);
 			if(!isset($image) || $image===false) //Image not found on comics, try to find local file
-				$image=$this->typecheck($this->filename($row['site'],$row['date']));
+				$image=$this->typecheck($filename=$this->filename($row['site'],$row['date']));
+			if(empty($image))
+			{
+				$this->error='Image not found by date: '.$filename;
+				return false;
+			}
 		}
 		else //Show strip by id
 		{
