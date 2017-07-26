@@ -66,12 +66,16 @@ elseif(isset($comicinfo))
 		{
 			if(!isset($_GET['value']) || !isset($_GET['site']))
 				die('Date and site must be specified');
-			if(!preg_match('/^[0-9%]+$/',$_GET['value'],$matches))
+			if(!preg_match('/^[0-9%]+$/',$_GET['value'],$date))
 				die("Invalid date: ".$_GET['value']);
+			$date=$date[0];
+			if(strlen($date)==6)
+				$date=$date.'%';
+
 			$st_show=$comicmanager->db->prepare($q="SELECT * FROM {$comicinfo['id']} WHERE date LIKE ? AND site=? ORDER BY date");
-			$comicmanager->execute($st_show,array($_GET['value'],$_GET['site']));
+			$comicmanager->execute($st_show,array($date,$_GET['site']));
 			if($st_show->rowCount()==0)
-				die('No strips found for the specified date');
+				die(sprintf('No strips found for date %s on site %s',$date,$_GET['site']));
 		}
 		elseif($_GET['view']=='range' && is_numeric($min=$_GET['from']) && is_numeric($max=$_GET['to'])) //Show a range (from key to key)
 		{
