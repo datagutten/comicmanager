@@ -29,6 +29,7 @@ function change_to_text(id)
 <?php
 require 'class_management.php';
 $comicmanager=new management;
+$dom=$comicmanager->dom;
 
 $comicinfo=$comicmanager->comicinfo_get();
 if($comicinfo===false)
@@ -161,14 +162,23 @@ foreach ($releases as $key_release=>$release)
 	elseif($_GET['mode']=='category' && $row_check['category']!=$resort) //Resort category
 		continue;
 	
-			
+	$div_release=$dom->createElement_simple('div');
 	if(file_exists($site.'/titles/'.$release['date'].'.txt')) //Check if the strip got a title
-		echo file_get_contents($site.'/titles/'.$release['date'].'.txt');
-	echo "<p>{$release['date']} - $site</p>";
+	{
+		$release_title=file_get_contents($site.'/titles/'.$release['date'].'.txt');
+		$dom->createElement_simple('span',$div_release,array('class'=>'title'),$release_title);
+	}
+	$dom->createElement_simple('p',$div_release,false,sprintf('%s - %s',$release['date'],$site));
+	$img=$dom->createElement_simple('img',$div_release,array('alt'=>$release['file']));
 	if(substr($file,0,4)!=='http') //If the file is a local file, show it using "proxy script"
-		echo "<p><img src=\"../image.php?file={$release['file']}\" alt=\"{$release['file']}\" width=\"500\" /></p>\n";
+		$img->setAttribute('src','../image.php?file='.$release['file']);
 	else //If the file is remote, show it directly
-		echo "<p><img src=\"{$release['file']}\" alt=\"{$release['file']}\"/></p>\n";
+		$img->setAttribute('src',$release['file']);
+	if($_GET['mode']=='category')
+		$img->setAttribute('style','max-width: 1000px; max-height: 400px');
+	else
+		$img->setAttribute('style','max-width: 100%');
+	echo $dom->saveXML($div_release);
 	echo '<input name="date[]" type="hidden" value="'.$release['date'].'" />'."\n";
 
 	if($_GET['mode']=='id') //Id input
