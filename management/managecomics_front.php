@@ -17,12 +17,6 @@ if($comicinfo!==false)
 	$form=$dom->createElement_simple('form',$dom,array('method'=>'get','action'=>'managecomics.php'));
 	
 	//Select mode
-	if(!$st_sites=$comicmanager->db->query("SELECT site FROM {$comicinfo['id']} GROUP BY site"))
-	{
-		$errorinfo=$comicmanager->db->errorInfo();
-		trigger_error("SQL error fetching sites: $errorinfo[2]",E_USER_ERROR);
-	}
-
 	$dom->createElement_simple('input',$form,array('type'=>'hidden','name'=>'comic','value'=>$comicinfo['id'])); //Comic id
 	if($comicinfo['has_categories']==0)
 		$dom->createElement_simple('input',$form,array('type'=>'hidden','name'=>'mode','value'=>'id')); //No categories, mode is always id
@@ -41,7 +35,7 @@ if($comicinfo!==false)
 	}
 
 	//Select site
-	$sites=$st_sites->fetchAll(PDO::FETCH_COLUMN);
+	$sites=$comicmanager->sites();
 	if(count($sites)==1)
 		$dom->createElement_simple('input',$form,array('type'=>'hidden','name'=>'site','value'=>$sites[0])); //Only one site
 	else //Site list
