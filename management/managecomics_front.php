@@ -36,11 +36,16 @@ if($comicinfo!==false)
 
 	//Select site
 	$sites=$comicmanager->sites();
-	if(count($sites)==1)
-		$dom->createElement_simple('input',$form,array('type'=>'hidden','name'=>'site','value'=>$sites[0])); //Only one site
+	$div_sites=$dom->createElement_simple('div',$form,array('id'=>'sites'));
+	if(count($sites)<2)
+	{
+		$dom->createElement_simple('p',$div_sites,'','Enter site slug:');
+		$input=$dom->createElement_simple('input',$form,array('type'=>'text','name'=>'site'));
+		if(!empty($sites))
+			$input->setAttribute('value',$sites[0]);
+	}
 	else //Site list
 	{
-		$div_sites=$dom->createElement_simple('div',$form,array('id'=>'sites'));
 		$dom->createElement_simple('p',$div_sites,'','Select site:');
 		foreach($sites as $site)
 		{
