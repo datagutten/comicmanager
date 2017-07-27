@@ -78,10 +78,11 @@ if(is_array($comicinfo) && $comicinfo['has_categories']==1)
 			if(!isset($categories_db[$id])) //New category
 			{
 				echo "INSERT INTO $table (name,visible) VALUES ($name,1)<br />\n";
-				$comicmanager->execute($st,array($name,1));
+				$comicmanager->db->execute($st_insert,array($name,1));
 				$id=$comicmanager->db->lastInsertId();
 				$categories_db[$id]=$name;
 				$visible_db[$id]=1;
+				continue;
 			}
 			elseif($name!=$categories_db[$id]) //Check if name is changed
 			{
