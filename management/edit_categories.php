@@ -53,9 +53,7 @@ require '../class.php';
 
 $comicmanager=new comicmanager;
 $comicinfo=$comicmanager->comicinfo_get();
-require '../tools/DOMDocument_createElement_simple.php';
-$dom=new DOMDocumentCustom;
-$dom->formatOutput = true;
+$dom=$comicmanager->dom;
 
 if(is_array($comicinfo) && $comicinfo['has_categories']==1)
 {
