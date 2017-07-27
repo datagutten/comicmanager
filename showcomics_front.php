@@ -25,7 +25,13 @@ if(!empty($comicinfo))
 	//Site field
 	$p=$dom->createElement_simple('p',$form_date);
 	$label=$dom->createElement_simple('label',$p,false,'Site:');
-	$dom->createElement_simple('input',$p,array('type'=>'text','name'=>'site'));
+	$dom->createElement_simple('input',$p,array('type'=>'text','name'=>'site','list'=>'sites'));
+	$datalist=$dom->createElement_simple('datalist',$form_date,array('id'=>'sites'));
+	foreach($comicmanager->sites() as $site)
+	{
+		$dom->createElement_simple('option',$datalist,array('value'=>$site));
+	}
+
 	//Date field
 	$p=$dom->createElement_simple('p',$form_date);
 	$label=$dom->createElement_simple('label',$p,false,'Date:');
