@@ -1,34 +1,28 @@
 <?Php
+if(!isset($_GET['comic']))
+{
+	header('Location: showcomics_front.php');
+	die();
+}
+elseif(!isset($_GET['view']))
+{
+	header('Location: showcomics_front.php?comic='.$_GET['comic']);
+	die();
+}
+
 require 'class.php';
 $comicmanager=new comicmanager;
-$title='Show comics';
-if(isset($_GET['comic']))
-{
-	$comicinfo=$comicmanager->comicinfo($_GET['comic'],(isset($_GET['keyfield']) ? $_GET['keyfield'] : false));
-	$title="Show ".$comicinfo['name'];
-}
-if(isset($_GET['view']))
-{
-	switch($_GET['view'])
-	{
-		case 'singlestrip': $title.=' strip '.$_GET['value']; break;
-		case 'category': $title.=' category '.$_GET['value']; break;
-	}
-}
+$dom=$comicmanager->dom;
+//Create HTML header
+$html=$dom->createElement_simple('html');
+$head=$dom->createElement_simple('head',$html);
+$dom->createElement_simple('meta',$head,array('charset'=>'utf-8'));
+$dom->createElement_simple('link',$head,array('href'=>'comicmanager.css','rel'=>'stylesheet','type'=>'text/css'));
+$title=$dom->createElement_simple('title',$head,false,'Show comics');
+$body=$dom->createElement_simple('body',$html);
 
-if(!isset($_GET['noheader']))
-{
-?>
-<!DOCTYPE HTML>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title><?php echo $title; ?></title>
-</head>
-
-<body>
-<?Php
-}
+$comicinfo=$comicmanager->comicinfo_get();
+$title->textContent='Show '.$comicinfo['name'];
 
 /*Rekkefølge på parametere:
 comic
@@ -37,64 +31,95 @@ view
 [site]
 value
 */
-if(!isset($_GET['comic']))
-	echo $comicmanager->selectcomic();
-elseif(isset($comicinfo))
+
+if(!empty($comicinfo))
 {
 	$comic=$comicinfo['id'];
 	$keyfield=$comicinfo['keyfield'];
 
 	$hidedupes=false;
-	if(count($_GET)>1) //Parameters specified
-	{
+
 		if($_GET['view']=='singlestrip') //Show strip by key
 		{
-			if(is_numeric($_GET['value']))
-				$where="$keyfield=".$_GET['value'];
-			elseif(strpos($_GET['value'],',')) //Multiple keys is separated by comma
+			if(!preg_match('/^[a-zA-Z0-9%,]+$/',$_GET['value'],$value))
+				$dom->createElement_simple('div',$body,array('class'=>'error'),'Invalid characters in key: '.$_GET['value']);
+			elseif(strpos($_GET['value'],',')!==false) //Multiple keys separated by comma
 			{
-				$where="$keyfield=";
-				$where.=str_replace(','," OR $keyfield=",$_GET['value']);
+				$values=explode(',',$_GET['value']);
+				$where=sprintf("%s='%s'",$comicinfo['keyfield'],array_shift($values));
+				foreach($values as $value)
+				{
+					$where.=sprintf("OR %s='%s'",$comicinfo['keyfield'],$value);
+				}
+				$hidedupes=true;
 			}
-			elseif(strpos($_GET['value'],'%')!==false && preg_match('/^[a-zA-Z0-9%]+$/',$_GET['value']))
-				$where=sprintf('%1$s LIKE \'%2$s\' ORDER BY %1$s',$keyfield,$_GET['value']);
+			elseif(strpos($_GET['value'],'%')!==false) //Wildcard
+			{
+				$where=sprintf('%1$s LIKE \'%2$s\' ORDER BY %1$s',$keyfield,$value[0]);
+				$hidedupes=true;
+			}
 			else
-				die('Invalid key');
-			$st_show=$comicmanager->query($q="SELECT * FROM $comic WHERE $where",false);
+				$where=sprintf("%s='%s'",$comicinfo['keyfield'],$value[0]);
+
+			if(isset($where))
+				$title->textContent.=' strip '.$_GET['value'];		
+
 		}
 		elseif($_GET['view']=='date') //Find by date
 		{
+			$sites=$comicmanager->sites();
 			if(!isset($_GET['value']) || !isset($_GET['site']))
-				die('Date and site must be specified');
-			if(!preg_match('/^[0-9%]+$/',$_GET['value'],$date))
-				die("Invalid date: ".$_GET['value']);
-			$date=$date[0];
-			if(strlen($date)==6)
-				$date=$date.'%';
+				$dom->createElement_simple('div',$body,array('class'=>'error'),'Date and site must be specified');
+			elseif(!preg_match('/^[0-9%]+$/',$_GET['value'],$date))
+				$dom->createElement_simple('div',$body,array('class'=>'error'),'Invalid date value: '.$_GET['value']);
+			elseif(array_search($_GET['site'],$sites)===false)
+				$dom->createElement_simple('div',$body,array('class'=>'error'),'Invalid site: '.$_GET['site']);
+			else
+			{
+				$date=$date[0];
+				$title->textContent.=' '.$date;
+				if(strlen($date)==6)
+					$date=$date.'%';
 
-			$st_show=$comicmanager->db->prepare($q="SELECT * FROM {$comicinfo['id']} WHERE date LIKE ? AND site=? ORDER BY date");
-			$comicmanager->execute($st_show,array($date,$_GET['site']));
-			if($st_show->rowCount()==0)
-				die(sprintf('No strips found for date %s on site %s',$date,$_GET['site']));
+				//$st_show=$comicmanager->db->prepare($q="SELECT * FROM {$comicinfo['id']} WHERE date LIKE ? AND site=? ORDER BY date");
+				$where=sprintf("date LIKE '%s' AND site='%s' ORDER BY date",$date,$_GET['site']);
+				//$comicmanager->execute($st_show,array($date,$_GET['site']));
+				$empty_message=sprintf('No strips found for date %s on site %s',$date,$_GET['site']);
+			}
 		}
-		elseif($_GET['view']=='range' && is_numeric($min=$_GET['from']) && is_numeric($max=$_GET['to'])) //Show a range (from key to key)
+		elseif($_GET['view']=='range') //Show a range (from key to key)
 		{
-			$where="$keyfield>=$min AND $keyfield<=$max GROUP BY $keyfield ORDER BY $keyfield";
-			$st_show=$comicmanager->db->prepare("SELECT * FROM {$comicinfo['id']} WHERE $keyfield>=? AND $keyfield<=? GROUP BY $keyfield ORDER BY $keyfield");
-			$comicmanager->execute($st_show,array($_GET['from'],$_GET['to']));
+			if(!is_numeric($min=$_GET['from']) || !is_numeric($max=$_GET['to']))
+				$dom->createElement_simple('div',$body,array('class'=>'error'),'From and to values must be numeric');
+			else
+			{
+				$where=sprintf('%1$s>=%2$d AND %1$s<=%3$d ORDER BY %1$s',$comicinfo['keyfield'],$min,$max);
+				$title->textContent.=sprintf(' %s %s to %s',$comicinfo['keyfield'],$min,$max);
+				$hidedupes=true;
+			}
 		}
 		elseif($_GET['view']=='category')
 		{
-			$st_show=$comicmanager->db->prepare("SELECT * FROM {$comicinfo['id']} WHERE category=? ORDER BY date");
-			$st_show->execute(array($_GET['value']));
-			$hidedupes=true;
+			if(!is_numeric($_GET['value']))
+			   $dom->createElement_simple('div',$body,array('class'=>'error'),'Category id must be numeric');
+			else
+			{
+				$where=sprintf('category=%d ORDER BY date',$_GET['value']);
+				$title->textContent.=' category '.$_GET['value'];
+				$hidedupes=true;
+			}
+			$emptymessage='Invalid category: '.$_GET['value'];
 		}
 		else
-			trigger_error('Invalid view: '.$_GET['view'],E_USER_ERROR);
+			$dom->createElement_simple('div',$body,array('class'=>'error'),'Invalid view: '.$_GET['view']);
+	if(!isset($st_show) && isset($where))
+		$st_show=$comicmanager->db->query($q=sprintf('SELECT * FROM %s WHERE %s',$comicinfo['id'],$where));
 
+	if(isset($st_show))
+	{
 		$displayed_strips=array();
 		$count=0; //Initialize counter variable
-
+		$dom->createElement_simple('h1',$body,false,$title->textContent);
 		while($row=$st_show->fetch(PDO::FETCH_ASSOC))
 		{
 			if(is_numeric($row[$keyfield]) && $hidedupes)
@@ -109,80 +134,28 @@ elseif(isset($comicinfo))
 					$row=$st_nyeste->fetch();
 				}
 			}
-			
-			echo $comicmanager->dom->saveXML($comicmanager->showpicture($row,$keyfield));
+
+			$div_release=$comicmanager->showpicture($row,$keyfield);
+			$body->appendChild($div_release);
 			$count++;
 		}
+		if($st_show->rowCount()>0)
+			$dom->createElement_simple('p',$body,false,'Number of displayed strips: '.$count);
+		elseif(isset($empty_message))
+			$dom->createElement_simple('p',$body,array('class'=>'error'),$empty_message);
+		else
+			$dom->createElement_simple('p',$body,array('class'=>'error'),'No strips found');
+	}
+}
 
-		echo "<p>Number of displayed strips: $count</p>\n";
-	}
-	else //Show default view
-	{
-		echo "<h1>{$comicinfo['name']}</h1>\n";
-		?>
-		<h2>Show strips by date</h2>
-		<form id="form1" name="form1" method="get" action="showcomics.php">
-			<input name="comic" type="hidden" id="comic1" value="<?php echo $comic; ?>" />
-			<input name="view" type="hidden" value="date" />
-			Site: <input name="site" type="text" id="site" value="" />
-			Date: <input type="text" name="value" id="value" /> (Use % as wildcard)
-			<input type="submit" value="Submit" />
-		</form>
-	
-		<h2>Show strip by key</h2>
-		<form id="form2" name="form2" method="get" action="showcomics.php?view=singlestrip">
-	  <input name="comic" type="hidden" id="comic2" value="<?php echo $comic; ?>" />
-			<input name="view" type="hidden" value="singlestrip" />
-			ID:
-		<?Php if($comicinfo['keyfield']=='customid') { ?>
-		   <input name="keyfield" type="checkbox" id="keyfield" value="id" />
-	<?Php } ?>
-		  <input name="value" type="text" value="" />
-		  <input type="submit" value="Submit">
-		</form>
-	<h2>Show strip range</h2>
-		<form id="form3" name="form3" method="get" action="showcomics.php">
-			<input name="comic" type="hidden" id="comic3" value="<?php echo $comic; ?>" />
-			<input name="view" type="hidden" value="range" />
-		From ID: <input name="from" type="text" id="key_from" size="5">
-		  To ID: <input name="to" type="text" id="id_max" size="5">
-		  <input type="submit" value="Submit">
-		 </form>
-	<?Php
-		$st_range=$comicmanager->db->query("SELECT MIN({$comicinfo['keyfield']}) AS min, MAX({$comicinfo['keyfield']}) AS max FROM {$comicinfo['id']}");
-		$range=$st_range->fetch(PDO::FETCH_ASSOC);
-		echo "<p>First id: {$range['min']} Last id: {$range['max']}</p>\n";
-	
-		if($comicinfo['has_categories']==1) //Check if the comic got categories
-		{
-			echo "<h2>Categories</h2>\n";
-			$st_categories=$comicmanager->db->prepare($q="SELECT * FROM {$comic}_categories ORDER BY name ASC");
-			if(!$st_categories->execute())
-			{
-				$errorinfo=$st_categories->errorInfo();
-				trigger_error("SQL error while fetching categories: $errorinfo[2]",E_USER_WARNING);
-			}
-			else
-			{
-				foreach($st_categories->fetchAll() as $row)
-				{
-					echo "<a href=\"?comic={$_GET['comic']}&amp;view=category&amp;value={$row['id']}\">{$row['name']}</a><br>\n";
-				}
-			}
-		}		
-	}
-}
-if(!isset($_GET['noheader']))
-{
-	if(count($_GET)==1)
-	{
-		echo "<p><a href=\"?\">Show another comic</a></p>\n";
-		echo "<p><a href=\"index.php?comic=$comic\">Main menu</a></p>\n";
-	}
-	elseif(count($_GET)>1)
-		echo "<p><a href=\"?comic=$comic\">Back to {$comicinfo['name']}</a></p>\n";
-?>
-</body>
-</html><?Php
-}
+$div_footer=$dom->createElement_simple('div',$body);
+$p=$dom->createElement_simple('p',$div_footer);
+$dom->createElement_simple('a',$p,array('href'=>'?'),'Change comic');
+$p=$dom->createElement_simple('p',$div_footer);
+$dom->createElement_simple('a',$p,array('href'=>'?comic='.$comicinfo['id']),'Show more '.$comicinfo['name']);
+$p=$dom->createElement_simple('p',$div_footer);
+$dom->createElement_simple('a',$p,array('href'=>'index.php?comic='.$comicinfo['id']),'Main menu');
+
+echo "<!DOCTYPE HTML>\n";
+echo $dom->saveXML($html);
 ?>

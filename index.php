@@ -23,7 +23,7 @@ elseif($comicinfo!==false)
 	$ul=$dom->createElement_simple('ul',$body);
 	
 	$li=$dom->createElement_simple('li',$ul);
-	$a=$dom->createElement_simple('a',$li,array('href'=>'showcomics.php?comic='.$comicinfo['id']),'Show comics');
+	$a=$dom->createElement_simple('a',$li,array('href'=>'showcomics_front.php?comic='.$comicinfo['id']),'Show comics');
 
 	$li=$dom->createElement_simple('li',$ul);
 	$a=$dom->createElement_simple('a',$li,array('href'=>'management/?comic='.$comicinfo['id']),'Manage');

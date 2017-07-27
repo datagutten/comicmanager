@@ -98,29 +98,39 @@ class comicmanager
 	}
 	public function comicinfo($comic,$keyfield=false) //Get information about a comic
 	{
-		$st_comic=$this->db->prepare("SELECT * FROM comic_info WHERE id=?");
-		if(!$st_comic->execute(array($comic)))
+		if(!preg_match('/^[a-z]+$/',$comic))
 		{
-			$errorinfo=$st_comic->errorInfo();
-			trigger_error("SQL error while fetching comic info: $errorinfo[2]",E_USER_ERROR);
+			$this->error='Invalid comic id: '.$comic;
+			return false;
 		}
-		
-		$comicinfo=$st_comic->fetch(PDO::FETCH_ASSOC);
+		$comicinfo=$this->db->query(sprintf("SELECT * FROM comic_info WHERE id='%s'",$comic),'assoc');
+
 		if($comicinfo===false)
-			trigger_error("Invalid comic id: $comic",E_USER_ERROR);
-		
+			return false;
+		if(empty($comicinfo))
+		{
+			$this->error='Unkown comic id: '.$comic;
+			return false;
+		}
+
 		$this->comic_info_db[$comicinfo['id']]=$comicinfo;
 
+		if(strpos($comicinfo['possible_key_fields'],',')!==false)
+			$comicinfo['possible_key_fields']=explode(',',$comicinfo['possible_key_fields']);
+		else
+			$comicinfo['possible_key_fields']=(array)$comicinfo['possible_key_fields'];
+		//Default key field is overridden
 		if($keyfield!==false)
 		{
-			switch($keyfield) //Check if the keyfield is valid
+			if(array_search($keyfield,$comicinfo['possible_key_fields'])===false && $keyfield!=='uid')
 			{
-				case 'customid': $comicinfo['keyfield']='customid'; break;
-				case 'id': $comicinfo['keyfield']='id'; break;
-				case 'uid': $comicinfo['keyfield']='uid'; break;
-				default: trigger_error("Invalid key field: $keyfield",E_USER_ERROR);
+				$this->error='Invalid key field: '.$keyfield;
+				return false;
 			}
-		}
+			else
+				$comicinfo['keyfield']=$keyfield;
+		}	
+
 		$this->comic=$comicinfo['id'];
 		$this->comic_info[$comicinfo['id']]=$comicinfo;
 		return $comicinfo;
