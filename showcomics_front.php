@@ -23,14 +23,20 @@ if(!empty($comicinfo))
 	$dom->createElement_simple('input',$form_date,array('type'=>'hidden','name'=>'comic','value'=>$comicinfo['id']));
 	$dom->createElement_simple('input',$form_date,array('type'=>'hidden','name'=>'view','value'=>'date'));
 	//Site field
+	$sites=$comicmanager->sites();
 	$p=$dom->createElement_simple('p',$form_date);
-	$label=$dom->createElement_simple('label',$p,false,'Site:');
-	$dom->createElement_simple('input',$p,array('type'=>'text','name'=>'site','list'=>'sites'));
-	$datalist=$dom->createElement_simple('datalist',$form_date,array('id'=>'sites'));
-	foreach($comicmanager->sites() as $site)
+	if(count($sites)>1)
 	{
-		$dom->createElement_simple('option',$datalist,array('value'=>$site));
+		$label=$dom->createElement_simple('label',$p,false,'Site:');
+		$dom->createElement_simple('input',$p,array('type'=>'text','name'=>'site','list'=>'sites'));
+		$datalist=$dom->createElement_simple('datalist',$form_date,array('id'=>'sites'));
+		foreach($sites as $site)
+		{
+			$dom->createElement_simple('option',$datalist,array('value'=>$site));
+		}
 	}
+	else
+		$dom->createElement_simple('input',$p,array('type'=>'hidden','name'=>'site','value'=>$sites[0]));
 
 	//Date field
 	$p=$dom->createElement_simple('p',$form_date);
