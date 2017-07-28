@@ -146,12 +146,8 @@ foreach ($releases as $key_release=>$release)
 
 	if(!empty($release['date']))
 	{
-		if(!$st_check->execute(array($site,$release['date'])))
-		{
-			$errorinfo=$st_categories->errorInfo();
-			trigger_error("SQL error: $errorinfo[2]",E_USER_ERROR);
-		}
-		$row_check=$st_check->fetch(PDO::FETCH_ASSOC);
+		//Check if the strip already has a value in the selected field
+		$row_check=$comicmanager->db->execute($st_check,array($site,$release['date']),'assoc');
 	}
 	if(empty($resort) && !empty($row_check[$sortmode]))
 		continue;
