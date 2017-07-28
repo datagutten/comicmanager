@@ -18,20 +18,29 @@ if($comicinfo!==false)
 	
 	//Select mode
 	$dom->createElement_simple('input',$form,array('type'=>'hidden','name'=>'comic','value'=>$comicinfo['id'])); //Comic id
-	if($comicinfo['has_categories']==0)
-		$dom->createElement_simple('input',$form,array('type'=>'hidden','name'=>'mode','value'=>'id')); //No categories, mode is always id
-	else //Select action (category or id)
-	{
+	//Build a list of possible actions
+	if($comicinfo['has_categories']==1)
+		$actions['category']='Category';
+	if(array_search('id',$comicinfo['possible_key_fields'])!==false)
+		$actions['id']='ID';
+	if(array_search('original_date',$comicinfo['possible_key_fields'])!==false)
+		$actions['original_date']='Original published date';
+	//More than one action, allow selection
+	if(count($actions)>1)
+	{	
 		$div_mode=$dom->createElement_simple('div',$form,array('id'=>'mode'));
 		$dom->createElement_simple('p',$div_mode,'','Select action:');
-		//Category
-		$dom->createElement_simple('input',$form,array('type'=>'radio','name'=>'mode','value'=>'category','id'=>'category'));
-		$dom->createElement_simple('label',$form,array('for'=>'category'),'Category');
-		$dom->createElement_simple('br',$form);
-		//ID
-		$dom->createElement_simple('input',$form,array('type'=>'radio','name'=>'mode','value'=>'id','id'=>'id'));
-		$dom->createElement_simple('label',$form,array('for'=>'id'),'ID');
-		$dom->createElement_simple('br',$form);
+		foreach($actions as $action=>$text)
+		{
+			$dom->createElement_simple('input',$form,array('type'=>'radio','name'=>'mode','value'=>$action,'id'=>$action));
+			$dom->createElement_simple('label',$form,array('for'=>$action),$text);
+			$dom->createElement_simple('br',$form);
+		}
+	}
+	else
+	{
+		$action=array_keys($actions)[0];
+		$dom->createElement_simple('input',$form,array('type'=>'hidden','name'=>'mode','value'=>$action));
 	}
 
 	//Select site

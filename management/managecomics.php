@@ -42,7 +42,8 @@ switch($_GET['mode'])
 {
 	case 'id': $sortmode='id'; break;
 	case 'category': $sortmode='category'; break;
-	trigger_error("Invalid mode: $mode",E_USER_ERROR);
+	case 'original_date': $sortmode='original_date'; break;
+	default: trigger_error('Invalid mode: '.$_GET['mode'],E_USER_ERROR);
 }
 
 $site=$_GET['site'];
@@ -152,13 +153,8 @@ foreach ($releases as $key_release=>$release)
 		}
 		$row_check=$st_check->fetch(PDO::FETCH_ASSOC);
 	}
-	if(!isset($resort))
-	{
-		if($_GET['mode']=='category' && !empty($row_check['category']))
-			continue;
-		elseif($_GET['mode']=='id' && !empty($row_check['id']))
-			continue;
-	}
+	if(!isset($resort) && !empty($row_check[$sortmode]))
+		continue;
 	elseif($_GET['mode']=='category' && $row_check['category']!=$resort) //Resort category
 		continue;
 	
@@ -181,7 +177,7 @@ foreach ($releases as $key_release=>$release)
 	echo $dom->saveXML($div_release);
 	echo '<input name="date[]" type="hidden" value="'.$release['date'].'" />'."\n";
 
-	if($_GET['mode']=='id') //Id input
+	if($sortmode=='id' || $sortmode==='original_date') //Id input
 		echo 'ID: <input type="number" id="input'.$key_release.'" min="0" inputmode="numeric" pattern="[0-9]*" name="value[]">'.
 		'<span id="changelink'.$key_release.'" onClick="change_to_text(\''.$key_release.'\')">Change to text</span>'.
 		"\n";
