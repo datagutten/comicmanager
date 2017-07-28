@@ -94,10 +94,10 @@ if($comicinfo!==false)
 	$dom->createElement_simple('input',$form,array('type'=>'submit','value'=>'Submit'));
 
 	echo $dom->saveXML($dom->documentElement);
-}
 
 	echo "<p><a href=\"../showcomics_front.php?comic={$comicinfo['id']}\">Show {$comicinfo['name']}</a></p>\n";
 	echo "<p><a href=\"index.php?comic={$comicinfo['id']}\">Manage {$comicinfo['name']}</a></p>\n";
+}
 ?>
 </body>
 </html>
