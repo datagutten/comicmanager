@@ -36,7 +36,7 @@ if($comicinfo===false)
 	die();
 
 $comic=$comicinfo['id'];
-
+$resort=false;
 
 switch($_GET['mode'])
 {
@@ -153,7 +153,7 @@ foreach ($releases as $key_release=>$release)
 		}
 		$row_check=$st_check->fetch(PDO::FETCH_ASSOC);
 	}
-	if(!isset($resort) && !empty($row_check[$sortmode]))
+	if(empty($resort) && !empty($row_check[$sortmode]))
 		continue;
 	elseif($_GET['mode']=='category' && $row_check['category']!=$resort) //Resort category
 		continue;
