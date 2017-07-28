@@ -41,13 +41,11 @@ if($comicinfo!==false) //A valid comid is selected, show form to select strip
 		$dom->createElement_simple('input',$form,array('name'=>'comic','type'=>'hidden','value'=>$comicinfo['id'])); //Comic ID
 
 		$select=$dom->createElement_simple('select',$form,array('name'=>'keyfield')); //Create keyfield select
-		$possible_keyfields=array('id','uid');
-		if($comicinfo['keyfield']=='customid') //If the comics keyfield is customid, add it to the list of possible keys
-			$possible_keyfields[]='customid';
-
-		foreach($possible_keyfields as $option_value) //Add options to the select list
+		foreach($comicinfo['possible_key_fields'] as $option_value) //Add options to the select list
 		{
-			$dom->createElement_simple('option',$select,false,$option_value);
+			$option=$dom->createElement_simple('option',$select,false,$option_value);
+			if($option_value===$comicinfo['keyfield'])
+				$option->setAttribute('selected','selected');
 		}
 
 		$input=$dom->createElement_simple('input',$form,array('type'=>'text','id'=>'key','name'=>'key'));
