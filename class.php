@@ -1,6 +1,7 @@
 <?php
 class comicmanager
 {
+	public $error;
 	public $db;
 	public $filepath;
 	public $picture_host;
