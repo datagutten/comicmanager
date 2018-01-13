@@ -10,7 +10,7 @@ class comics
 		curl_setopt($this->ch,CURLOPT_RETURNTRANSFER,true);
 		curl_setopt($this->ch,CURLOPT_FOLLOWLOCATION,true);
 		curl_setopt($this->ch,CURLOPT_HTTPHEADER,array('Accept: application/json',"Authorization: Key $key"));
-
+		$this->secret_key=$key;
 		if(substr($site,-1,1)=='/') //Remove trailing slash from site url
 			$this->site=substr($site,0,-1);
 		else
@@ -18,7 +18,7 @@ class comics
 	}
 	function request($uri)
 	{
-		curl_setopt($this->ch,CURLOPT_URL,$this->site.$uri);
+		curl_setopt($this->ch,CURLOPT_URL,$this->site.$uri.'&key='.$this->secret_key);
 		$data=curl_exec($this->ch);
 		$code=curl_getinfo($this->ch,CURLINFO_HTTP_CODE); //Get HTTP return code
 		if($data===false)
