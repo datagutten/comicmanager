@@ -4,6 +4,7 @@ class comics
 	public $image_host;
 	public $ch;
 	public $site;
+	public $error;
 	function __construct($site,$key)
 	{
 		$this->ch=curl_init();
@@ -23,32 +24,38 @@ class comics
 		$code=curl_getinfo($this->ch,CURLINFO_HTTP_CODE); //Get HTTP return code
 		if($data===false)
 		{
-			trigger_error("cURL error: ".curl_error($this->ch),E_USER_WARNING);
+			$this->error='cURL error: '.curl_error($this->ch);
 			return false;
 		}
 		elseif($code==400)
 		{
-			trigger_error("Bad request, check parameters",E_USER_WARNING);
+			$this->error='Bad request, check parameters';
 			return false;
 		}
 		elseif($code==401)
 		{
-			trigger_error("Invalid secret key",E_USER_ERROR);
+			$this->error='Invalid secret key';
 			return false;
 		}
 		elseif(empty($data))
 		{
-			trigger_error("No data returned",E_USER_WARNING);
+			$this->error='Comics returned empty response';
+			return false;
+		}
+		$releases=json_decode($data,true);
+		if(empty($releases['objects']))
+		{
+			$this->error='No releases found';
 			return false;
 		}
 		else
-			return json_decode($data,true);
+			return $releases;
 	}
 	function releases_year($slug,$year)
 	{
 		if(strlen($year)!=4 || !is_numeric($year))
 		{
-			trigger_error("Year should be four digits",E_USER_WARNING);
+			$this->error='Year must be four digits';
 			return false;
 		}
 		$releases=$this->request("/api/v1/releases/?comic__slug=$slug&pub_date__year=$year&limit=366");
@@ -63,7 +70,7 @@ class comics
 
 		if(strlen($year)!=4 || !is_numeric($year))
 		{
-			trigger_error("Year should be four digits",E_USER_WARNING);
+			$this->error='Year must be four digits';
 			return false;
 		}
 		$releases=$this->request("/api/v1/releases/?comic__slug=$slug&pub_date__gte=$start&pub_date__lte=$end&limit=31");
