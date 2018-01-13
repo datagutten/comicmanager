@@ -53,18 +53,6 @@ if(isset($_GET['datefilter']) && preg_match('/[0-9\-%]+/',$_GET['datefilter']))
 else
 	$datefilter='%';
 
-if(isset($_GET['releasetype']))
-{
-	switch($_GET['releasetype'])
-	{
-		case 'file': $releasetype='file'; break;
-		case 'jodal': $releasetype='jodal'; break;
-		trigger_error("Invalid release type: {$_GET['releasetype']}",E_USER_ERROR);
-	}
-}
-else
-	$releasetype='file';
-
 if(isset($_POST['button'])) //Form is submitted
 {
 	$st_indb=$comicmanager->db->prepare("SELECT * FROM $comic WHERE date=? AND site=?");
@@ -116,6 +104,7 @@ else
 
 if($_GET['source']=='jodal' && is_object($comicmanager->comics)) //Fetch releases from jodal
 {
+	echo sprintf('<p>Fetching releases from %s</p>',$comicmanager->comics->site);
 	if(!empty($_GET['year']) && empty($_GET['month']))
 		$releases=$comicmanager->comics->releases_year($site,$_GET['year']);
 	elseif(!empty($_GET['year']) && !empty($_GET['month']))
@@ -125,6 +114,7 @@ if($_GET['source']=='jodal' && is_object($comicmanager->comics)) //Fetch release
 }
 elseif($_GET['source']=='file')
 {	
+	echo '<p>Fetching releases from local files</p>';
 	$releases=$comicmanager->filereleases_date($site,$filter_year,$filter_month);
 
 	if($releases===false)
