@@ -2,12 +2,9 @@
 require '../class.php';
 class management extends comicmanager
 {
-	public $dom;
 	function __construct()
 	{
 		parent::__construct();
-		require_once '../tools/DOMDocument_createElement_simple.php';
-		$this->dom=new DOMDocumentCustom;
 	}
 	public function filereleases_date($site,$filter_year=false,$filter_month=false) //Used by managecomics
 	{
