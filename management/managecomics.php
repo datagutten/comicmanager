@@ -90,7 +90,7 @@ $i=1;
 echo '<form id="form1" name="form1" method="post" action="">';
 echo '<input type="submit" name="button" id="button" value="Submit" />';
 if($_GET['mode']=='category') //Get categories
-	$categories=$comicmanager->categories($comicinfo['id'],true);
+	$categories=$comicmanager->categories(true);
 
 //Filter by year and/or month
 if(empty($_GET['year']))

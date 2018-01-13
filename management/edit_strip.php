@@ -112,7 +112,7 @@ if($comicinfo!==false) //A valid comid is selected, show form to select strip
 
 			if($comicinfo['has_categories']==1)
 			{
-				$categories=$comicmanager->categories($comic);
+				$categories=$comicmanager->categories();
 				$strips_categories=array_filter(array_unique(array_column($strips,'category'))); //Get categories for the strips
 				if(empty($strips_categories))
 					$category_preselect=false;

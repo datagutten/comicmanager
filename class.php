@@ -84,12 +84,9 @@ class comicmanager
 		}
 		return $this->db->query(sprintf('SELECT DISTINCT site FROM %s',$comic),'all_column');
 	}
-	public function categories($comic=false,$only_visible=false)
+	public function categories($only_visible=false)
 	{
-		if($comic===false)
-			$comic=$this->comic;
 		if($only_visible===false)
-			//$st_categories=$this->db->prepare($q="SELECT id,name FROM {$comic}_categories ORDER BY name ASC");
 			$st_categories=$this->db->query(sprintf('SELECT id,name FROM %s_categories ORDER BY name ASC',$this->comic));
 		else
 			$st_categories=$this->db->query(sprintf('SELECT id,name FROM %s_categories WHERE visible=1 ORDER BY name ASC',$this->comic));

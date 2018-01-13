@@ -102,7 +102,7 @@ if(!empty($comicinfo))
 	{
 		//Categories
 		$dom->createElement_simple('h2',$div_menu,false,'Category');
-		$categories=$comicmanager->categories($comicinfo['id'],false);
+		$categories=$comicmanager->categories();
 		$ul=$dom->createElement_simple('ul',$div_menu);
 		foreach($categories as $id=>$name)
 		{
