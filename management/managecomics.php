@@ -25,15 +25,16 @@ function change_to_text(id)
 }
 </script>
 </head>
-<body>
 <?php
 require 'class_management.php';
 $comicmanager=new management;
 $dom=$comicmanager->dom;
 
+$body=$dom->createElement_simple('body');
+
 $comicinfo=$comicmanager->comicinfo_get();
 if($comicinfo===false)
-	die();
+	die($comicmanager->error);
 
 $comic=$comicinfo['id'];
 $resort=false;
@@ -86,9 +87,6 @@ if(isset($_POST['button'])) //Form is submitted
 
 }
 
-$i=1;
-echo '<form id="form1" name="form1" method="post" action="">';
-echo '<input type="submit" name="button" id="button" value="Submit" />';
 if($_GET['mode']=='category') //Get categories
 	$categories=$comicmanager->categories(true);
 
@@ -104,29 +102,39 @@ else
 
 if($_GET['source']=='jodal' && is_object($comicmanager->comics)) //Fetch releases from jodal
 {
-	echo sprintf('<p>Fetching releases from %s</p>',$comicmanager->comics->site);
+	$dom->createElement_simple('p',$body,false,sprintf('Fetching releases from %s',$comicmanager->comics->site));
 	if(!empty($_GET['year']) && empty($_GET['month']))
 		$releases=$comicmanager->comics->releases_year($site,$_GET['year']);
 	elseif(!empty($_GET['year']) && !empty($_GET['month']))
 		$releases=$comicmanager->comics->releases_month($site,$_GET['year'],$_GET['month']);
 	else
-		trigger_error("Year and/or month must be specified",E_USER_ERROR); //Filtering is required when using jodal comics
+		$error_text='Year and/or month must be specified'; //Filtering is required when using jodal comics
+
+	if($releases===false)
+		$error_text=$comicmanager->comics->error;
 }
 elseif($_GET['source']=='file')
 {	
-	echo '<p>Fetching releases from local files</p>';
+	$dom->createElement_simple('p',$body,false,'Fetching releases from local files');
 	$releases=$comicmanager->filereleases_date($site,$filter_year,$filter_month);
 
 	if($releases===false)
-		trigger_error("No file releases found",E_USER_ERROR);
+		$error_text='No file releases found';
 }
 else
-	trigger_error("Invalid source: {$_GET['source']}",E_USER_ERROR);
+	$error_text=sprintf('Invalid source: %s',$_GET['source']);
+
 if(empty($releases))
-	echo "<p>No releases found.<br /><a href=\"managecomics_front.php?comic={$_GET['comic']}\">Go back and try other options</a></p>\n";
+{
+	$dom->createElement_simple('p',$body,array('class'=>'error'),'Error: '.$error_text);
+	$dom->createElement_simple('a',$body,array('href'=>'managecomics_front.php?comic='.$comicinfo['id']),'Go back and try other options');
+}
 else
 {
 $st_check=$comicmanager->db->prepare("SELECT * FROM $comic WHERE site=? AND date=?");
+	$i=1;
+	$form=$dom->createElement_simple('form',$body,array('method'=>'post'));
+	$dom->createElement_simple('input',$form,array('type'=>'submit','name'=>'button','value'=>'Submit'));
 foreach ($releases as $key_release=>$release)
 {
 	$file=$release['file'];
@@ -144,7 +152,7 @@ foreach ($releases as $key_release=>$release)
 	elseif($_GET['mode']=='category' && $row_check['category']!=$resort) //Resort category
 		continue;
 	
-	$div_release=$dom->createElement_simple('div');
+		$div_release=$dom->createElement_simple('div',$form);
 	if(file_exists($site.'/titles/'.$release['date'].'.txt')) //Check if the strip got a title
 	{
 		$release_title=file_get_contents($site.'/titles/'.$release['date'].'.txt');
@@ -160,36 +168,32 @@ foreach ($releases as $key_release=>$release)
 		$img->setAttribute('style','max-width: 1000px; max-height: 400px');
 	else
 		$img->setAttribute('style','max-width: 100%');
-	echo $dom->saveXML($div_release);
-	echo '<input name="date[]" type="hidden" value="'.$release['date'].'" />'."\n";
 
+		$dom->createElement_simple('input',$div_release,array('name'=>'date[]','type'=>'hidden','value'=>$release['date']));
+		$dom->createElement_simple('br',$div_release);
 	if($sortmode=='id' || $sortmode==='original_date') //Id input
-		echo 'ID: <input type="number" id="input'.$key_release.'" min="0" inputmode="numeric" pattern="[0-9]*" name="value[]">'.
-		'<span id="changelink'.$key_release.'" onClick="change_to_text(\''.$key_release.'\')">Change to text</span>'.
-		"\n";
+	{
+			$dom->createElement_simple('span',$div_release,false,'ID: ');
+			$dom->createElement_simple('input',$div_release,array('type'=>'number','id'=>'input'.$key_release,'inputmode'=>'numeric','pattern'=>'[0-9]*','name'=>'value[]'));
+	}
 	elseif($_GET['mode']=='category') //Show category select
 	{
-		echo 'Category:<br />';
-		echo '<select name="value[]">'."\n";
-		echo "\t<option value=\"\">Select category</option>\n";
-		foreach ($categories as $key=>$name)
-		{
-			echo "\t<option value=\"$key\">".htmlentities($name).'</option>'."\n";
-		}
-		echo '</select>'."\n";
-							
+			$dom->createElement_simple('span',$div_release,false,'Category: ');
+			$comicmanager->categoryselect('value[]',$div_release,false,true);
 	}
 	if($i>20)
 		break;
 	else
 		$i++;
 }
+$dom->createElement_simple('input',$form,array('type'=>'submit','name'=>'button','value'=>'Submit'));
 
-echo '<input type="submit" name="button" id="button2" value="Submit" /></form>';
-echo "\n";
+
 }
-echo "<p><a href=\"../showcomics_front.php?comic=$comic\">Show {$comicinfo['name']}</a></p>\n";
-echo "<p><a href=\"index.php?comic={$comicinfo['id']}\">Manage {$comicinfo['name']}</a></p>\n";
+$p=$dom->createElement_simple('p',$body);
+$dom->createElement_simple('a',$p,array('href'=>'../showcomics_front.php?comic='.$comicinfo['id']),'Show '.$comicinfo['name']);
+$dom->createElement_simple('br',$p);
+$dom->createElement_simple('a',$p,array('href'=>'index.php?comic='.$comicinfo['id']),'Manage '.$comicinfo['name']);
+echo $dom->saveXML($body);
 ?>
-</body>
 </html>
