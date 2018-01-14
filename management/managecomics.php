@@ -34,9 +34,11 @@ $body=$dom->createElement_simple('body');
 
 $comicinfo=$comicmanager->comicinfo_get();
 if($comicinfo===false)
-	die($comicmanager->error);
+{
+	unset($comicinfo);
+	$error_text=$comicmanager->error;
+}
 
-$comic=$comicinfo['id'];
 $resort=false;
 
 switch($_GET['mode'])
@@ -77,9 +79,6 @@ if(isset($_POST['button'])) //Form is submitted
 	}
 }
 
-if($_GET['mode']=='category') //Get categories
-	$categories=$comicmanager->categories(true);
-
 //Filter by year and/or month
 if(empty($_GET['year']))
 	$filter_year=false;
@@ -90,6 +89,8 @@ if(empty($_GET['month']))
 else
 	$filter_month=$_GET['month'];
 
+if(!empty($comicinfo))
+{
 if($_GET['source']=='jodal' && is_object($comicmanager->comics)) //Fetch releases from jodal
 {
 	$dom->createElement_simple('p',$body,false,sprintf('Fetching releases from %s',$comicmanager->comics->site));
@@ -113,15 +114,18 @@ elseif($_GET['source']=='file')
 }
 else
 	$error_text=sprintf('Invalid source: %s',$_GET['source']);
-
+}
 if(empty($releases))
 {
 	$dom->createElement_simple('p',$body,array('class'=>'error'),'Error: '.$error_text);
-	$dom->createElement_simple('a',$body,array('href'=>'managecomics_front.php?comic='.$comicinfo['id']),'Go back and try other options');
+	if(!empty($comicinfo))
+		$dom->createElement_simple('a',$body,array('href'=>'managecomics_front.php?comic='.$comicinfo['id']),'Go back and try other options');
+	else
+		$dom->createElement_simple('a',$body,array('href'=>'managecomics_front.php'),'Select other comic');
 }
 else
 {
-$st_check=$comicmanager->db->prepare("SELECT * FROM $comic WHERE site=? AND date=?");
+	$st_check=$comicmanager->db->prepare(sprintf('SELECT * FROM %s WHERE site=? AND date=?',$comicinfo['id']));
 	$i=1;
 	$form=$dom->createElement_simple('form',$body,array('method'=>'post'));
 	$dom->createElement_simple('input',$form,array('type'=>'submit','name'=>'button','value'=>'Submit'));
@@ -181,9 +185,12 @@ $dom->createElement_simple('input',$form,array('type'=>'submit','name'=>'button'
 
 }
 $p=$dom->createElement_simple('p',$body);
-$dom->createElement_simple('a',$p,array('href'=>'../showcomics_front.php?comic='.$comicinfo['id']),'Show '.$comicinfo['name']);
-$dom->createElement_simple('br',$p);
-$dom->createElement_simple('a',$p,array('href'=>'index.php?comic='.$comicinfo['id']),'Manage '.$comicinfo['name']);
+if(!empty($comicinfo))
+{
+	$dom->createElement_simple('a',$p,array('href'=>'../showcomics_front.php?comic='.$comicinfo['id']),'Show '.$comicinfo['name']);
+	$dom->createElement_simple('br',$p);
+	$dom->createElement_simple('a',$p,array('href'=>'index.php?comic='.$comicinfo['id']),'Manage '.$comicinfo['name']);
+}
 echo $dom->saveXML($body);
 ?>
 </html>
