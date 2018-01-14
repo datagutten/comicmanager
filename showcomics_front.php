@@ -12,18 +12,28 @@ require 'class.php';
 $comicmanager=new comicmanager;
 $dom=$comicmanager->dom;
 $comicinfo=$comicmanager->comicinfo_get();
+$div_menu=$dom->createElement_simple('div');
 if(!empty($comicinfo))
 {
-	$div_menu=$dom->createElement_simple('div');
-	$dom->createElement_simple('h1',$div_menu,false,$comicinfo['name']);
+	$dom->createElement_simple('h1',$div_menu,false,$comicinfo['name']); //Show comic name
+	$sites=$comicmanager->sites();
+	if(empty($sites))
+	{
+		$dom->createElement_simple('p',$div_menu,false,'No releases found');
+		$dom->createElement_simple('a',$div_menu,array('href'=>'management/managecomics_front.php?comic='.$comicinfo['id']),'Add releases by sorting them by id or category');
+	}
+}
+elseif($comicinfo===false)
+	$dom->createElement_simple('p',$div_menu,array('class'=>'error'),$comicmanager->error);
 
+if(!empty($sites))
+{
 	//Date form
 	$dom->createElement_simple('h2',$div_menu,false,'Show strips by date');
 	$form_date=$dom->createElement_simple('form',$div_menu,array('id'=>'form_date','name'=>'form_date','action'=>'showcomics.php'));
 	$dom->createElement_simple('input',$form_date,array('type'=>'hidden','name'=>'comic','value'=>$comicinfo['id']));
 	$dom->createElement_simple('input',$form_date,array('type'=>'hidden','name'=>'view','value'=>'date'));
 	//Site field
-	$sites=$comicmanager->sites();
 	$p=$dom->createElement_simple('p',$form_date);
 	if(count($sites)>1)
 	{
@@ -114,9 +124,8 @@ if(!empty($comicinfo))
 		$dom->createElement_simple('a',$p,array('href'=>'?'),'Change comic');
 		$dom->createElement_simple('br',$p);
 		$dom->createElement_simple('a',$p,array('href'=>'index.php?comic='.$comicinfo['id']),'Main menu');
-		echo $dom->saveXML($div_menu);
 }
-		
+echo $dom->saveXML($div_menu);
 ?>
 </body>
 </html>

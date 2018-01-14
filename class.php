@@ -145,7 +145,7 @@ class comicmanager
 		else //No comic selected, display comic selection
 		{
 			echo $this->selectcomic();
-			return false;
+			return;
 		}
 	}
 
