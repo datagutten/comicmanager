@@ -16,7 +16,13 @@ $comicinfo=$comicmanager->comicinfo_get();
 if($comicinfo!==false)
 {
 	$comic=$comicinfo['id'];
-
+	if($comicinfo['has_categories']==0)
+		unset($tools['propagate_categories.php'],$tools['multiple_categories.php']);
+	if(count(array_intersect(array('customid','id'),$comicinfo['possible_key_fields']))!=2)
+		unset($tools['id_to_customid.php']);
+	if(array_search('id',$comicinfo['possible_key_fields'])===false || count($comicinfo['possible_key_fields'])==1)
+		unset($tools['propagate_id.php'],$tools['traceid.php']);
+	
 	if(!isset($_GET['tool']))
 	{
 		foreach($tools as $file=>$name)

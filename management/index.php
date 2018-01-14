@@ -18,7 +18,10 @@ $comicinfo=$comicmanager->comicinfo_get();
 if($comicinfo!==false)
 {
 	$comic=$comicinfo['id'];
-
+	if($comicinfo['has_categories']==0)
+		unset($tools['edit_categories.php']);
+	if(array_search('id',$comicinfo['possible_key_fields'])===false)
+		unset($tools['add_id_files.php']);
 	if(!isset($_GET['tool']))
 	{
 		foreach($tools as $file=>$name)
