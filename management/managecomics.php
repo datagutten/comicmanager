@@ -56,35 +56,25 @@ else
 
 if(isset($_POST['button'])) //Form is submitted
 {
-	$st_indb=$comicmanager->db->prepare("SELECT * FROM $comic WHERE date=? AND site=?");
+	$st_indb=$comicmanager->db->prepare(sprintf('SELECT * FROM %s WHERE date=? AND site=?',$comicinfo['id']));
 	foreach($_POST['value'] as $key=>$value)
 	{
 		$value=trim($value);
 		if (!is_numeric($date=$_POST['date'][$key]) || empty($value)) //Check if the date is numeric and that the value is not empty
 			continue;
-	
+
 		//Check if the strip is in the database
-		$st_indb->execute(array($date,$site));
+		$comicmanager->db->execute($st_indb,array($date,$site));
 
 		if($st_indb->rowCount()==0) //Not in db, insert it
-		{
-			$st_write=$comicmanager->db->prepare($q="INSERT INTO $comic ($sortmode,date,site) VALUES (?,?,?)");
-			echo str_replace('?,?,?',implode(',',array($value,$_POST['date'][$key],$site)),$q)."<br />\n";
-		}
+			$st_write=$comicmanager->db->prepare($q=sprintf('INSERT INTO %s (%s,date,site) VALUES (?,?,?)',$comicinfo['id'],$sortmode));
 		else //Update the strip with new value
-		{
-			$st_write=$comicmanager->db->prepare($q="UPDATE $comic SET $sortmode=? WHERE date=? AND site=?");
-			echo "UPDATE $comic SET $sortmode=$value WHERE date={$_POST['date'][$key]} AND site=$site<br />\n";
-		}
+			$st_write=$comicmanager->db->prepare($q=sprintf('UPDATE %s SET %s=? WHERE date=? AND site=?',$comicinfo['id'],$sortmode));
 
-		if(!$st_write->execute(array($value,$_POST['date'][$key],$site)))
-		{
-			$errorinfo=$st_categories->errorInfo();
-			trigger_error("SQL error: $errorinfo[2]",E_USER_WARNING);
-		}
-	
+		$debug_q=sprintf(str_replace('?','%s',$q),$value,$_POST['date'][$key],$site);
+		$dom->createElement_simple('pre',$body,array('class'=>'query'),$debug_q);
+		$comicmanager->db->execute($st_write,array($value,$_POST['date'][$key],$site));
 	}
-
 }
 
 if($_GET['mode']=='category') //Get categories
