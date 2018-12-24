@@ -1,0 +1,10 @@
+<select name="value[{{release.date}}]" id="{{release.date}}">
+    <option value="">Select category</option>
+    {% for id, category in categories %}
+        {% if release.category==id %}
+            <option value="{{id}}" selected="selected">{{category}}</option>
+        {% else %}
+            <option value="{{id}}">{{category}}</option>
+        {% endif %}
+    {% endfor %}
+</select>

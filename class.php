@@ -11,6 +11,7 @@ class comicmanager
 	public $comic_list; //Array with a list of all comics, id as key, name as value
 	public $comic_info; //Array with info about comics
 	public $comic_info_db; //Array with info about comics, default value from db
+	private $queries;
 
 	public function __construct()
 	{
@@ -49,6 +50,7 @@ class comicmanager
 	{
 		return $this->db->execute($st,$parameters,$fetch);
 	}
+
 
 	//Get all available comics and populate $this->comic_list
 	public function build_comic_list()
@@ -133,6 +135,7 @@ class comicmanager
 		$this->comic_info[$comicinfo['id']]=$comicinfo;
 		return $comicinfo;
 	}
+
 	public function comicinfo_get()
 	{
 		if(isset($_GET['comic']))
@@ -147,6 +150,21 @@ class comicmanager
 			echo $this->selectcomic();
 			return;
 		}
+	}
+	public function prepare_queries()
+	{
+		$comic=$this->comic;
+		$comicinfo=$this->comic_info[$this->comic];
+		$this->queries['keyfield']=
+			$this->db->prepare($q=sprintf('SELECT * FROM %s WHERE %s=?',
+			$this->comic, $comicinfo['keyfield']));
+
+		$this->queries['date_and_site']=
+			$this->db->prepare($q=sprintf('SELECT * FROM %s WHERE date=? and site=?', $comic));
+
+		$this->queries['insert_keyfield']=
+            $this->db->prepare($q=sprintf('INSERT INTO %s (%s) VALUES ?', $comic, $comicinfo['keyfield']));
+
 	}
 
 	public function typecheck($filename,$typereturn=false) //Try different extensions for a file name
@@ -212,6 +230,8 @@ class comicmanager
 			$a=$this->dom->createElement_simple('a',$div,array('href'=>$image));
 			$this->dom->createElement_simple('img',$a,array('src'=>$image,'style'=>'max-width: 1000px; max-height: 400px'));
 		}
+		//$this->dom->createElement_simple('pre',$div,false,print_r($row,true));
+		//$this->dom->createElement_simple('pre',$div,false,$image);
 		return $div;
 	}
 	public function imagefile($row) //Find the image file for a database row
@@ -250,16 +270,16 @@ class comicmanager
 	}
 	function comics_release_single_cache($slug,$date)
 	{
-		$st_select=$this->db->prepare("SELECT file FROM comics_cache WHERE slug=? AND date=?");
-		$st_insert=$this->db->prepare("INSERT INTO comics_cache (checksum,slug,date,file) VALUES (?,?,?,?)");
-		$st_select->execute(array($slug,$date)); //Try to find image in local cache
+		$st_select=$this->db->prepare("SELECT file FROM comics_cache WHERE slug=? AND date=? AND site=?");
+		$st_insert=$this->db->prepare("INSERT INTO comics_cache (checksum,slug,date,file,site) VALUES (?,?,?,?,?)");
+		$st_select->execute($params=array($slug,$date,$this->comics->site)); //Try to find image in local cache
 		if($st_select->rowCount()==0)
 		{
 			$image_url=$this->comics->release_single($slug,$date); //Query comics to get image url
 			if($image_url===false) //Release not found on comics
 				return false;
 			preg_match("^.+($slug.+/([a-f0-9]+)\..+)^",$image_url,$fileinfo); //Extract image hash from URL
-			$st_insert->execute(array($fileinfo[2],$slug,$date,$fileinfo[1])); //Add image hash to local cache table
+			$st_insert->execute(array($fileinfo[2],$slug,$date,$fileinfo[1],$this->comics->site)); //Add image hash to local cache table
 			return $image_url;
 		}
 		return $this->comics_media.'/'.$st_select->fetch(PDO::FETCH_COLUMN);
@@ -280,5 +300,69 @@ class comicmanager
 	{
 		return $this->query($q="SELECT max(customid)+1 FROM {$this->comic}",'column');
 	}
+
+	function get($args=array('date'=>null, 'site'=>'null', 'id'=>'null', 'key'=>null)) {
+		if(empty($this->queries))
+			$this->prepare_queries();
+		if(!empty($args['key'])) //Keyfield
+			return $this->execute($this->queries['keyfield'], array($args['key']), 'assoc');
+		elseif(!empty($args['date']) && !empty($args['site'])) //Date and site
+			return $this->execute($this->queries['date_and_site'], array($args['date'],$args['site']), 'assoc');
+	}
+
+    /**
+     * @param array $args
+     */
+    function add_or_update($args=array('date'=>null, 'site'=>'null', 'id'=>'null', 'key'=>null, 'category'=>null)) {
+
+        $fields = array_filter($args);
+        $comic=$this->comic;
+        $keyfield=$this->comic_info[$comic]['keyfield'];
+        $release = $this->get($args);
+
+        if(empty($release)) //Not in db, insert it
+        {
+            $q=sprintf('INSERT INTO %s (%s) VALUES (?%s)',
+                $this->comic,
+                implode(', ', array_keys($fields)),
+                str_repeat(',?', count($fields)-1));
+            $st=$this->db->prepare($q);
+            $values=array_values($fields);
+        }
+        else //Update the strip with new value
+        {
+            $merged = array_merge($fields, array_filter($release));
+            $missing = array_diff_assoc($merged, $release); //Values that should be updated
+            $sets='';
+            $values = array();
+            foreach ($missing as $field=>$value)
+            {
+                $sets.=sprintf('%s=?,', $field);
+                $values[] = $value;
+            }
+            $sets=substr($sets, 0, -1);
+
+            if(!empty($release[$keyfield])) {
+                $where = sprintf('%s=?', $keyfield);
+                $values[]=$release[$keyfield];
+            }
+            elseif(!empty($release['date']) && !empty($release['site'])) {
+                $where=sprintf('date=? AND site=?');
+                $values[]=$release['date'];
+                $values[]=$release['site'];
+            }
+            else
+                throw new exception('No valid key');
+
+            if(!empty($sets)) {
+                $q = sprintf('UPDATE %s SET %s WHERE %s', $this->comic, $sets, $where);
+            }
+        }
+
+        if(!empty($q)){
+            $st = $this->db->prepare($q);
+            $this->db->execute($st, $values);
+            //$debug_q=vsprintf(str_replace('?','%s',$q),$values);
+        }
+    }
 }
-?>

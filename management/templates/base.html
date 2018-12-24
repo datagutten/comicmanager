@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{{ title }}</title>
+<link href="../comicmanager.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<ul class="toc">
+	<li><a href="{{root}}">Change comic</a></li>
+	<li><a href="{{root}}/showcomics_front.php?comic={{comic}}">Show {{comic}}</a></li>
+    <li><a href="{{root}}/management/?comic={{comic}}">Manage</a></li>
+    <li style="border-right: 1px solid black;"><a href="{{root}}/maintenance?comic={{comic}}">Maintain</a></li>
+</ul>
+<br>
+<hr>
+{% block content %} {% endblock %}
+</body>
+</html>

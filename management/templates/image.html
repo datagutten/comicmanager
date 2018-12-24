@@ -1,0 +1,8 @@
+{{release.date}} - {{site}}&nbsp;{{release.uid}}<br />
+{% if release.file|slice(0,4)=='http' %}
+    <a href="{{release.file}}"><img src="{{release.file}}" alt="{{release.date}} - {{site}}" class="{{mode}}"/></a>
+{% else %}
+    <a href="../image.php?file={{release.file}}">
+        <img src="../image.php?file={{release.file}}" alt="{{release.date}} - {{site}}" class="{{mode}}"/>
+    </a>
+{% endif %}

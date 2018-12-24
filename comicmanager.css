@@ -1,6 +1,43 @@
 @charset "utf-8";
 /* https://stackoverflow.com/a/23741073/2630074 */
-form  { display: table;      }
-p     { display: table-row;  }
-label { display: table-cell; font-weight: bold}
-input { display: table-cell; }
+form {
+    display: table;
+}
+
+p {
+    display: table-row;
+}
+
+label {
+    display: table-cell;
+    font-weight: bold
+}
+
+input {
+    display: table-cell;
+}
+
+/* Navigation bar at the top of each page */
+ul.toc li {
+    width: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #e7e7e7;
+    border-left: 1px solid black;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    float: left;
+    text-align: center;
+    list-style-type: none;
+    font-weight: bold;
+}
+
+img.id {
+    max-width: 100%;
+    max-height: 800px
+}
+
+img.category {
+    max-width: 1000px;
+    /*max-height: 400px*/
+}

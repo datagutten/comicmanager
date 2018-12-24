@@ -14,7 +14,7 @@ $dom=$comicmanager->dom;
 $comicinfo=$comicmanager->comicinfo_get();
 if($comicinfo!==false)
 {
-	$form=$dom->createElement_simple('form',$dom,array('method'=>'get','action'=>'managecomics.php'));
+	$form=$dom->createElement_simple('form',$dom,array('method'=>'get','action'=>'managecomics_template.php'));
 	
 	//Select mode
 	$dom->createElement_simple('input',$form,array('type'=>'hidden','name'=>'comic','value'=>$comicinfo['id'])); //Comic id
@@ -80,7 +80,7 @@ if($comicinfo!==false)
 	{
 		$p_source=$dom->createElement_simple('p',$form,'','Source: ');
 		$dom->createElement_simple('br',$p_source);
-		foreach(array('jodal'=>'Jodal comics','file'=>'Local files') as $source_id=>$source_name) //Loop to make it easier to add more sources in the future
+		foreach(array('comics'=>'Jodal comics','file'=>'Local files') as $source_id=>$source_name) //Loop to make it easier to add more sources in the future
 		{
 			$dom->createElement_simple('input',$p_source,array('type'=>'radio','name'=>'source','value'=>$source_id,'id'=>'source_'.$source_id));
 			$dom->createElement_simple('label',$p_source,array('for'=>'source_'.$source_id),$source_name);
