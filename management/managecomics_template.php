@@ -5,11 +5,6 @@
  * Date: 24.12.2018
  * Time: 11.10
  */
-require '../vendor/autoload.php';
-
-$loader = new Twig_Loader_Filesystem('templates');
-$twig = new Twig_Environment($loader, array('debug' => true));
-$twig->addExtension(new Twig_Extension_Debug());
 
 switch($_GET['mode'])
 {
@@ -23,10 +18,15 @@ switch($_GET['mode'])
 require 'class_management.php';
 $comicmanager=new management;
 $comicinfo=$comicmanager->comicinfo_get();
+
 if($comicinfo===false)
-    $error_text=$comicmanager->error;
+    die();
 else
 {
+    if(empty($_GET['site'])) {
+        header('Location: managecomics_front.php?comic=' . $comicinfo['id']);
+        die();
+    }
     $site=$_GET['site'];
     //Filter by year and/or month
     if(empty($_GET['year']))
@@ -64,13 +64,14 @@ else
 }
 
 if(!empty($error_text))
-    echo $twig->render('error.html', array(
+    echo $comicmanager->twig->render('error.twig', array(
+        'title'=>'Error',
         'error'=>$error_text,
-        'root'=>'..',
-        'comic'=>$comicinfo['id'],
+        'root'=>$comicmanager->root,
+        'comic'=>$comicinfo,
         ));
 else {
-    foreach ($releases as $key=>$release)
+    foreach ($releases as $key=>&$release)
     {
         //Check if release already is in DB
         $release['site']=$_GET['site'];
@@ -84,15 +85,15 @@ else {
             $releases[$key]+=$release_db; //Append information from DB
     }
 
-    echo $twig->render('managecomics_id.html', array(
+    echo $comicmanager->twig->render('manage_comics.twig', array(
         'name' => 'Comics ID',
         'title' => sprintf('%s %s', $comicinfo['name'], $_GET['mode']),
-        'comic' => $comicinfo['id'],
+        'comic' => $comicinfo,
         'site' => $site,
         'source' => $source,
         'releases' => $releases,
         'mode' => $_GET['mode'],
-        'root' => '..',
+        'root' => $comicmanager->root,
         'categories' => $comicmanager->categories(true),
     ));
 }

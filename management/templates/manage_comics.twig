@@ -1,0 +1,20 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+<form method="post" action="managecomics_process.php">
+    <input type="hidden" name="comic" value="{{comic.id}}">
+    <input type="hidden" name="site" value="{{site}}">
+    <input type="hidden" name="mode" value="{{mode}}">
+
+    <input type="submit" name="button" value="Submit"/>
+
+    {% for release in releases|slice(0,20) %}
+    <div>
+        {% include 'image.twig' %}<br />
+        {% include mode ~ '.twig' %}
+    </div>
+    {% endfor %}
+    <input type="submit" name="button" value="Submit"/>
+</form>
+
+{% endblock %}

@@ -15,7 +15,7 @@ if(isset($_GET['comic']))
 
 <?Php
 if(!isset($_GET['comic']))
-	echo $comicmanager->selectcomic();
+	echo $comicmanager->select_comic();
 elseif($comicinfo!==false)
 {
 	$body=$dom->createElement('body');

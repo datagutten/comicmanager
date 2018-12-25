@@ -1,4 +1,6 @@
 <?php
+require 'vendor/autoload.php';
+
 class comicmanager
 {
 	public $error;
@@ -10,25 +12,42 @@ class comicmanager
 	public $comic; //Current comic
 	public $comic_list; //Array with a list of all comics, id as key, name as value
 	public $comic_info; //Array with info about comics
+    public $info; //Array with info about the current comic
 	public $comic_info_db; //Array with info about comics, default value from db
+    public $sources=array();
+    public $twig;
+    public $root='comicmanager';
 	private $queries;
 
 	public function __construct()
 	{
+        $loader = new Twig_Loader_Filesystem(array('templates', 'management/templates'), __DIR__);
+        $this->twig = new Twig_Environment($loader, array('debug' => true, 'strict_variables' => true));
+        require 'config.php';
 		error_reporting(E_ALL);
 		ini_set('display_errors',1);
-		require 'config.php';
 
 		if(isset($comics_site) && isset($comics_key))
 		{
 			require_once 'class_jodal_comics.php';
 			$this->comics=new comics($comics_site,$comics_key);
-			$this->comics_media=$comics_media;
+			if(isset($comics_media))
+			    $this->comics_media=$comics_media;
+			$this->sources['comics']='Jodal comics';
 		}
-		if(!file_exists($filepath))
-			trigger_error("Invalid image file path: $filepath",E_USER_ERROR);
-		else
-			$this->filepath=realpath($filepath);
+		if(isset($filepath))
+        {
+            if(!file_exists($filepath))
+                trigger_error("Invalid image file path: $filepath",E_USER_ERROR);
+            else
+            {
+                $this->filepath=realpath($filepath);
+                $this->sources['file']='Local files';
+            }
+        }
+		if(empty($this->sources))
+		    throw new exception('No valid sources configured');
+
 		if(isset($picture_host))
 			$this->picture_host=$picture_host;
 
@@ -65,14 +84,13 @@ class comicmanager
 	}
 
 	//Display links to select a comic
-	public function selectcomic()
+	public function select_comic()
 	{
-		$output="<h2>Select comic:</h2>\n";
-		foreach($this->comic_list as $id=>$name)
-		{
-			$output.="<p><a href=\"?comic={$id}\">{$name}</a></p>\n";
-		}
-		return $output;
+	    $context = array(
+	        'comics'=>$this->comic_list,
+            'title'=>'Select comic',
+            'root'=>$this->root);
+	    return $this->twig->render('select_comic.twig', $context);
 	}
 
 	//Find valid sites for a comic
@@ -89,6 +107,8 @@ class comicmanager
 	}
 	public function categories($only_visible=false)
 	{
+        if($this->info['has_categories']!='1')
+            return array();
 		if($only_visible===false)
 			$st_categories=$this->db->query(sprintf('SELECT id,name FROM %s_categories ORDER BY name ASC',$this->comic));
 		else
@@ -133,6 +153,7 @@ class comicmanager
 
 		$this->comic=$comicinfo['id'];
 		$this->comic_info[$comicinfo['id']]=$comicinfo;
+		$this->info = $comicinfo;
 		return $comicinfo;
 	}
 
@@ -147,13 +168,15 @@ class comicmanager
 		}
 		else //No comic selected, display comic selection
 		{
-			echo $this->selectcomic();
-			return;
+			echo $this->select_comic();
+			return false;
 		}
 	}
 	public function prepare_queries()
 	{
 		$comic=$this->comic;
+		if(empty($this->comic))
+		    return null;
 		$comicinfo=$this->comic_info[$this->comic];
 		$this->queries['keyfield']=
 			$this->db->prepare($q=sprintf('SELECT * FROM %s WHERE %s=?',
