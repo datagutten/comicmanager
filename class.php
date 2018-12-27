@@ -134,17 +134,15 @@ class comicmanager
 	    return $this->twig->render('select_comic.twig', $context);
 	}
 
-	//Find valid sites for a comic
-	function sites($comic=false)
+    /**
+     * Find valid sites for a comic
+     *
+     * @return array
+     * @throws Exception
+     */
+    function sites()
 	{
-		if($comic===false) //Default to current comic
-			$comic=$this->comic;
-		elseif(!isset($this->comic_list[$comic]))
-		{
-			$this->error='Invalid comic: '.$comic;
-			return false;
-		}
-		return $this->db->query(sprintf('SELECT DISTINCT site FROM %s',$comic),'all_column');
+		return $this->db->query(sprintf('SELECT DISTINCT site FROM %s',$this->info['id']),'all_column');
 	}
 	public function categories($only_visible=false)
 	{
