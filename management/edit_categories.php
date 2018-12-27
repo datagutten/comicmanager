@@ -87,7 +87,7 @@ if(is_array($comicinfo) && $comicinfo['has_categories']==1)
 			elseif($name!=$categories_db[$id]) //Check if name is changed
 			{
 				echo "UPDATE $table SET name=$name WHERE id=$id<br />\n";
-				$comicmanager->execute($st_update_name,array($name,$id));
+				$comicmanager->db->execute($st_update_name,array($name,$id));
 				$categories_db[$id]=$name; //Update the name variable to avoid reloading from db
 			}
 			if(!isset($_POST['visible'][$id])) //Box not checked means not visible
@@ -95,13 +95,13 @@ if(is_array($comicinfo) && $comicinfo['has_categories']==1)
 			if(is_numeric($_POST['visible'][$id]) && $_POST['visible'][$id]!=$visible_db[$id]) //Check if visible status is changed
 			{
 				echo "UPDATE $table SET visible={$_POST['visible'][$id]} WHERE id=$id<br />\n"; //Dummy query for troubleshooting
-				$comicmanager->execute($st_visible_update,array($_POST['visible'][$id],$id));
+				$comicmanager->db->execute($st_visible_update,array($_POST['visible'][$id],$id));
 				$visible_db[$id]=$_POST['visible'][$id];
 			}
 			if(isset($_POST['delete'][$id]))
 			{
 				echo "DELETE FROM $table WHERE id=$id<br />\n";
-				$comicmanager->execute($st_delete,array($id));
+				$comicmanager->db->execute($st_delete,array($id));
 				unset($categories_db[$id]);
 			}
 

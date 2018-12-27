@@ -61,15 +61,6 @@ class comicmanager
 		$this->dom=new DOMDocumentCustom;
 		$this->dom->formatOutput=true;
 	}
-	function query($q,$fetch='all')
-	{
-		return $this->db->query($q,$fetch);
-	}
-	function execute($st,$parameters,$fetch=false)
-	{
-		return $this->db->execute($st,$parameters,$fetch);
-	}
-
 
 	//Get all available comics and populate $this->comic_list
 	public function build_comic_list()
@@ -321,16 +312,16 @@ class comicmanager
 	}
 	function next_customid()
 	{
-		return $this->query($q="SELECT max(customid)+1 FROM {$this->comic}",'column');
+		return $this->db->query($q="SELECT max(customid)+1 FROM {$this->comic}",'column');
 	}
 
 	function get($args=array('date'=>null, 'site'=>'null', 'id'=>'null', 'key'=>null)) {
 		if(empty($this->queries))
 			$this->prepare_queries();
 		if(!empty($args['key'])) //Keyfield
-			return $this->execute($this->queries['keyfield'], array($args['key']), 'assoc');
+			return $this->db->execute($this->queries['keyfield'], array($args['key']), 'assoc');
 		elseif(!empty($args['date']) && !empty($args['site'])) //Date and site
-			return $this->execute($this->queries['date_and_site'], array($args['date'],$args['site']), 'assoc');
+			return $this->db->execute($this->queries['date_and_site'], array($args['date'],$args['site']), 'assoc');
 	}
 
     /**

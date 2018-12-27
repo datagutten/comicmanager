@@ -47,9 +47,9 @@ if(isset($_POST['submit']))
   `visible` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;';
-		$comicmanager->query($q_categories,false);
+		$comicmanager->db->query($q_categories,false);
 
-		$comicmanager->query('ALTER TABLE `comicmanager`.`'.$comic.'` ADD COLUMN `category` INT(2) NULL DEFAULT NULL AFTER `id`;',false);
+		$comicmanager->db->query('ALTER TABLE `comicmanager`.`'.$comic.'` ADD COLUMN `category` INT(2) NULL DEFAULT NULL AFTER `id`;',false);
 	}
 	else
 		$has_categories=0;

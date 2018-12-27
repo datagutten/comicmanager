@@ -36,7 +36,7 @@ if(is_array($comicinfo))
 			{
 				$stripstring="{$matches[1]} $site";
 				//Check if the strip is already in the database
-				$comicmanager->execute($st_select,array($matches[1],$site));
+				$comicmanager->db->execute($st_select,array($matches[1],$site));
 				if($st_select->rowCount()>0) //Already in db
 					continue;
 				
@@ -49,7 +49,7 @@ if(is_array($comicinfo))
 				else
 				{
 					//Insert the strip in the DB
-					$comicmanager->execute($st_insert,array($matches[1],$site));
+					$comicmanager->db->execute($st_insert,array($matches[1],$site));
 					echo "<p>Inserted $stripstring</p>\n";
 				}
 			}
