@@ -107,8 +107,16 @@ if($comicinfo!==false) //A valid comid is selected, show form to select strip
 			$strips=$st_strip->fetchAll(PDO::FETCH_ASSOC);
 
 			$form=$dom->createElement_simple('form',$dom,array('method'=>'post')); //Create form
-			$picture=$comicmanager->showpicture($strips[0],$keyfield);
-			$form->appendChild($picture);
+            $context=array(
+                'release'=> $strips[0],
+                'root'=>$comicmanager->root,
+                'comic'=>$comicinfo,);
+
+            $image = $comicmanager->twig->render('image.twig', $context);
+			$image = str_replace('&nbsp;', ' ', $image);
+            $picture = $dom->createDocumentFragment();
+            $picture->appendXML($image);
+            $form->appendChild($picture);
 
 			if($comicinfo['has_categories']==1)
 			{
