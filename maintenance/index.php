@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Maintenance</title>
+    <link href="/comicmanager/comicmanager.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body>
