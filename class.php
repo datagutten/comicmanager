@@ -35,10 +35,6 @@ class comicmanager
      */
     public $comic;
     /**
-     * @var array Array with a list of all comics, id as key, name as value
-     */
-    public $comic_list;
-    /**
      * @var array Array with info about comics
      */
     public $comic_info;
@@ -110,25 +106,28 @@ class comicmanager
 
 		if(isset($picture_host))
 			$this->picture_host=$picture_host;
-
-		$this->build_comic_list();
 	}
 
-	//Get all available comics and populate $this->comic_list
-	public function build_comic_list()
+    /**
+     * Get all available comics and populate $this->comic_list
+     *
+     * @return array Array with comics, key is id, value is display name
+     * @throws Exception
+     */
+    public function comic_list()
 	{
 		$st=$this->db->query("SELECT id,name FROM comic_info ORDER BY name", null);
 		if($st->rowCount()===0)
 			throw new Exception('No comics in database');
 
-		$this->comic_list=$st->fetchAll(PDO::FETCH_KEY_PAIR);
+		return $st->fetchAll(PDO::FETCH_KEY_PAIR);
 	}
 
 	//Display links to select a comic
 	public function select_comic()
 	{
 	    $context = array(
-	        'comics'=>$this->comic_list,
+	        'comics'=>$this->comic_list(),
             'title'=>'Select comic',
             'root'=>$this->root);
 	    return $this->twig->render('select_comic.twig', $context);
