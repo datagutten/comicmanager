@@ -1,0 +1,10 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+    {% for key, release in releases %}
+        <p>
+            {% include 'image.twig' %}
+        </p>
+    {% endfor %}
+
+{% endblock %}

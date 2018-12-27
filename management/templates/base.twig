@@ -1,21 +1,27 @@
 <!doctype html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>{{ title }}</title>
-<link href="/{{ root }}/comicmanager.css" rel="stylesheet" type="text/css">
+    <meta charset="utf-8">
+    <title>{{ title }}</title>
+    <link href="/{{ root }}/comicmanager.css" rel="stylesheet" type="text/css"/>
+    {% if extra_css is defined %}
+        <link href="/{{ root }}/static/{{ extra_css }}" rel="stylesheet" type="text/css"/>
+    {% endif %}
+    {% if js is defined %}
+        <script type="text/javascript" src="/{{ root }}/static/{{ js }}"></script>
+    {% endif %}
 </head>
 
 <body>
 <div class="nav_bar">
-<ul class="toc">
-    {% if comic is defined %}
-    <li><a href="/{{root}}">Change comic</a></li>
-	<li><a href="/{{root}}/showcomics_front.php?comic={{comic.id}}">Show {{comic.name}}</a></li>
-    <li><a href="/{{root}}/management/?comic={{comic.id}}">Manage {{ comic.name }}</a></li>
-    <li><a href="/{{root}}/maintenance?comic={{comic.id}}">Maintain {{ comic.name }}</a></li>
-    {% endif %}
-</ul>
+    <ul class="toc">
+        {% if comic is defined %}
+            <li><a href="/{{ root }}">Change comic</a></li>
+            <li><a href="/{{ root }}/showcomics_front.php?comic={{ comic.id }}">Show {{ comic.name }}</a></li>
+            <li><a href="/{{ root }}/management/?comic={{ comic.id }}">Manage {{ comic.name }}</a></li>
+            <li><a href="/{{ root }}/maintenance?comic={{ comic.id }}">Maintain {{ comic.name }}</a></li>
+        {% endif %}
+    </ul>
 </div>
 <br>
 <hr>

@@ -1,0 +1,16 @@
+/* https://stackoverflow.com/a/23741073/2630074 */
+form {
+    display: table;
+}
+p {
+    display: table-row;
+}
+
+label {
+    display: table-cell;
+    font-weight: bold
+}
+
+input {
+    display: table-cell;
+}

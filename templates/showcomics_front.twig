@@ -1,0 +1,78 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+    <h1>{{ comic.name }}</h1>
+    <div id="menu_date">
+        <h2>Show strips by date</h2>
+        <form id="form_date" name="form_date" action="showcomics.php">
+            <input type="hidden" name="comic" value="{{ comic.id }}"/>
+            <input type="hidden" name="view" value="date"/>
+            {% if sites|length > 1 %}
+                <p>
+                    <label for="site">Site:</label>
+                    <input type="text" name="site" id="site" list="sites">
+                </p>
+                <datalist id="sites">
+                    {% for site in sites %}
+                    <option value="{{ site }}">
+                        {% endfor %}
+                </datalist>
+            {% else %}
+                <p>
+                    <input type="hidden" name="site" value="{{ sites|first }}"/>
+                    Site: {{ sites|first }}
+                </p>
+            {% endif %}
+            <p>
+                <label for="field_date">Date:</label>
+                <input type="text" name="date" id="field_date"/>
+                <label>Use % as wildcard</label>
+            </p>
+            <input type="submit" value="Show">
+        </form>
+    </div>
+    <div id="menu_key">
+        <h2>Show strips by key</h2>
+        <p>
+            First {{ comic.keyfield }}: {{ range.min }}, last {{ comic.keyfield }}: {{ range.max }}<br/>
+        </p>
+        <form id="form_key" name="form_key" action="showcomics.php">
+            <input type="hidden" name="comic" value="{{ comic.id }}"/>
+            <input type="hidden" name="view" value="singlestrip"/>
+
+            {% if comic.possible_key_fields|length >1 %}
+                <p>
+                <label for="key_field">Key field:</label>
+                <select name="key_field" id="key_field">
+                    {% for field in comic.possible_key_fields %}
+                        {% if field==comic.keyfield %}
+                            <option value="{{ field }}" selected="selected">{{ field }}</option>
+                        {% else %}
+                            <option value="{{ field }}">{{ field }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                </p>
+            {% else %}
+                <input type="hidden" name="key_field" value="{{ comic.keyfield }}"/>
+            {% endif %}
+            <p>
+            <label for="key">From:</label>
+            <input type="text" id="key" name="key_from" size="{{ range.max|length }}">
+            <label for="key">To:</label>
+            <input type="text" id="key" name="key_to" size="{{ range.max|length }}">
+            </p>
+            <p><input type="submit" value="Show"></p>
+        </form>
+    </div>
+    {% if comic.has_categories=='1' %}
+    <div id="categories">
+        <h2>Category</h2>
+        <ul>
+        {% for id,category in categories %}
+            <li><a href="showcomics.php?comic={{ comic.id }}&category={{ id }}">{{ category }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+{% endblock %}
