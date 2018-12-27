@@ -54,9 +54,14 @@ else
     elseif($_GET['source']=='file')
     {
         $source='Fetching releases from local files';
-        $releases=$comicmanager->filereleases_date($site,$filter_year,$filter_month);
+        try {
+            $releases=$comicmanager->filereleases_date($site,$filter_year,$filter_month);
+        }
+        catch (Exception $e) {
+            $error_text=$e->getMessage();
+        }
 
-        if($releases===false)
+        if(empty($releases))
             $error_text='No file releases found: '.$comicmanager->error;
     }
     else
