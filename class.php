@@ -31,10 +31,6 @@ class comicmanager
      */
     public $comics_media;
     /**
-     * @var string Current comic
-     */
-    public $comic;
-    /**
      * @var array Array with info about comics
      */
     public $comic_info;
@@ -148,9 +144,9 @@ class comicmanager
         if($this->info['has_categories']!='1')
             return array();
 		if($only_visible===false)
-			$st_categories=$this->db->query(sprintf('SELECT id,name FROM %s_categories ORDER BY name ASC',$this->comic));
+			$st_categories=$this->db->query(sprintf('SELECT id,name FROM %s_categories ORDER BY name ASC',$this->info['id']));
 		else
-			$st_categories=$this->db->query(sprintf('SELECT id,name FROM %s_categories WHERE visible=1 ORDER BY name ASC',$this->comic));
+			$st_categories=$this->db->query(sprintf('SELECT id,name FROM %s_categories WHERE visible=1 ORDER BY name ASC',$this->info['id']));
 
 		return $st_categories->fetchAll(PDO::FETCH_KEY_PAIR);
 	}
@@ -189,7 +185,6 @@ class comicmanager
 				$comicinfo['keyfield']=$keyfield;
 		}	
 
-		$this->comic=$comicinfo['id'];
 		$this->comic_info[$comicinfo['id']]=$comicinfo;
 		$this->info = $comicinfo;
 		return $comicinfo;
@@ -212,13 +207,14 @@ class comicmanager
 	}
 	public function prepare_queries()
 	{
-		$comic=$this->comic;
-		if(empty($this->comic))
-		    return null;
-		$comicinfo=$this->comic_info[$this->comic];
+		if(empty($this->info['id']))
+		    throw new Exception('Comic info not found');
+
+        $comic=$this->info['id'];
+		$comicinfo=$this->comic_info[$this->info['id']];
 		$this->queries['keyfield']=
 			$this->db->prepare($q=sprintf('SELECT * FROM %s WHERE %s=?',
-			$this->comic, $comicinfo['keyfield']));
+			$this->info['id'], $comicinfo['keyfield']));
 
 		$this->queries['date_and_site']=
 			$this->db->prepare($q=sprintf('SELECT * FROM %s WHERE date=? and site=?', $comic));
@@ -251,7 +247,7 @@ class comicmanager
 		if(!is_array($row))
 			throw new exception('Release is not array');
 		if($comic===false)
-			$comic=$this->comic;
+			$comic=$this->info['id'];
 		if($keyfield===false)
 			$keyfield=$this->comic_info[$comic]['keyfield'];
 
@@ -362,7 +358,7 @@ class comicmanager
 	}
 	function next_customid()
 	{
-		return $this->db->query($q="SELECT max(customid)+1 FROM {$this->comic}",'column');
+		return $this->db->query($q="SELECT max(customid)+1 FROM {$this->info['id']}",'column');
 	}
 
 	function get($args=array('date'=>null, 'site'=>'null', 'id'=>'null', 'key'=>null)) {
@@ -411,7 +407,7 @@ class comicmanager
         if(empty($release)) //Not in db, insert it
         {
             $q=sprintf('INSERT INTO %s (%s) VALUES (?%s)',
-                $this->comic,
+                $this->info['id'],
                 implode(', ', array_keys($fields)),
                 str_repeat(',?', count($fields)-1));
             $values=array_values($fields);
