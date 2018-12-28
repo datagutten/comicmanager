@@ -397,14 +397,15 @@ class comicmanager
     }
 
     /**
-     * @param array $args
+     * Add a comic strip to the database or update it if it exists
+     *
+     * @param array $args Strip properties
      * @throws Exception
      */
     function add_or_update($args=array('date'=>null, 'site'=>'null', 'id'=>'null', 'key'=>null, 'category'=>null)) {
 
         $fields = array_filter($args);
-        $comic=$this->comic;
-        $keyfield=$this->comic_info[$comic]['keyfield'];
+        $keyfield=$this->info['keyfield'];
         $release = $this->get($args);
 
         if(empty($release)) //Not in db, insert it
@@ -441,7 +442,7 @@ class comicmanager
                 throw new exception('No valid key');
 
             if(!empty($sets)) {
-                $q = sprintf('UPDATE %s SET %s WHERE %s', $this->comic, $sets, $where);
+                $q = sprintf('UPDATE %s SET %s WHERE %s', $this->info['id'], $sets, $where);
             }
         }
 
