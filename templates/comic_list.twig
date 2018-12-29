@@ -1,0 +1,26 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+    {% for id, comic in comics %}
+        {% if comic.error is defined %}
+            <h2>{{ id }}</h2>
+            {{ comic.error }}<br />
+        {% else %}
+            <h2>{{ comic.comic.name }}</h2>
+            {% if comic.releases is empty %}
+                No releases found
+            {% else %}
+                {% for key, release in comic.releases %}
+                    <p>
+                        {% if release.error is defined %}
+                            {{ release.error }}
+                        {% else %}
+                            {% include 'image.twig' with {'comic': comic.comic, 'mode': 'id'} %}
+                        {% endif %}
+                    </p>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+{% endblock %}
