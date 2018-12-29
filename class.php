@@ -244,7 +244,7 @@ class comicmanager
 
     }
 
-	public function typecheck($filename,$typereturn=false) //Try different extensions for a file name
+	public function typecheck($filename) //Try different extensions for a file name
 	{
 		$types=array('jpg','gif','png');
 		foreach($types as $type)
@@ -256,9 +256,8 @@ class comicmanager
 			}
 		}
 		if(!isset($file)) //File not found
-			return false;
-		if($typereturn===true) //Return only extension
-			return $type;
+            throw new Exception('Image not found by date: '.$filename);
+
 		return $file;
 	}
 	public function showpicture($row,$keyfield=false,$comic=false,$noheader=false)
