@@ -307,30 +307,31 @@ class comicmanager
 		//$this->dom->createElement_simple('pre',$div,false,$image);
 		return $div;
 	}
-	public function imagefile($row) //Find the image file for a database row
-	{
-		if(!empty($row['date'])) //Show strip by date
-		{
-			$comics_date=preg_replace('/([0-9]{4})([0-9]{2})([0-9]{2})/','$1-$2-$3',$row['date']); //Rewrite date for comics
-			if(is_object($this->comics)) {
-			    try {
+    public function imagefile($row) //Find the image file for a database row
+    {
+        if(!empty($row['date'])) //Show strip by date
+        {
+            $comics_date=preg_replace('/([0-9]{4})([0-9]{2})([0-9]{2})/','$1-$2-$3',$row['date']); //Rewrite date for comics
+            if(is_object($this->comics)) {
+                try {
                     //Check if the strip is found on comics
                     $image=$this->comics_release_single_cache($row['site'],$comics_date);
                 }
-                catch (Exception $e) {
-                    $this->error=$e->getMessage();
+                catch (Exception $e_comics) {
+                    //Image not found on comics, try to find local file
+                    try {
+                        $image = $this->typecheck($filename = $this->filename($row['site'], $row['date']));
+                    }
+                    catch (Exception $e_file) //File not found, re-throw exception from comics
+                    {
+                        throw $e_comics;
+                    }
                 }
             }
-			if(!isset($image) || $image===false) {
-                //Image not found on comics, try to find local file
-                $image = $this->typecheck($filename = $this->filename($row['site'], $row['date']));
-            }
-			if(empty($image))
-			{
-				$this->error='Image not found by date: '.$filename;
-				return false;
-			}
-		}
+
+            if(empty($image))
+                throw new Exception('Image file not found by date: '.$filename);
+        }
 		else //Show strip by id
 		{
 			if(!empty($row['id']))
