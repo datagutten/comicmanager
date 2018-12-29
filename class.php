@@ -150,45 +150,44 @@ class comicmanager
 
 		return $st_categories->fetchAll(PDO::FETCH_KEY_PAIR);
 	}
-	public function comicinfo($comic,$keyfield=false) //Get information about a comic
-	{
-		if(!preg_match('/^[a-z]+$/',$comic))
-		{
-			$this->error='Invalid comic id: '.$comic;
-			return false;
-		}
-		$comicinfo=$this->db->query(sprintf("SELECT * FROM comic_info WHERE id='%s'",$comic),'assoc');
 
-		if($comicinfo===false)
-			return false;
-		if(empty($comicinfo))
-		{
-			$this->error='Unkown comic id: '.$comic;
-			return false;
-		}
+    /**
+     * Get information about a comic
+     *
+     * @param string $comic Comic id
+     * @param string $key_field Override the default key field
+     * @return array Array with comic information
+     * @throws Exception
+     */
+    public function comicinfo($comic, $key_field=null)
+    {
+        if(!preg_match('/^[a-z]+$/',$comic))
+            throw new Exception('Invalid comic id: '.$comic);
 
-		$this->comic_info_db[$comicinfo['id']]=$comicinfo;
+        $info=$this->db->query(sprintf("SELECT * FROM comic_info WHERE id='%s'",$comic),'assoc');
 
-		if(strpos($comicinfo['possible_key_fields'],',')!==false)
-			$comicinfo['possible_key_fields']=explode(',',$comicinfo['possible_key_fields']);
-		else
-			$comicinfo['possible_key_fields']=(array)$comicinfo['possible_key_fields'];
-		//Default key field is overridden
-		if($keyfield!==false)
-		{
-			if(array_search($keyfield,$comicinfo['possible_key_fields'])===false && $keyfield!=='uid')
-			{
-				$this->error='Invalid key field: '.$keyfield;
-				return false;
-			}
-			else
-				$comicinfo['keyfield']=$keyfield;
-		}	
+        if(empty($info))
+            throw new Exception('Unknown comic id: '.$comic);
 
-		$this->comic_info[$comicinfo['id']]=$comicinfo;
-		$this->info = $comicinfo;
-		return $comicinfo;
-	}
+        $this->comic_info_db[$info['id']]=$info;
+
+        if(strpos($info['possible_key_fields'],',')!==false)
+            $info['possible_key_fields']=explode(',',$info['possible_key_fields']);
+        else
+            $info['possible_key_fields']=(array)$info['possible_key_fields'];
+        //Default key field is overridden
+        if(!empty($key_field))
+        {
+            if(array_search($key_field,$info['possible_key_fields'])===false && $key_field!=='uid')
+                throw new Exception('Invalid key field: '.$key_field);
+            else
+                $info['keyfield']=$key_field;
+        }
+
+        $this->comic_info[$info['id']]=$info;
+        $this->info = $info;
+        return $info;
+    }
 
 	public function comicinfo_get()
 	{
