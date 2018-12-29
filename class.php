@@ -204,6 +204,27 @@ class comicmanager
 			return false;
 		}
 	}
+
+    /**
+     * Renders a template.
+     *
+     * @param string $name    The template name
+     * @param array  $context An array of parameters to pass to the template
+     *
+     * @return string The rendered template
+     *
+     * @throws Twig_Error_Loader  When the template cannot be found
+     * @throws Twig_Error_Syntax  When an error occurred during compilation
+     * @throws Twig_Error_Runtime When an error occurred during rendering
+     */
+    public function render($name, $context)
+    {
+        $context = array_merge($context, array(
+            'root'=>$this->root,
+            'comic'=>$this->info));
+        return $this->twig->render($name, $context);
+    }
+
 	public function prepare_queries()
 	{
 		if(empty($this->info['id']))
