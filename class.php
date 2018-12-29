@@ -225,24 +225,24 @@ class comicmanager
         return $this->twig->render($name, $context);
     }
 
-	public function prepare_queries()
-	{
-		if(empty($this->info['id']))
-		    throw new Exception('Comic info not found');
+    public function prepare_queries()
+    {
+        if(empty($this->info['id']))
+            throw new Exception('Comic info not found');
 
         $comic=$this->info['id'];
-		$comicinfo=$this->comic_info[$this->info['id']];
-		$this->queries['keyfield']=
-			$this->db->prepare($q=sprintf('SELECT * FROM %s WHERE %s=?',
-			$this->info['id'], $comicinfo['keyfield']));
+        $comic_info=$this->info;
+        $this->queries[$this->info['id']]['keyfield']=
+            $this->db->prepare($q=sprintf('SELECT * FROM %s WHERE %s=?',
+                $this->info['id'], $comic_info['keyfield']));
 
-		$this->queries['date_and_site']=
-			$this->db->prepare($q=sprintf('SELECT * FROM %s WHERE date=? and site=?', $comic));
+        $this->queries[$this->info['id']]['date_and_site']=
+            $this->db->prepare($q=sprintf('SELECT * FROM %s WHERE date=? and site=?', $comic));
 
-		$this->queries['insert_keyfield']=
-            $this->db->prepare($q=sprintf('INSERT INTO %s (%s) VALUES ?', $comic, $comicinfo['keyfield']));
+        $this->queries[$this->info['id']]['insert_keyfield']=
+            $this->db->prepare($q=sprintf('INSERT INTO %s (%s) VALUES ?', $comic, $comic_info['keyfield']));
 
-	}
+    }
 
 	public function typecheck($filename,$typereturn=false) //Try different extensions for a file name
 	{
