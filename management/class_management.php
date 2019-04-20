@@ -6,19 +6,33 @@ class management extends comicmanager
 	{
 		parent::__construct();
 	}
-	public function filereleases_date($site,$filter_year=false,$filter_month=false) //Used by managecomics
+
+    /**
+     * Get comic strips from files
+     *
+     * @param string $site slug
+     * @param string $filter_year
+     * @param string $filter_month
+     * @return array
+     * @throws Exception
+     */
+    public function releases_file_date($site, $filter_year=null, $filter_month=null)
 	{
 
 		if(!file_exists($basepath=$this->filepath.'/'.$site))
-			return false;
+		    throw new Exception('No folder for site '.$site);
+
 
 		$dir=scandir($basepath=$this->filepath.'/'.$site); //Get months
 		$dir=array_diff($dir,array('.','..','Thumbs.db'));
-
+        $releases = array();
 		foreach ($dir as $month)
 		{
 			if(!is_dir($basepath.'/'.$month))
-				continue;
+            {
+                $this->error=sprintf('Month folder %s/%s is not a directory', $basepath, $month);
+                continue;
+            }
 
 			if($filter_year!==false && substr($month,0,4)!=$filter_year) //Filter by year
 				continue;
@@ -33,25 +47,24 @@ class management extends comicmanager
 				{
 					$fileinfo['date']=$date[0];
 					$fileinfo['file']=$basepath.'/'.$month.'/'.$file;
-					$rows[]=$fileinfo;
+                    $releases[]=$fileinfo;
 				}
 			}
 		}
-		if(empty($rows))
-			return false;
-		else
-			return $rows;
+
+        return $releases;
 	}
-	/*
-	Build a select list with categories
-	Arguments:
-	$name: 			Name of the select object.
-	$parent:		Parent object which the select should be appended to
-	$preselect:		Category to be preselected
-	$only_visible:	Show only categories marked as visible
-	*/
+
+    /**
+     * Build a select list with categories
+     * @param string $name Name of the select object
+     * @param $parent Parent object which the select should be appended to
+     * @param bool $preselect Category to be preselected
+     * @param bool $only_visible Show only categories marked as visible
+     */
 	public function categoryselect($name='category',$parent,$preselect=false,$only_visible=false)
 	{
+	    //TODO: Remove or rewrite with twig
 		//Category select
 		$select=$this->dom->createElement_simple('select',$parent,array('name'=>$name));
 		$option_default=$this->dom->createElement_simple('option',$select,array('value'=>''),'Select category');
