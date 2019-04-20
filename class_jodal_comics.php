@@ -5,6 +5,7 @@ class comics
 	public $ch;
 	public $site;
 	public $error;
+	public $secret_key;
 	function __construct($site,$key)
 	{
 		$this->ch=curl_init();
@@ -45,8 +46,10 @@ class comics
 		$releases=json_decode($data,true);
 		if(empty($releases['objects']))
 		{
-			$this->error='No releases found';
-			return false;
+			$this->error=sprintf('No releases found for query %s on site %s',
+                basename($uri),
+			$this->site);
+            throw new exception($this->error);
 		}
 		else
 			return $releases;
@@ -80,17 +83,33 @@ class comics
 		else
 			return $this->format_releases($releases);
 	}
-	function release_single($slug,$date)
+
+    /**
+     * Get a single release
+     *
+     * @param string $slug Comic slug
+     * @param string $date Release date
+     * @return string File name or null if not found
+     * @throws exception
+     */
+    function release_single($slug, $date)
 	{
 		$release=$this->request("/api/v1/releases/?comic__slug=$slug&pub_date=$date");
-
 		if($release['meta']['total_count']==0)
-			return false;
+			return null;
 		else
 			return $release['objects'][0]['images'][0]['file'];
 	}
-	function format_releases($releases) //Make the release array structure similar to the file functions
+
+    /**
+     * Make the release array structure similar to the file functions
+     *
+     * @param array $releases
+     * @return array
+     */
+    function format_releases($releases)
 	{
+	    $rows = array();
 		foreach(array_reverse($releases['objects']) as $release)
 		{
 			$rows[]=array('date'=>str_replace('-','',$release['pub_date']),'file'=>$release['images'][0]['file']);
