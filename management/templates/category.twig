@@ -1,4 +1,5 @@
-<select name="value[{{release.date}}]" id="{{release.date}}">
+<label for="{{release.date}}">Category:</label>
+<select name="release[{{release.date}}][value]" id="{{release.date}}">
     <option value="">Select category</option>
     {% for category in categories %}
         {% if release.category|default()==category.id %}

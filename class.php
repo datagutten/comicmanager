@@ -443,11 +443,19 @@ class comicmanager
 		return $this->db->query($q="SELECT max(customid)+1 FROM {$this->info['id']}",'column');
 	}
 
-    function get($args) {
+    function get($args)
+    {
+        if(!empty($args['uid']) && is_numeric($args['uid']))
+        {
+            $st = $this->query(sprintf('SELECT * FROM %s WHERE uid=%d', $this->info['id'], $args['uid']));
+            return $st->fetch(PDO::FETCH_ASSOC);
+        }
+
         $valid_fields = array('date', 'site', 'id', 'key');
         $valid_fields = array_merge($valid_fields, $this->info['possible_key_fields']);
         unset($args['file']);
         $where='';
+        $values = array();
         foreach($args as $field=>$value)
         {
             if(array_search($field, $valid_fields)===false)

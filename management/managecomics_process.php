@@ -16,15 +16,18 @@ require 'class_management.php';
 $comicmanager=new management;
 $comicinfo = $comicmanager->comicinfo($_POST['comic']);
 
-foreach($_POST['value'] as $date=>$value)
+foreach($_POST['release'] as $date=>$release)
 {
-    if(empty($value))
+    if(empty($release['value']))
         continue;
     //var_dump($date);
     //var_dump($_POST['site']);
     //$release = $comicmanager->get(array('date'=>$date, 'site'=>$_POST['site']));
     $args = array('date'=>$date, 'site'=>$_POST['site']);
-    $args[$_POST['mode']]=$value;
+    $args[$_POST['mode']]=$release['value'];
+    if(!empty($release['uid']))
+        $args['uid'] = $release['uid'];
+
     $comicmanager->add_or_update($args);
 
 

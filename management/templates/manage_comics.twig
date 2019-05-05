@@ -13,6 +13,7 @@
         {% include 'image.twig' %}<br />
         {% include mode ~ '.twig' %}
     </div>
+    <input type="hidden" name="release[{{ release.date }}][uid]" value="{{release.uid|default()}}">
     {% endfor %}
     <input type="submit" name="button" value="Submit"/>
 </form>
