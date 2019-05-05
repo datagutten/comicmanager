@@ -1,5 +1,5 @@
 <?php
-require 'tools/pdo_helper.class.php';
+require 'tools/autoload.php';
 require 'class_jodal_comics.php';
 require 'vendor/autoload.php';
 require 'tools/DOMDocument_createElement_simple.php';
