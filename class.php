@@ -178,10 +178,15 @@ class comicmanager
 	{
         if($this->info['has_categories']!='1')
             return array();
-        if($only_visible)
-            $st = $this->query(sprintf('SELECT * FROM %s_categories WHERE visible=1 ORDER BY name ASC',$this->info['id']), PDO::FETCH_ASSOC);
+        if($return_object)
+            $fields = '*';
         else
-            $st = $this->query(sprintf('SELECT * FROM %s_categories ORDER BY name ASC',$this->info['id']), PDO::FETCH_ASSOC);
+            $fields = 'id, name';
+
+        if($only_visible)
+            $st = $this->query(sprintf('SELECT %s FROM %s_categories WHERE visible=1 ORDER BY name ASC',$fields, $this->info['id']), PDO::FETCH_ASSOC);
+        else
+            $st = $this->query(sprintf('SELECT %s FROM %s_categories ORDER BY name ASC', $fields, $this->info['id']), PDO::FETCH_ASSOC);
 
         if($return_object)
             return $st;
