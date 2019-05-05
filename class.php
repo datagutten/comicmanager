@@ -66,11 +66,17 @@ class comicmanager
 
 	public function __construct()
 	{
-        $this->db=new pdo_helper;
-        $this->db->connect_db_config(__DIR__.'/config_db.php');
-
-        $loader = new Twig_Loader_Filesystem(array('templates', 'management/templates'), __DIR__);
+	    $loader = new Twig_Loader_Filesystem(array('templates', 'management/templates'), __DIR__);
         $this->twig = new Twig_Environment($loader, array('debug' => true, 'strict_variables' => true));
+
+        $this->db=new pdo_helper;
+        try {
+            $this->db->connect_db_config(__DIR__.'/config_db.php');
+        }
+        catch (Exception|FileNotFoundException $e)
+        {
+            $this->twig->render('error.twig', array('error'=>$e->getMessage()));
+        }
 
         $this->dom=new DOMDocumentCustom;
         $this->dom->formatOutput=true;
