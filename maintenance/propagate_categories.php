@@ -10,11 +10,6 @@ if($comicinfo!==false && $comicinfo['has_categories']==1)
 
 	$q="SELECT $keyfield,category FROM $comic WHERE category IS NOT NULL AND $keyfield IS NOT NULL GROUP BY $keyfield"; 
 	$st_strips=$comicmanager->db->query($q); //Get all unique strips with category
-	/*if(!is_object($st_strips)); 
-	{
-		$errorinfo=$comicmanager->db->errorInfo();
-		trigger_error("Error fetching strips: {$errorinfo[2]}",E_USER_ERROR);
-	}*/
 	$categories=$st_strips->fetchAll(PDO::FETCH_KEY_PAIR);
 
 	$st_missing=$comicmanager->db->query("SELECT * FROM $comic WHERE $keyfield IS NOT NULL AND category IS NULL");
@@ -30,4 +25,3 @@ if($comicinfo!==false && $comicinfo['has_categories']==1)
 		}
 	}
 }
-?>
