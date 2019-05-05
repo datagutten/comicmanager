@@ -66,8 +66,8 @@ class comicmanager
 
 	public function __construct()
 	{
-	    $loader = new Twig_Loader_Filesystem(array('templates', 'management/templates'), __DIR__);
-        $this->twig = new Twig_Environment($loader, array('debug' => true, 'strict_variables' => true));
+	    $loader = new Twig\Loader\FilesystemLoader(array('templates', 'management/templates'), __DIR__);
+        $this->twig = new Twig\Environment($loader, array('debug' => true, 'strict_variables' => true));
 
         $this->db=new pdo_helper;
         try {
@@ -251,16 +251,18 @@ class comicmanager
      *
      * @return string The rendered template
      *
-     * @throws Twig_Error_Loader  When the template cannot be found
-     * @throws Twig_Error_Syntax  When an error occurred during compilation
-     * @throws Twig_Error_Runtime When an error occurred during rendering
      */
     public function render($name, $context)
     {
         $context = array_merge($context, array(
             'root'=>$this->root,
             'comic'=>$this->info));
-        return $this->twig->render($name, $context);
+        try {
+            return $this->twig->render($name, $context);
+        }
+        catch (\Twig\Error\Error $e) {
+            die('Error rendering template:<br />' . $e->getMessage() . '<br />' . $e->getTraceAsString());
+        }
     }
 
     public function prepare_queries()
