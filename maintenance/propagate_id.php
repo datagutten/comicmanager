@@ -13,11 +13,7 @@ if($comicinfo!==false)
 
 		$st_update=$comicmanager->db->prepare("UPDATE $comic SET id=? WHERE uid=?");
 		$st_strips=$comicmanager->db->query($q="SELECT customid,id FROM $comic WHERE id IS NOT NULL AND $keyfield IS NOT NULL GROUP BY $keyfield"); //Get all unique strips with category
-		/*if(!is_object($st_strips)); 
-		{
-			$errorinfo=$comicmanager->db->errorInfo();
-			trigger_error("Error fetching strips: {$errorinfo[2]}",E_USER_ERROR);
-		}*/
+
 		$ids=$st_strips->fetchAll(PDO::FETCH_KEY_PAIR); //key=customid, value=id
 		//print_r($ids);
 		$st_missing=$comicmanager->db->query("SELECT * FROM $comic WHERE $keyfield IS NOT NULL AND id IS NULL");
@@ -33,4 +29,3 @@ if($comicinfo!==false)
 		}
 	}
 }
-?>
