@@ -266,7 +266,24 @@ class comicmanager
             return $this->twig->render($name, $context);
         }
         catch (\Twig\Error\Error $e) {
-            die('Error rendering template:<br />' . $e->getMessage() . '<br />' . $e->getTraceAsString());
+
+            //$trace = sprintf('<pre>%s</pre>', $e->getTraceAsString());
+            $msg = "Error rendering template:\n" . $e->getMessage();
+            try {
+                die($this->twig->render('error.twig', array(
+                    'root'=>$this->root,
+                    'comic'=>$this->info,
+                    'title'=>'Rendering error',
+                    'error'=>$msg)
+                ));
+            }
+            catch (\Twig\Error\Error $e_e)
+            {
+                $msg = sprintf("Original error: %s\n<pre>%s</pre>\nError rendering error template: %s\n<pre>%s</pre>",
+                    $e->getMessage(), $e->getTraceAsString(), $e_e->getMessage(), $e_e->getTraceAsString());
+                die($msg);
+            }
+            //die($this->render($this->render()))
         }
     }
 
