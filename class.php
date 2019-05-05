@@ -111,6 +111,28 @@ class comicmanager
 	}
 
     /**
+     * @param $query
+     * @param int $fetch PDO::FETCH_CLASS
+     * @return PDOStatement|array|string|null
+     */
+	public function query($query, $fetch=null)
+    {
+        try {
+            return $this->db->query($query, $fetch);
+        }
+        catch (PDOException $e)
+        {
+            try {
+                die($this->render('error.twig', array('title'=>'SQL error', 'error'=>$e->getMessage())));
+            }
+            catch (\Twig\Error\Error $e)
+            {
+                die($e->getMessage()."\n".$e->getTraceAsString());
+            }
+        }
+    }
+
+    /**
      * Get all available comics and populate $this->comic_list
      *
      * @return array Array with comics, key is id, value is display name
@@ -145,16 +167,26 @@ class comicmanager
 	{
 		return $this->db->query(sprintf('SELECT DISTINCT site FROM %s',$this->info['id']),'all_column');
 	}
-	public function categories($only_visible=false)
+
+    /**
+     * Get all categories for a comic
+     * @param bool $only_visible Return only categories marked as visible
+     * @param bool $return_object Return the PDOStatement object
+     * @return array|PDOStatement
+     */
+	public function categories($only_visible=false, $return_object=false)
 	{
         if($this->info['has_categories']!='1')
             return array();
-		if($only_visible===false)
-			$st_categories=$this->db->query(sprintf('SELECT id,name FROM %s_categories ORDER BY name ASC',$this->info['id']));
-		else
-			$st_categories=$this->db->query(sprintf('SELECT id,name FROM %s_categories WHERE visible=1 ORDER BY name ASC',$this->info['id']));
+        if($only_visible)
+            $st = $this->query(sprintf('SELECT * FROM %s_categories WHERE visible=1 ORDER BY name ASC',$this->info['id']), PDO::FETCH_ASSOC);
+        else
+            $st = $this->query(sprintf('SELECT * FROM %s_categories ORDER BY name ASC',$this->info['id']), PDO::FETCH_ASSOC);
 
-		return $st_categories->fetchAll(PDO::FETCH_KEY_PAIR);
+        if($return_object)
+            return $st;
+        else
+            return $st->fetchAll(PDO::FETCH_KEY_PAIR);
 	}
 
     /**
