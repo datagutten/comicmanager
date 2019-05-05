@@ -55,7 +55,7 @@ else
     {
         $source='Fetching releases from local files';
         try {
-            $releases=$comicmanager->filereleases_date($site,$filter_year,$filter_month);
+            $releases=$comicmanager->releases_file_date($site,$filter_year,$filter_month);
         }
         catch (Exception $e) {
             $error_text=$e->getMessage();
@@ -100,5 +100,6 @@ else {
         'mode' => $_GET['mode'],
         'root' => $comicmanager->root,
         'categories' => $comicmanager->categories(true),
+        'js' => 'release_date.js',
     ));
 }
