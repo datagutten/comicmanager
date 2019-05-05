@@ -362,7 +362,8 @@ class comicmanager
                 $this->error=$this->comics->error;
                 return false;
             }
-			preg_match("^.+($slug.+/([a-f0-9]+)\..+)^",$image_url,$fileinfo); //Extract image hash from URL
+            //Extract image hash from URL
+            preg_match(sprintf('^.+(%s.+/([a-f0-9]+)(?:_[A-Za-z0-9]+)?\..+)^', $slug), $image_url, $fileinfo);
             if(empty($fileinfo))
                 throw new Exception('Invalid URL: '.$image_url);
 			$st_insert->execute(array($fileinfo[2],$slug,$date,$fileinfo[1],$this->comics->site)); //Add image hash to local cache table
