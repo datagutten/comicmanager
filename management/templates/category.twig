@@ -1,10 +1,10 @@
 <select name="value[{{release.date}}]" id="{{release.date}}">
     <option value="">Select category</option>
-    {% for id, category in categories %}
-        {% if release.category==id %}
-            <option value="{{id}}" selected="selected">{{category}}</option>
+    {% for category in categories %}
+        {% if release.category|default()==category.id %}
+            <option value="{{category.id}}" selected="selected">{{category.name}}</option>
         {% else %}
-            <option value="{{id}}">{{category}}</option>
+            <option value="{{category.id}}">{{category.name}}</option>
         {% endif %}
     {% endfor %}
 </select>

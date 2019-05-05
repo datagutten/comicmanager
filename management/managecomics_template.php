@@ -99,7 +99,7 @@ else {
         'releases' => $releases,
         'mode' => $_GET['mode'],
         'root' => $comicmanager->root,
-        'categories' => $comicmanager->categories(true),
+        'categories' => $comicmanager->categories(true, true)->fetchAll(),
         'js' => 'release_date.js',
     ));
 }
