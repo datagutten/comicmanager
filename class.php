@@ -334,9 +334,6 @@ class comicmanager
                     }
                 }
             }
-
-            if(empty($image))
-                throw new Exception('Image file not found by date: '.$filename);
         }
 		else //Show strip by id
 		{
