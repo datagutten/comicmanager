@@ -31,7 +31,3 @@ foreach($st_categories->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP) as $strip=>
 		}
 	}
 }
-
-
-
-?>
