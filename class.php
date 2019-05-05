@@ -387,16 +387,28 @@ class comicmanager
 		return $this->db->query($q="SELECT max(customid)+1 FROM {$this->info['id']}",'column');
 	}
 
-	function get($args=array('date'=>null, 'site'=>'null', 'id'=>'null', 'key'=>null)) {
-		if(empty($this->queries))
-			$this->prepare_queries();
-		if(!empty($args['key'])) //Keyfield
-			return $this->db->execute($this->queries['keyfield'], array($args['key']), 'assoc');
-		elseif(!empty($args['date']) && !empty($args['site'])) //Date and site
-			return $this->db->execute($this->queries['date_and_site'], array($args['date'],$args['site']), 'assoc');
-		else
-		    throw new Exception('Invalid parameter combination');
-	}
+    function get($args) {
+        $valid_fields = array('date', 'site', 'id', 'key');
+        $valid_fields = array_merge($valid_fields, $this->info['possible_key_fields']);
+        unset($args['file']);
+        $where='';
+        foreach($args as $field=>$value)
+        {
+            if(array_search($field, $valid_fields)===false)
+                continue;
+            //throw new Exception('Invalid field '.$field);
+
+            $where .= sprintf('%s=? AND ', $field);
+            $values[]=$value;
+        }
+        $where = substr($where, 0, -5);
+
+        $q = sprintf('SELECT * FROM %s WHERE %s', $this->info['id'], $where);
+        $st = $this->db->prepare($q);
+
+        $this->db->execute($st, $values);
+        return $st->fetch(PDO::FETCH_ASSOC);
+    }
 
 
     /**
