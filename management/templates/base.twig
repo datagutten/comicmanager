@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{{ title }}</title>
+    <title>{{ title|default('Comicmanager') }}</title>
     <link href="/{{ root }}/comicmanager.css" rel="stylesheet" type="text/css"/>
     {% if extra_css is defined %}
         <link href="/{{ root }}/static/{{ extra_css }}" rel="stylesheet" type="text/css"/>
