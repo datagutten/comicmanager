@@ -75,7 +75,7 @@ class comicmanager
         }
         catch (Exception|FileNotFoundException $e)
         {
-            $this->twig->render('error.twig', array('error'=>$e->getMessage()));
+            $this->render('error.twig', array('error'=>$e->getMessage()));
         }
 
         $this->dom=new DOMDocumentCustom;
