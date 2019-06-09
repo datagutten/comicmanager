@@ -130,7 +130,7 @@ class comicmanager
      * Get all available comics and populate $this->comic_list
      *
      * @return array Array with comics, key is id, value is display name
-     * @throws Exception
+     * @throws Exception No comics in database
      */
     public function comic_list()
 	{
