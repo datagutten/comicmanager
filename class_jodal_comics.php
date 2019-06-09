@@ -18,70 +18,70 @@ class comics
 		else
 			$this->site=$site;
 	}
+
+    /**
+     * Do a request to the comics API
+     * @param string $uri Relative URL to get from comics
+     * @return array Releases
+     * @throws Exception Request failed
+     */
 	function request($uri)
 	{
 		curl_setopt($this->ch,CURLOPT_URL,$this->site.$uri.'&key='.$this->secret_key);
 		$data=curl_exec($this->ch);
 		$code=curl_getinfo($this->ch,CURLINFO_HTTP_CODE); //Get HTTP return code
 		if($data===false)
-		{
-			$this->error='cURL error: '.curl_error($this->ch);
-			return false;
-		}
+			throw new Exception('cURL error: '.curl_error($this->ch));
 		elseif($code==400)
-		{
-			$this->error='Bad request, check parameters';
-			return false;
-		}
+            throw new Exception('Bad request, check parameters');
 		elseif($code==401)
-		{
-			$this->error='Invalid secret key';
-			return false;
-		}
+            throw new Exception('Invalid secret key');
 		elseif(empty($data))
-		{
-			$this->error='Comics returned empty response';
-			return false;
-		}
+            throw new Exception('Comics returned empty response');
+
 		$releases=json_decode($data,true);
 		if(empty($releases['objects']))
 		{
-			$this->error=sprintf('No releases found for query %s on site %s',
+            throw new exception(sprintf('No releases found for query %s on site %s',
                 basename($uri),
-			$this->site);
-            throw new exception($this->error);
+                $this->site));
 		}
 		else
 			return $releases;
 	}
+
+    /**
+     * Get all releases from a year
+     * @param string $slug Comic slug
+     * @param int $year Year
+     * @return array Releases
+     * @throws Exception Request failed
+     */
 	function releases_year($slug,$year)
 	{
 		if(strlen($year)!=4 || !is_numeric($year))
-		{
-			$this->error='Year must be four digits';
-			return false;
-		}
+			throw new InvalidArgumentException('Year must be four digits');
 		$releases=$this->request("/api/v1/releases/?comic__slug=$slug&pub_date__year=$year&limit=366");
-		if($releases===false || empty($releases['objects']))
-			return false;
-		else
-			return $this->format_releases($releases);
+		return $this->format_releases($releases);
 	}
+
+    /**
+     * Get all releases from a month
+     * @param string $slug Comic slug
+     * @param int $year Year
+     * @param int $month Month
+     * @return array Releases
+     * @throws Exception Request failed
+     */
 	function releases_month($slug,$year,$month)
 	{
 		list($start,$end)=$this->month($month,$year);
 
 		if(strlen($year)!=4 || !is_numeric($year))
-		{
-			$this->error='Year must be four digits';
-			return false;
-		}
-		$releases=$this->request("/api/v1/releases/?comic__slug=$slug&pub_date__gte=$start&pub_date__lte=$end&limit=31");
+            throw new InvalidArgumentException('Year must be four digits');
 
-		if($releases===false || empty($releases['objects']))
-			return false;
-		else
-			return $this->format_releases($releases);
+		$releases=$this->request("/api/v1/releases/?comic__slug=$slug&pub_date__gte=$start&pub_date__lte=$end&limit=31");
+        return $this->format_releases($releases);
 	}
 
     /**
