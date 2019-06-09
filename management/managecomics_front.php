@@ -24,12 +24,21 @@ else
     $sources=array('file'=>'Local files');
 
     $context = array(
-        'root'=>$comic_manager->root,
-        'title'=>'Manage comics',
-        'comic'=>$comic_info,
-        'actions'=>$actions,
-        'sites'=>$comic_manager->sites(),
-        'sources'=>$comic_manager->sources,
-        );
-    echo $comic_manager->render('manage_comics_front.twig', $context);
+        'root' => $comic_manager->root,
+        'title' => 'Manage comics',
+        'comic' => $comic_info,
+        'actions' => $actions,
+        'sources' => $comic_manager->sources,
+    );
+
+    try
+    {
+        $context['sites'] = $comic_manager->sites();
+        echo $comic_manager->render('manage_comics_front.twig', $context);
+    }
+    catch (Exception $e)
+    {
+        $context['e'] = $e;
+        echo $comic_manager->render('exception.twig', $context);
+    }
 }

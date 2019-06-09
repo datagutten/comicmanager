@@ -28,9 +28,13 @@ foreach($_POST['release'] as $date=>$release)
     if(!empty($release['uid']))
         $args['uid'] = $release['uid'];
 
-    $comicmanager->add_or_update($args);
-
-
+    try {
+        $comicmanager->add_or_update($args, 'key');
+    }
+    catch (Exception $e)
+    {
+        die($comicmanager->render('exception.twig', array('e'=>$e)));
+    }
 }
 if(!empty($_SERVER['HTTP_REFERER']))
     header('Location: '.$_SERVER['HTTP_REFERER']);

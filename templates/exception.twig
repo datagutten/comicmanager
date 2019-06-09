@@ -1,0 +1,6 @@
+{% extends 'base.twig' %}
+{% block content %}
+    {{e.getmessage}}
+    Trace:
+    <pre>{{ e.getTraceAsString}}</pre>
+{% endblock %}
