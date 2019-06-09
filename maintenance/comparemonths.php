@@ -61,27 +61,27 @@ else
   <p><input type="submit" name="submit" id="submit" value="Submit"></p>
 </form>
 <script type="text/javascript">
-var newcount=1;
+const newcount=1;
 
 function addfield() //Create a new table row with an empty field
 {
-	var div=document.getElementById('fields');
+	const div=document.getElementById('fields');
 
-	var label_date=document.createElement('label');
+    const label_date=document.createElement('label');
 	label_date.innerHTML="Start date:";
 	div.appendChild(label_date);
 
-	var input_date=document.createElement('input');
+    const input_date=document.createElement('input');
 	input_date.setAttribute('type','text'); //type="text"
 	input_date.setAttribute('name',"start[]");
 	input_date.setAttribute('onchange','addfield()');
 	div.appendChild(input_date);
 
-	var label_site=document.createElement('label');
+    const label_site=document.createElement('label');
 	label_site.innerHTML="&nbsp;Site:";
 	div.appendChild(label_site);
 
-	var input_site=document.createElement('input');
+    const input_site=document.createElement('input');
 	input_site.setAttribute('type','text'); //type="text"
 	input_site.setAttribute('name',"site[]");
 
