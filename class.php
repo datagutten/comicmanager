@@ -134,7 +134,7 @@ class comicmanager
      */
     public function comic_list()
 	{
-		$st=$this->db->query("SELECT id,name FROM comic_info ORDER BY name", null);
+		$st=$this->query("SELECT id,name FROM comic_info ORDER BY name", null);
 		if($st->rowCount()===0)
 			throw new Exception('No comics in database');
 
@@ -162,13 +162,11 @@ class comicmanager
 
     /**
      * Find valid sites for a comic
-     *
      * @return array
-     * @throws Exception
      */
     function sites()
 	{
-		return $this->db->query(sprintf('SELECT DISTINCT site FROM %s',$this->info['id']),'all_column');
+		return $this->query(sprintf('SELECT DISTINCT site FROM %s',$this->info['id']),'all_column');
 	}
 
     /**
@@ -209,7 +207,7 @@ class comicmanager
         if(!preg_match('/^[a-z]+$/',$comic))
             throw new InvalidArgumentException('Invalid comic id: '.$comic);
 
-        $info=$this->db->query(sprintf("SELECT * FROM comic_info WHERE id='%s'",$comic),'assoc');
+        $info=$this->query(sprintf("SELECT * FROM comic_info WHERE id='%s'",$comic),'assoc');
 
         if(empty($info))
             throw new InvalidArgumentException('Unknown comic id: '.$comic);
@@ -419,7 +417,7 @@ class comicmanager
 	}
 	function next_customid()
 	{
-		return $this->db->query($q="SELECT max(customid)+1 FROM {$this->info['id']}",'column');
+		return $this->query($q="SELECT max(customid)+1 FROM {$this->info['id']}",'column');
 	}
 
     /**

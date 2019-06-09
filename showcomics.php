@@ -13,7 +13,7 @@ if (empty($comic_info))
     die();
 
 if (!isset($_GET['comic'])) {
-    echo $comic_manager->twig->render('showcomics_front.twig', array(
+    echo $comic_manager->render('showcomics_front.twig', array(
         'title' => 'Show ' . $comic_info['name'],
         'comic' => $comic_info,
         'root' => $comic_manager->root,
@@ -68,7 +68,7 @@ else {
         $where = 'category=?'; //GROUP BY %1$s ORDER BY %1$s
         $values = array($_GET['category']);
         $show_newest = true;
-        $title = $comic_manager->db->query(sprintf('SELECT name FROM %s_categories WHERE id=%d',
+        $title = $comic_manager->query(sprintf('SELECT name FROM %s_categories WHERE id=%d',
             $comic_info['id'], $_GET['category']), 'column');
     } else {
         header('Location: showcomics_front.php?comic=' . $comic_info['id']);
@@ -85,7 +85,7 @@ else {
     if (empty($releases)) {
         $q_debug = str_replace('?', '%s', $q);
         $q_debug = vsprintf($q_debug, $values);
-        echo $comic_manager->twig->render('error.twig', array(
+        echo $comic_manager->render('error.twig', array(
             'title' => $title,
             'root' => $comic_manager->root,
             'comic' => $comic_info,
@@ -105,7 +105,7 @@ else {
         else
             $releases_show = $releases;
 
-        echo $comic_manager->twig->render('showcomics.twig', array(
+        echo $comic_manager->render('showcomics.twig', array(
             'title' => $title,
             'root' => $comic_manager->root,
             'comic' => $comic_info,

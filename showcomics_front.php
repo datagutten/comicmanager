@@ -11,7 +11,7 @@ $comic_info = $comic_manager->comicinfo_get();
 if (empty($comic_info))
     die();
 
-echo $comic_manager->twig->render('showcomics_front.twig', array(
+echo $comic_manager->render('showcomics_front.twig', array(
     'title' => 'Show ' . $comic_info['name'],
     'comic' => $comic_info,
     'root' => $comic_manager->root,
