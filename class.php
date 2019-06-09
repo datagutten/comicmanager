@@ -141,14 +141,23 @@ class comicmanager
 		return $st->fetchAll(PDO::FETCH_KEY_PAIR);
 	}
 
-	//Display links to select a comic
+    /**
+     * Display links to select a comic
+     * @return string
+     */
 	public function select_comic()
 	{
-	    $context = array(
-	        'comics'=>$this->comic_list(),
-            'title'=>'Select comic',
-            'root'=>$this->root);
-	    return $this->twig->render('select_comic.twig', $context);
+	    try {
+            $context = array(
+                'comics' => $this->comic_list(),
+                'title' => 'Select comic',
+                'root' => $this->root);
+            return $this->render('select_comic.twig', $context);
+        }
+        catch (Exception $e)
+        {
+            return $this->render('error.twig', array('error'=>$e->getMessage()));
+        }
 	}
 
     /**
@@ -194,17 +203,16 @@ class comicmanager
      * @param string $comic Comic id
      * @param string $key_field Override the default key field
      * @return array Array with comic information
-     * @throws Exception
      */
     public function comicinfo($comic, $key_field=null)
     {
         if(!preg_match('/^[a-z]+$/',$comic))
-            throw new Exception('Invalid comic id: '.$comic);
+            throw new InvalidArgumentException('Invalid comic id: '.$comic);
 
         $info=$this->db->query(sprintf("SELECT * FROM comic_info WHERE id='%s'",$comic),'assoc');
 
         if(empty($info))
-            throw new Exception('Unknown comic id: '.$comic);
+            throw new InvalidArgumentException('Unknown comic id: '.$comic);
 
         $this->comic_info_db[$info['id']]=$info;
 
@@ -216,7 +224,7 @@ class comicmanager
         if(!empty($key_field))
         {
             if(array_search($key_field,$info['possible_key_fields'])===false && $key_field!=='uid')
-                throw new Exception('Invalid key field: '.$key_field);
+                throw new InvalidArgumentException('Invalid key field: '.$key_field);
             else
                 $info['keyfield']=$key_field;
         }
@@ -281,6 +289,10 @@ class comicmanager
         }
     }
 
+    /**
+     * Prepare SQL queries
+     * @throws Exception
+     */
     public function prepare_queries()
     {
         if(empty($this->info['id']))
@@ -300,7 +312,13 @@ class comicmanager
 
     }
 
-	public function typecheck($filename) //Try different extensions for a file name
+    /**
+     * Try different extensions for a file name
+     * @param string $filename File name
+     * @return string File name with extension
+     * @throws Exception File not found
+     */
+	public function typecheck($filename) //
 	{
 		$types=array('jpg','gif','png');
 		foreach($types as $type)
@@ -317,7 +335,13 @@ class comicmanager
 		return $file;
 	}
 
-    public function imagefile($row) //Find the image file for a database row
+    /**
+     * Find the image file for a database row
+     * @param array $row Array with release information
+     * @return string Image file
+     * @throws Exception Image not found
+     */
+    public function imagefile($row)
     {
         if(!empty($row['date'])) //Show strip by date
         {
@@ -352,6 +376,12 @@ class comicmanager
 			return $image;
 	}
 
+    /**
+     * @param string $slug Comic slug
+     * @param string $date Date in Y-M-D format
+     * @return string Image file
+     * @throws Exception Error from comics or invalid URL
+     */
 	function comics_release_single_cache($slug,$date)
 	{
 	    if(strpos($date, '-')===false)
@@ -363,11 +393,6 @@ class comicmanager
 		if($st_select->rowCount()==0)
 		{
 			$image_url=$this->comics->release_single($slug,$date); //Query comics to get image url
-			if(empty($image_url)) //Release not found on comics
-            {
-                $this->error=$this->comics->error;
-                return false;
-            }
             //Extract image hash from URL
             preg_match(sprintf('^.+(%s.+/([a-f0-9]+)(?:_[A-Za-z0-9]+)?\..+)^', $slug), $image_url, $fileinfo);
             if(empty($fileinfo))
