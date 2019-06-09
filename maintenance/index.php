@@ -34,7 +34,8 @@ if($comicinfo!==false)
 	elseif(isset($tools[$_GET['tool']]))
 	{
 		echo "<h3>{$_GET['tool']}</h3>\n";
-		require $_GET['tool'];
+        /** @noinspection PhpIncludeInspection */
+        require $_GET['tool'];
 		echo "<p><a href=\"?comic=$comic\">Back to tool selection</a></p>\n";
 	}
 	else
