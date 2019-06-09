@@ -65,6 +65,11 @@ else
 		}
 		else //Release line
         {
+            if(empty($comic_id))
+                die($comic_manager->render('error.twig', array(
+                        'error'=>sprintf("No comic specified before line %s", $strip),
+                        'title'=>'Missing comic')));
+
             if (array_search($comic_id, $filter) === false)
                 continue;
 
