@@ -18,7 +18,7 @@
         </a>
     {% endif %}
 {% else %}
-    <img src="/{{ root }}/image.php?release={{ release|json_encode }}"
+    <img src="/{{ root }}/image.php?release={{ release|json_encode|url_encode }}"
          alt="{{ release.date }} - {{ release.site }}"
          class="{{ mode|default }}"/>
 {% endif %}
