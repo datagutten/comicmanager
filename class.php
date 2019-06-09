@@ -316,53 +316,7 @@ class comicmanager
 
 		return $file;
 	}
-	public function showpicture($row,$keyfield=false,$comic=false,$noheader=false)
-	{
-		$div=$this->dom->createElement_simple('div',false,array('class'=>'release'));
-		if(!is_array($row))
-			throw new exception('Release is not array');
-		if($comic===false)
-			$comic=$this->info['id'];
-		if($keyfield===false)
-			$keyfield=$this->comic_info[$comic]['keyfield'];
 
-		if(!$noheader) //Make header
-		{
-			if(!empty($row['date']))
-				$this->dom->createElement_simple('span',$div,false,$row['date'].' - ');
-
-			if(isset($row[$keyfield]))
-			{
-				$urlfields=array('comic'=>$comic,'view'=>'singlestrip','keyfield'=>$keyfield,'value'=>$row[$keyfield]);
-				$this->dom->createElement_simple('a',$div,array('href'=>'/comicmanager/showcomics.php?'.http_build_query($urlfields,'','&')),$row[$keyfield]);
-			}
-			else
-				$this->dom->createElement_simple('span',$div,false,$row['uid']);
-			if(isset($row['tittel']))
-				$this->dom->createElement_simple('span',$div,false,' - '.$row['tittel']);
-			$this->dom->createElement_simple('span',$div,false,' - '.$row['site']);
-			$this->dom->createElement_simple('br',$div);
-		}
-
-		$image=$this->imagefile($row);
-		if($image===false)
-		{
-			if(empty($this->error))
-				$this->dom->createElement_simple('p',$div,false,'No image found');
-			else
-				$this->dom->createElement_simple('p',$div,false,$this->error);
-		}
-		else
-		{
-			if(substr($image,0,4)!='http')
-				$image="/comicmanager/image.php?file=".$image;
-			$a=$this->dom->createElement_simple('a',$div,array('href'=>$image));
-			$this->dom->createElement_simple('img',$a,array('src'=>$image,'style'=>'max-width: 1000px; max-height: 400px'));
-		}
-		//$this->dom->createElement_simple('pre',$div,false,print_r($row,true));
-		//$this->dom->createElement_simple('pre',$div,false,$image);
-		return $div;
-	}
     public function imagefile($row) //Find the image file for a database row
     {
         if(!empty($row['date'])) //Show strip by date
