@@ -19,7 +19,7 @@ if($comicinfo!==false)
 
 	if(!isset($_GET['tool']))
 	{
-	    echo $comicmanager->twig->render('select_tool.twig', array(
+	    echo $comicmanager->render('select_tool.twig', array(
             'comic'=>$comicinfo,
             'tools'=>$tools,
             'title'=>'Manage '.$comicinfo['name'],
