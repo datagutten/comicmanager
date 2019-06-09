@@ -122,13 +122,7 @@ class comicmanager
         }
         catch (PDOException $e)
         {
-            try {
-                die($this->render('error.twig', array('title'=>'SQL error', 'error'=>$e->getMessage())));
-            }
-            catch (\Twig\Error\Error $e)
-            {
-                die($e->getMessage()."\n".$e->getTraceAsString());
-            }
+            die($this->render('error.twig', array('title'=>'SQL error', 'error'=>$e->getMessage())));
         }
     }
 
