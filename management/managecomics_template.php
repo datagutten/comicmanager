@@ -41,15 +41,17 @@ else
     if($_GET['source']=='comics' && is_object($comicmanager->comics)) //Fetch releases from comics
     {
         $source=sprintf('Fetching releases from %s', $comicmanager->comics->site);
-        if(!empty($_GET['year']) && empty($_GET['month']))
-            $releases=$comicmanager->comics->releases_year($site,$_GET['year']);
-        elseif(!empty($_GET['year']) && !empty($_GET['month']))
-            $releases=$comicmanager->comics->releases_month($site,$_GET['year'],$_GET['month']);
-        else
-            $error_text='Year and/or month must be specified'; //Filtering is required when using jodal comics
-
-        if(isset($releases) && $releases===false)
-            $error_text=$comicmanager->comics->error;
+        try {
+            if (!empty($_GET['year']) && empty($_GET['month']))
+                $releases = $comicmanager->comics->releases_year($site, $_GET['year']);
+            elseif (!empty($_GET['year']) && !empty($_GET['month']))
+                $releases = $comicmanager->comics->releases_month($site, $_GET['year'], $_GET['month']);
+            else
+                $error_text = 'Year and/or month must be specified'; //Filtering is required when using jodal comics
+        }
+        catch (Exception $e) {
+            $error_text = $e->getMessage();
+        }
     }
     elseif($_GET['source']=='file')
     {
