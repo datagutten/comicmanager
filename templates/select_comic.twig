@@ -1,0 +1,9 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+    <h2>Select comic:</h2>
+    {% for slug,comic in comics %}
+        <p><a href="?comic={{ slug }}">{{ comic }}</a></p>
+    {% endfor %}
+
+{% endblock %}
