@@ -1,5 +1,24 @@
 {
+    "name": "datagutten/comicmanager",
+    "description": "A tool to manage comic strips and sort them by category",
+    "type": "project",
     "require": {
-        "twig/twig": "^2.0"
+        "twig/twig": "^2.11",
+        "datagutten/tools": "^1.0",
+        "ext-pdo": "*",
+        "ext-json": "*",
+        "ext-gd": "*",
+        "ext-curl": "*",
+        "ext-simplexml": "*"
+    },
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "datagutten",
+            "email": "datagutten@datagutten.net"
+        }
+    ],
+    "autoload": {
+        "classmap": ["class.php", "class_jodal_comics.php"]
     }
 }

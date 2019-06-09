@@ -1,9 +1,5 @@
 <?php
-require 'tools/autoload.php';
-require 'class_jodal_comics.php';
 require 'vendor/autoload.php';
-require 'tools/DOMDocument_createElement_simple.php';
-
 class comicmanager
 {
     /**
@@ -64,6 +60,10 @@ class comicmanager
      */
     private $queries;
 
+    /**
+     * comicmanager constructor.
+     * @throws exception No valid comic sources configured
+     */
 	public function __construct()
 	{
 	    $loader = new Twig\Loader\FilesystemLoader(array('templates', 'management/templates'), __DIR__);
@@ -400,7 +400,9 @@ class comicmanager
 
 	function comics_release_single_cache($slug,$date)
 	{
-		$st_select=$this->db->prepare("SELECT file FROM comics_cache WHERE slug=? AND date=? AND site=?");
+	    if(strpos($date, '-')===false)
+	        throw new InvalidArgumentException('Date must be Y-M-D format');
+		$st_select=$this->db->prepare("SELECT checksum,file,basename FROM comics_cache WHERE slug=? AND date=? AND site=?");
 		$st_insert=$this->db->prepare("INSERT INTO comics_cache (checksum,slug,date,file,site) VALUES (?,?,?,?,?)");
         //Try to find image in local cache
         $this->db->execute($st_select, array($slug,$date,$this->comics->site));
@@ -419,7 +421,11 @@ class comicmanager
 			$st_insert->execute(array($fileinfo[2],$slug,$date,$fileinfo[1],$this->comics->site)); //Add image hash to local cache table
 			return $image_url;
 		}
-		return $this->comics_media.'/'.$st_select->fetch(PDO::FETCH_COLUMN);
+        $cache = $st_select->fetch(PDO::FETCH_ASSOC);
+		if(!empty($cache['file']))
+		    return $this->comics_media.'/'.$cache['file'];
+		else
+            return sprintf('%s/%s/%s/%s', $this->comics_media, $slug, $cache['checksum'][0], $cache['basename']);
 	}
 
 	function filename($site,$date,$create_dir=false)
@@ -437,35 +443,44 @@ class comicmanager
 		return $this->db->query($q="SELECT max(customid)+1 FROM {$this->info['id']}",'column');
 	}
 
-    function get($args)
+    /**
+     * @param $args
+     * @param bool $return_pdo Return PDOStatement
+     * @return array|bool|mixed|PDOStatement|string|null
+     */
+    function get($args, $return_pdo = false)
     {
         if(!empty($args['uid']) && is_numeric($args['uid']))
         {
             $st = $this->query(sprintf('SELECT * FROM %s WHERE uid=%d', $this->info['id'], $args['uid']));
+            //return $st->fetch(PDO::FETCH_ASSOC);
+        }
+        else {
+
+            $valid_fields = array('date', 'site', 'id', 'key');
+            $valid_fields = array_merge($valid_fields, $this->info['possible_key_fields']);
+            unset($args['file']);
+            $where = '';
+            $values = array();
+            foreach ($args as $field => $value) {
+                if (array_search($field, $valid_fields) === false)
+                    continue;
+                //throw new Exception('Invalid field '.$field);
+
+                $where .= sprintf('%s=? AND ', $field);
+                $values[] = $value;
+            }
+            $where = substr($where, 0, -5);
+
+            $q = sprintf('SELECT * FROM %s WHERE %s', $this->info['id'], $where);
+            $st = $this->db->prepare($q);
+
+            $this->db->execute($st, $values);
+        }
+        if($return_pdo)
+            return $st;
+        else
             return $st->fetch(PDO::FETCH_ASSOC);
-        }
-
-        $valid_fields = array('date', 'site', 'id', 'key');
-        $valid_fields = array_merge($valid_fields, $this->info['possible_key_fields']);
-        unset($args['file']);
-        $where='';
-        $values = array();
-        foreach($args as $field=>$value)
-        {
-            if(array_search($field, $valid_fields)===false)
-                continue;
-            //throw new Exception('Invalid field '.$field);
-
-            $where .= sprintf('%s=? AND ', $field);
-            $values[]=$value;
-        }
-        $where = substr($where, 0, -5);
-
-        $q = sprintf('SELECT * FROM %s WHERE %s', $this->info['id'], $where);
-        $st = $this->db->prepare($q);
-
-        $this->db->execute($st, $values);
-        return $st->fetch(PDO::FETCH_ASSOC);
     }
 
 
@@ -492,11 +507,14 @@ class comicmanager
      * Add a comic strip to the database or update it if it exists
      *
      * @param array $args Strip properties
+     * array('date'=>null, 'site'=>'null', 'id'=>'null', 'key'=>null, 'category'=>null)
+     * @param string $mode Update mode, uid or keyfield to update all releases with a key
      * @throws Exception
      */
-    function add_or_update($args=array('date'=>null, 'site'=>'null', 'id'=>'null', 'key'=>null, 'category'=>null)) {
+    function add_or_update($args, $mode='uid') {
 
-        $fields = array_filter($args);
+        //$fields = array_filter($args);
+        $fields = $args;
         $keyfield=$this->info['keyfield'];
         $release = $this->get($args);
 
@@ -510,28 +528,40 @@ class comicmanager
         }
         else //Update the strip with new value
         {
-            $merged = array_merge($fields, array_filter($release));
+            $merged = array_merge(array_filter($release), $fields);
             $missing = array_diff_assoc($merged, $release); //Values that should be updated
             $sets='';
             $values = array();
             foreach ($missing as $field=>$value)
             {
                 $sets.=sprintf('%s=?,', $field);
+                if($value=='')
+                    $value = null;
                 $values[] = $value;
             }
             $sets=substr($sets, 0, -1);
 
-            if(!empty($release[$keyfield])) {
-                $where = sprintf('%s=?', $keyfield);
-                $values[]=$release[$keyfield];
-            }
-            elseif(!empty($release['date']) && !empty($release['site'])) {
-                $where=sprintf('date=? AND site=?');
-                $values[]=$release['date'];
-                $values[]=$release['site'];
+            if($mode=='uid')
+            {
+                if(!isset($args['uid']))
+                    throw new InvalidArgumentException('uid must be set when using uid mode');
+                $where = 'uid=?';
+                $values[] = $args['uid'];
             }
             else
-                throw new exception('No valid key');
+            {
+                if(!empty($release[$keyfield])) {
+                    $where = sprintf('%s=?', $keyfield);
+                    $values[]=$release[$keyfield];
+                }
+                elseif(!empty($release['date']) && !empty($release['site'])) {
+                    $where=sprintf('date=? AND site=?');
+                    $values[]=$release['date'];
+                    $values[]=$release['site'];
+                }
+                else
+                    throw new exception('No valid key');
+            }
 
             if(!empty($sets)) {
                 $q = sprintf('UPDATE %s SET %s WHERE %s', $this->info['id'], $sets, $where);
