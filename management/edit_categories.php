@@ -16,26 +16,26 @@ table, th, td {
 
 <body onLoad="addfield()">
 <script type="text/javascript">
-var newcount=1;
+let newcount=1;
 
 function addfield() //Create a new table row with an empty field
 {
-	var table=document.getElementsByTagName('table');
-	var tr=document.createElement('tr');
+    const table=document.getElementsByTagName('table');
+    const tr=document.createElement('tr');
 
-	var td_name=document.createElement('td');
-	var input_name=document.createElement('input');
+    const td_name=document.createElement('td');
+    const input_name=document.createElement('input');
 	input_name.setAttribute('type','text'); //type="text"
 	input_name.setAttribute('name',"categories[new"+newcount+"]");
 	input_name.setAttribute('onchange','addfield()');
 	td_name.appendChild(input_name); //Add the input to the td
 	tr.appendChild(td_name); //Add the td to the tr
 
-	var td_delete=document.createElement('td');
+    const td_delete=document.createElement('td');
 	tr.appendChild(td_delete); //Empty td, no need for delete button for new category
 
-	var td_visible=document.createElement('td');
-	var input_visible=document.createElement('input');
+    const td_visible=document.createElement('td');
+    const input_visible=document.createElement('input');
 	input_visible.setAttribute('type','checkbox');
 	input_visible.setAttribute('name',"visible[new"+newcount+"]");
 	input_visible.setAttribute('checked','checked');
