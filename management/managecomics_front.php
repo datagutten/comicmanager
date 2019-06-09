@@ -31,5 +31,5 @@ else
         'sites'=>$comic_manager->sites(),
         'sources'=>$comic_manager->sources,
         );
-    echo $comic_manager->twig->render('manage_comics_front.twig', $context);
+    echo $comic_manager->render('manage_comics_front.twig', $context);
 }

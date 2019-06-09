@@ -112,7 +112,7 @@ if($comicinfo!==false) //A valid comid is selected, show form to select strip
                 'root'=>$comicmanager->root,
                 'comic'=>$comicinfo,);
 
-            $image = $comicmanager->twig->render('image.twig', $context);
+            $image = $comicmanager->render('image.twig', $context);
 			$image = str_replace('&nbsp;', ' ', $image);
             $picture = $dom->createDocumentFragment();
             $picture->appendXML($image);

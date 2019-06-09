@@ -69,7 +69,7 @@ else
 }
 
 if(!empty($error_text))
-    echo $comicmanager->twig->render('error.twig', array(
+    echo $comicmanager->render('error.twig', array(
         'title'=>'Error',
         'error'=>$error_text,
         'root'=>$comicmanager->root,
@@ -90,7 +90,7 @@ else {
             $releases[$key]+=$release_db; //Append information from DB
     }
 
-    echo $comicmanager->twig->render('manage_comics.twig', array(
+    echo $comicmanager->render('manage_comics.twig', array(
         'name' => 'Comics ID',
         'title' => sprintf('%s %s', $comicinfo['name'], $_GET['mode']),
         'comic' => $comicinfo,
