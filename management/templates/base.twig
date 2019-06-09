@@ -16,7 +16,7 @@
 <body>
 <div class="nav_bar">
     <ul class="toc">
-        {% if comic is not empty %}
+        {% if comic is defined and comic is not empty %}
             <li><a href="/{{ root }}">Change comic</a></li>
             <li><a href="/{{ root }}/showcomics_front.php?comic={{ comic.id }}">Show {{ comic.name }}</a></li>
             <li><a href="/{{ root }}/management/?comic={{ comic.id }}">Manage {{ comic.name }}</a></li>
