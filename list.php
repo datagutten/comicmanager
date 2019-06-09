@@ -6,7 +6,6 @@ $list_path="/home/Dropbox/Tegneserier/lister/pondus";
 
 if(!isset($_GET['list']))
 {
-	$title=$dom->createElement_simple('title',$head,false,'List comics');
 	$lists=glob($list_path.'/*.txt');
 	$lists = array_map('basename', $lists);
 	echo $comic_manager->render('comic_list_select.twig', array(
