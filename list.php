@@ -20,8 +20,14 @@ else
 	$list=$_GET['list'];
 	$data=trim(file_get_contents($list_path.'/'.$list));
 	$strips=explode("\r\n",$data);
+    try {
+        $filter=array_keys($comic_manager->comic_list()); //Get valid comics
+    }
+    catch (Exception $e)
+    {
+        die($comic_manager->render('error.twig', array('error'=>$e->getMessage())));
+    }
 
-	$filter=array_keys($comic_manager->comic_list()); //Get valid comics
 	if(isset($_GET['filter']))
 		$filter=explode(',',$_GET['filter']);
 
