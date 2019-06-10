@@ -466,7 +466,7 @@ class comicmanager
      *
      * @param array $release Array with release info
      * @return array
-     * @throws Exception
+     * @throws PDOException
      */
     function get_newest($release)
     {
