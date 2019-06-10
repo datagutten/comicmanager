@@ -34,9 +34,9 @@ if(isset($_POST['submit']))
 	{
 		$has_categories=1;
 		$q_categories='CREATE TABLE `'.$comic.'_categories` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(2) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
-  `visible` int(11) NOT NULL,
+  `visible` int(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;';
 		$comicmanager->query($q_categories,null);
