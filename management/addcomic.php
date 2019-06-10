@@ -5,6 +5,12 @@ $comicmanager=new comicmanager;
 if(isset($_POST['submit']))
 {
 	$comic=preg_replace('/[^a-z0-9]+/','',strtolower($_POST['comic'])); //Make a clean comic id
+	$q_comic="CREATE TABLE `$comic` (
+	  `date` int(11) DEFAULT NULL,
+	  `site` varchar(45) NOT NULL,
+	  `uid` int(11) NOT NULL AUTO_INCREMENT, PRIMARY KEY (`uid`))";
+	$comicmanager->query($q_comic);
+	
 	if(!isset($_POST['keyfield']))
 		$keyfield='id';
 	else
@@ -56,24 +62,6 @@ if(isset($_POST['submit']))
 	{
 		echo $comicmanager->render('error.twig', array('error'=>'Error inserting comic info: '.$e->getMessage()));
 	}
-	$q_comic="CREATE TABLE `$comic` (
-  `id` varchar(11) DEFAULT NULL,
-  `date` int(11) DEFAULT NULL,
-  `site` varchar(45) NOT NULL,
-  `uid` int(11) NOT NULL AUTO_INCREMENT,";
-  
-  if($keyfield=='customid')
-		$q_comic.="\n  `customid` int(11) DEFAULT NULL,";
-
-$q_comic.="\n  PRIMARY KEY (`uid`)
- );";
-
-	if(!$st_comic=$comicmanager->db->query($q_comic))
-	{
-		$errorinfo=$comicmanager->db->errorInfo();
-		trigger_error("Error creating comic table: {$errorinfo[2]}",E_USER_WARNING);
-	}
-var_dump($q_comic);
 }
 
 echo $comicmanager->render('add_comic.twig', array('title'=>'Add comic'));
