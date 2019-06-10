@@ -1,7 +1,6 @@
 <?Php
 require 'class_management.php';
 $comicmanager=new comicmanager;
-echo $comicmanager->render('add_comic.twig', array('title'=>'Add comic'));
 
 if(isset($_POST['submit']))
 {
@@ -49,10 +48,13 @@ if(isset($_POST['submit']))
 	
 	$st_comic_info=$comicmanager->db->prepare("INSERT IGNORE INTO comic_info (id,name,keyfield,has_categories,possible_key_fields) VALUES (?,?,?,?,?)");
 	$possible_key_fields=implode(',',$fields);
-	if(!$st_comic_info->execute(array($comic,$_POST['name'],$keyfield,$has_categories,$possible_key_fields)))
+	try {
+        $st_comic_info->execute(array($comic,$_POST['name'],$keyfield,$has_categories,$possible_key_fields));
+        $comicmanager->comicinfo($comic);
+    }
+	catch (PDOException $e)
 	{
-		$errorinfo=$st_comic_info->errorInfo();
-		trigger_error("Error inserting comic info: {$errorinfo[2]}",E_USER_WARNING);
+		echo $comicmanager->render('error.twig', array('error'=>'Error inserting comic info: '.$e->getMessage()));
 	}
 	$q_comic="CREATE TABLE `$comic` (
   `id` varchar(11) DEFAULT NULL,
@@ -73,3 +75,5 @@ $q_comic.="\n  PRIMARY KEY (`uid`)
 	}
 var_dump($q_comic);
 }
+
+echo $comicmanager->render('add_comic.twig', array('title'=>'Add comic'));
