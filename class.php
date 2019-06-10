@@ -427,6 +427,8 @@ class comicmanager
      */
     function get($args, $return_pdo = false)
     {
+        if(empty($this->info['id']))
+            throw new InvalidArgumentException('Comic not set');
         if(!empty($args['uid']) && is_numeric($args['uid']))
         {
             $st = $this->query(sprintf('SELECT * FROM %s WHERE uid=%d', $this->info['id'], $args['uid']));
