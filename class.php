@@ -486,7 +486,6 @@ class comicmanager
      * @param array $args Strip properties
      * array('date'=>null, 'site'=>'null', 'id'=>'null', 'key'=>null, 'category'=>null)
      * @param string $mode Update mode, uid or keyfield to update all releases with a key
-     * @throws Exception
      */
     function add_or_update($args, $mode='uid') {
 
@@ -537,7 +536,7 @@ class comicmanager
                     $values[]=$release['site'];
                 }
                 else
-                    throw new exception('No valid key');
+                    throw new InvalidArgumentException('No valid key');
             }
 
             if(!empty($sets)) {
