@@ -13,17 +13,16 @@ body {
     background-color: #f8f8f8;
     border-color: #e7e7e7;
     position: relative;
-    min-height: 50px;
-    margin-bottom: 20px;
-    border: 1px solid transparent;
+    min-height: 40px;
+    /*margin-bottom: 20px;*/
+    /*border: 1px solid transparent;*/
 }
 
 /* Navigation bar at the top of each page */
 ul.toc li {
     width: auto;
     height: 100%;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 10px;
     /*background-color: #e7e7e7;*/
     border-left: 1px solid black;
     border-top: 1px solid black;
