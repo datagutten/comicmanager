@@ -21,6 +21,8 @@
             <li><a href="/{{ root }}/showcomics_front.php?comic={{ comic.id }}">Show {{ comic.name }}</a></li>
             <li><a href="/{{ root }}/management/?comic={{ comic.id }}">Manage {{ comic.name }}</a></li>
             <li><a href="/{{ root }}/maintenance?comic={{ comic.id }}">Maintain {{ comic.name }}</a></li>
+        {% else %}
+            <li><a href="/{{ root }}">Select comic</a></li>
         {% endif %}
     </ul>
 </div>
