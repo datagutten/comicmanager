@@ -1,0 +1,43 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+    <h1>Add comic</h1>
+    <form id="form1" name="form1" method="post">
+        <p>
+            <label for="comic">Comic id:</label>
+            <input type="text" name="comic" id="comic">
+        </p>
+        <p>
+            <label for="name">Comic name:</label>
+            <input type="text" name="name" id="name">
+        </p>
+
+        <p>
+            <input name="has_categories" type="checkbox" id="has_categories" value="1">
+            <label for="has_categories">Organize the comic using categories</label>
+        </p>
+        <h3>Columns</h3>
+        <p>
+            <input name="fields[]" type="checkbox" value="customid" id="customid">
+            <label for="customid">Customid</label>
+            <br/>
+            <input name="fields[]" type="checkbox" value="id" id="id">
+            <label for="id">ID (printed on strip)</label>
+            <br/>
+            <input name="fields[]" type="checkbox" value="original_date" id="original_date">
+            <label for="original_date">Original published date</label>
+        </p>
+        <p>
+            <input type="submit" name="submit" id="submit" value="Submit">
+        </p>
+        <p>
+            <label for="keyfield">Grouping key</label>
+            <input type="text" name="keyfield" list="key_fields" id="keyfield">
+            <datalist id="key_fields">
+                <option value="customid"></option>
+                <option value="original_date"></option>
+                <option value="id"></option>
+            </datalist>
+        </p>
+    </form>
+{% endblock %}

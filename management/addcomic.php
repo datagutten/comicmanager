@@ -1,38 +1,10 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Add comic</title>
-</head>
-
-<body>
-<p>Add comic</p>
-<form id="form1" name="form1" method="post">
-
-<p>
-  <label for="comic">Comic id:</label>
-  <input type="text" name="comic" id="comic">
-</p>
-<p>
-  <label for="name">Comic name:</label>
-  <input type="text" name="name" id="name">
-</p>
-<p>
-  <input name="has_categories" type="checkbox" id="has_categories" value="1">
-  Categories</p>
-<p>
-  <input name="keyfield" type="checkbox" id="keyfield" value="customid">
-  <label for="keyfield">Customid </label>
-</p>
-<p>
-  <input type="submit" name="submit" id="submit" value="Submit">
-</p>
-</form>
 <?Php
+require 'class_management.php';
+$comicmanager=new comicmanager;
+echo $comicmanager->render('add_comic.twig', array('title'=>'Add comic'));
+
 if(isset($_POST['submit']))
 {
-	require 'class_management.php';
-	$comicmanager=new comicmanager;
 	$comic=preg_replace('/[^a-z0-9]+/','',strtolower($_POST['comic'])); //Make a clean comic id
 	if(!isset($_POST['keyfield']))
 		$keyfield='id';
@@ -80,7 +52,3 @@ $q_comic.="\n  PRIMARY KEY (`uid`)
 	}
 var_dump($q_comic);
 }
-
-?>
-</body>
-</html>
