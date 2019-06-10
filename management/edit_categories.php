@@ -58,7 +58,7 @@ $dom=$comicmanager->dom;
 if(is_array($comicinfo) && $comicinfo['has_categories']==1)
 {
 	$table=$comicinfo['id']."_categories";
-	$st_categories=$comicmanager->db->query($q="SELECT * FROM $table ORDER BY name ASC");
+	$st_categories=$comicmanager->db->query($q="SELECT * FROM $table ORDER BY name");
 	$st_visible_update=$comicmanager->db->prepare("UPDATE $table SET visible=? WHERE id=?");
 	$st_insert=$comicmanager->db->prepare("INSERT INTO $table (name,visible) VALUES (?,?)");
 	$st_delete=$comicmanager->db->prepare("DELETE FROM $table WHERE id=?");
