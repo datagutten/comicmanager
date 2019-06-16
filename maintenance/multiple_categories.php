@@ -15,7 +15,12 @@ foreach($st_categories->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP) as $strip=>
 		if(isset($argv)) //CLI
 			echo "Multiple categories for $keyfield $strip:\n";
 		else
-			echo "Multiple categories for <a href=\"../showcomics.php?comic=$comic&view=singlestrip&value=$strip\">$keyfield $strip:</a> (<a href=\"../management/edit_strip.php?comic=$comic&amp;key=$strip\">Edit</a>)<br />\n";
+        {
+            $parameters = array('comic'=>$comic, 'view'=>'singlestrip', 'key_field'=>$keyfield, 'key_from'=>$strip);
+            $parameters = http_build_query($parameters);
+            echo "Multiple categories for <a href=\"../showcomics.php?$parameters\">$keyfield $strip:</a> (<a href=\"../management/edit_release.php?comic=$comic&amp;keyfield={$comicinfo['keyfield']}&amp;key=$strip\">Edit</a>)<br />\n";
+        }
+
 
 		$st_strip->execute(array($strip));
 		foreach($st_strip->fetchAll(PDO::FETCH_ASSOC) as $strip_release)
