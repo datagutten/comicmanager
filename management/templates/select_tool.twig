@@ -1,7 +1,7 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-    <h1>Tools for editing information in the database</h1>
+    <h1>{{ header }}</h1>
     {% for file,name in tools %}
         <a href="?comic={{ comic.id }}&tool={{ file }}">{{ name }}</a><br />
     {% endfor %}

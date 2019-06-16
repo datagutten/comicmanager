@@ -1,13 +1,3 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Maintenance</title>
-    <link href="/comicmanager/comicmanager.css" rel="stylesheet" type="text/css"/>
-</head>
-
-<body>
-<h2>Tools for maintaining the database</h2>
 <?Php
 require '../class.php';
 $comicmanager=new comicmanager;
@@ -32,24 +22,23 @@ if($comicinfo!==false)
 	
 	if(!isset($_GET['tool']))
 	{
-		foreach($tools as $file=>$name)
-		{
-			echo "<a href=\"?comic=$comic&amp;tool=$file\">$name</a><br />\n";
-		}
+	    echo $comicmanager->render('select_tool.twig', array(
+	            'title'=>'Maintain '.$comicinfo['name'],
+                'tools'=>$tools,
+                'header'=>'Tools for maintaining the database'));
 	}
 	elseif(isset($tools[$_GET['tool']]))
 	{
-		echo "<h3>{$_GET['tool']}</h3>\n";
+	    ob_start();
         /** @noinspection PhpIncludeInspection */
-        require $_GET['tool'];
-		echo "<p><a href=\"?comic=$comic\">Back to tool selection</a></p>\n";
+	    require $_GET['tool'];
+	    $output = ob_get_clean();
+	    echo $comicmanager->render('tool_output.twig', array(
+	            'tool'=>$tools[$_GET['tool']],
+                'output'=>$output));
+		//echo "<h3>{$_GET['tool']}</h3>\n";
+		//echo "<p><a href=\"?comic=$comic\">Back to tool selection</a></p>\n";
 	}
 	else
 		echo "Invalid tool: {$_GET['tool']}";
-	
-	echo "<p><a href=\"../showcomics_front.php?comic=$comic\">Show {$comicinfo['name']}</a></p>\n";
-	echo "<p><a href=\"../management/?comic={$comicinfo['id']}\">Manage {$comicinfo['name']}</a></p>\n";
 }
-?>
-</body>
-</html>
