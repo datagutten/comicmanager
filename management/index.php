@@ -4,7 +4,7 @@ $comicmanager=new comicmanager;
 $tools=array(
     'edit_categories.php'=>"Add or edit categories",
     'managecomics_front.php'=>'Add id or category to strips',
-    'edit_strip.php'=>'Edit strip info',
+    'edit_release.php'=>'Edit release',
     'add_id_files.php'=>'Add files with id as name to the database',
     'compare_months.php'=>'Compare months and add missing releases'
 );

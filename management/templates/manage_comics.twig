@@ -11,7 +11,11 @@
     {% for release in releases|slice(0,20) %}
     <div>
         {% include 'image.twig' %}<br />
-        {% include mode ~ '.twig' %}
+        {% if mode == 'category' %}
+            {{ include ('category.twig', {'name': 'release['~release.date~'][value]', 'id': release.date}) }}
+        {% else %}
+            {% include mode ~ '.twig' %}
+        {% endif %}
     </div>
     <input type="hidden" name="release[{{ release.date }}][uid]" value="{{release.uid|default()}}">
     {% endfor %}

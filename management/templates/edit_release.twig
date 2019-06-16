@@ -1,0 +1,31 @@
+{% extends 'base.twig' %}
+{% set first = true %}
+
+{% block content %}
+    {{ errors }}
+    <form method="post">
+    {% for release in releases %}
+        {% if first %}
+            {% set first = false %}
+            {% include 'image.twig' %}
+            {% if comic.has_categories %}
+                <p>{% include 'category.twig' %}</p>
+            {% endif %}
+            <table>
+            <tr>
+                {% for key, value in release %}
+                    <th>{{ key }}</th>
+                {% endfor %}
+            </tr>
+        {% endif %}
+            <tr>
+                {% for key, value in release %}
+                    <td><input type="text" name="release[{{ release.uid }}][{{ key }}]" value="{{ value }}" class="input_{{ key }}" /></td>
+                {% endfor %}
+            </tr>
+    {% endfor %}
+    </table>
+        <input type="submit" name="submit" value="Save" />
+    </form>
+    <a href="?comic=pondus">Edit other release</a>
+{% endblock %}

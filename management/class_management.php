@@ -54,28 +54,4 @@ class management extends comicmanager
 
         return $releases;
 	}
-
-    /**
-     * Build a select list with categories
-     * @param string $name Name of the select object
-     * @param $parent Parent object which the select should be appended to
-     * @param bool $preselect Category to be preselected
-     * @param bool $only_visible Show only categories marked as visible
-     */
-	public function categoryselect($name='category',$parent,$preselect=false,$only_visible=false)
-	{
-	    //TODO: Remove or rewrite with twig
-		//Category select
-		$select=$this->dom->createElement_simple('select',$parent,array('name'=>$name));
-		$option_default=$this->dom->createElement_simple('option',$select,array('value'=>''),'Select category');
-		if($preselect===false)
-			$option_default->setAttribute('selected','selected');
-
-		foreach ($this->categories($only_visible) as $category_id=>$category_name)
-		{
-			$option=$this->dom->createElement_simple('option',$select,array('value'=>$category_id),$category_name);
-			if($preselect!==false && $category_id==$preselect)
-				$option->setAttribute('selected','selected');
-		}	
-	}
 }
