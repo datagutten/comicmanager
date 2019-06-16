@@ -1,0 +1,34 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+    <div class="compare">
+    <table>
+        <tr>
+            {% for site in days[0].releases|keys %}
+                <th>{{ site }}</th>
+            {% endfor %}
+        </tr>
+    {% for day in days %}
+        <tr>
+        {% for release in day.releases %}
+            <td style="width: {{ 100/days[0].releases|length }}%"> {# style="max-width: {{ 100/day|length }}%" #}
+                {% if release is empty %}
+                    <span class="error">No release found</span>
+                {% else %}
+                    {% include 'image.twig' %}
+                    {% if release.key is not defined and day.key is defined %}
+                        <span id="add{{ release.site }}{{ release.date }}" onclick="add_key('{{ comic.id }}','{{ day.key }}', {{ release.date }}, '{{ release.site }}')">Add to {{ comic.keyfield }} {{ day.key }}</span>
+                    {% elseif release.uid is defined %}
+                        {% if release.key is empty %}
+                            <span id="add{{ release.site }}{{ release.date }}" onclick="add_key_uid('{{ comic.id }}','{{ day.key }}', {{ release.uid }})">Add to {{ comic.keyfield }} {{ day.key }}</span><br />
+                        {% endif %}
+                            <a href="/{{ root }}/management/edit_release.php?comic={{ comic.id }}&keyfield=uid&key={{ release.uid }}">Edit uid {{ release.uid }}</a>
+                    {% endif %}
+                {% endif %}
+            </td>
+        {% endfor %}
+        </tr>
+    {% endfor %}
+    </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+    <script>
+        document.addEventListener("DOMContentLoaded", add_field);
+    </script>
+    <form method="post">
+        <div id="fields"></div>
+        <p><input type="submit" value="Compare"/></p>
+    </form>
+{% endblock %}

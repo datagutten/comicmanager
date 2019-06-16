@@ -1,0 +1,15 @@
+/*img {
+    display: inline-block;
+}*/
+table {
+    /*border-collapse: collapse;*/
+    /*width: 100%;*/
+    width: inherit;
+    max-width: inherit;
+}
+table, th, td {
+    border: 1px solid;
+}
+.compare {
+    max-width: 100%;
+}

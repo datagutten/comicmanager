@@ -11,7 +11,13 @@
 <?Php
 require '../class.php';
 $comicmanager=new comicmanager;
-$tools=array('id_to_customid.php'=>'Set id as customid','propagate_categories.php'=>"Propagate category to all copies of a strip",'multiple_categories.php'=>'Find strips with multiple categories','propagate_id.php'=>"Propagate id to all copies of a strip",'traceid.php'=>'Trace ID','comparemonths.php'=>'Compare months');
+$tools=array(
+    'id_to_customid.php'=>'Set id as customid',
+    'propagate_categories.php'=>"Propagate category to all copies of a strip",
+    'multiple_categories.php'=>'Find strips with multiple categories',
+    'propagate_id.php'=>"Propagate id to all copies of a strip",
+    'traceid.php'=>'Trace ID',
+    );
 
 $comicinfo=$comicmanager->comicinfo_get();
 if($comicinfo!==false)

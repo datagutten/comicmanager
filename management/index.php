@@ -5,7 +5,8 @@ $tools=array(
     'edit_categories.php'=>"Add or edit categories",
     'managecomics_front.php'=>'Add id or category to strips',
     'edit_strip.php'=>'Edit strip info',
-    'add_id_files.php'=>'Add files with id as name to the database'
+    'add_id_files.php'=>'Add files with id as name to the database',
+    'compare_months.php'=>'Compare months and add missing releases'
 );
 
 $comicinfo=$comicmanager->comicinfo_get();
