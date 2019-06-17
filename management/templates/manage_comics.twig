@@ -1,7 +1,7 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-<form method="post" action="managecomics_process.php">
+<form method="post" action="{{ root }}/management/managecomics_process.php">
     <input type="hidden" name="comic" value="{{comic.id}}">
     <input type="hidden" name="site" value="{{site}}">
     <input type="hidden" name="mode" value="{{mode}}">

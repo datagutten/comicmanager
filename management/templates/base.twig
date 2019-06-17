@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{{ title|default('Comicmanager') }}</title>
-    <link href="/{{ root }}/comicmanager.css" rel="stylesheet" type="text/css"/>
+    <link href="{{ root }}/comicmanager.css" rel="stylesheet" type="text/css"/>
     {% if extra_css is defined %}
-        <link href="/{{ root }}/static/{{ extra_css }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ root }}/static/{{ extra_css }}" rel="stylesheet" type="text/css"/>
     {% endif %}
     {% if js is defined %}
-        <script src="/{{ root }}/static/{{ js }}"></script>
+    <script src="{{ root }}/static/{{ js }}"></script>
     {% endif %}
 </head>
 
@@ -22,7 +22,7 @@
             <li><a href="/{{ root }}/management/?comic={{ comic.id }}">Manage {{ comic.name }}</a></li>
             <li><a href="/{{ root }}/maintenance?comic={{ comic.id }}">Maintain {{ comic.name }}</a></li>
         {% else %}
-            <li><a href="/{{ root }}">Select comic</a></li>
+            <li><a href="{{ root }}">Select comic</a></li>
         {% endif %}
     </ul>
 </div>

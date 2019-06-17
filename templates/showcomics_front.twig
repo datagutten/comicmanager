@@ -4,7 +4,7 @@
     <h1>{{ comic.name }}</h1>
     <div id="menu_date">
         <h2>Show strips by date</h2>
-        <form id="form_date" name="form_date" action="showcomics.php">
+        <form id="form_date" name="form_date" action="{{ root }}/showcomics.php">
             <input type="hidden" name="comic" value="{{ comic.id }}"/>
             <input type="hidden" name="view" value="date"/>
             {% if sites|length > 1 %}
@@ -36,7 +36,7 @@
         <p>
             First {{ comic.keyfield }}: {{ range.min }}, last {{ comic.keyfield }}: {{ range.max }}<br/>
         </p>
-        <form id="form_key" name="form_key" action="showcomics.php">
+        <form id="form_key" name="form_key" action="{{ root }}/showcomics.php">
             <input type="hidden" name="comic" value="{{ comic.id }}"/>
             <input type="hidden" name="view" value="singlestrip"/>
 
@@ -70,7 +70,7 @@
         <h2>Category</h2>
         <ul>
         {% for id,category in categories %}
-            <li><a href="showcomics.php?comic={{ comic.id }}&category={{ id }}">{{ category }}</li>
+            <li><a href="{{ root }}/showcomics.php?comic={{ comic.id }}&category={{ id }}">{{ category }}</li>
         {% endfor %}
         </ul>
     </div>

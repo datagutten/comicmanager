@@ -54,7 +54,7 @@ class comicmanager
     /**
      * @var string Web site root directory
      */
-    public $root='comicmanager';
+    public $root='/comicmanager';
     /**
      * @var array Array with prepared queries
      */

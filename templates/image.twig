@@ -1,7 +1,7 @@
 <span class="date">{{ release.date|default }}</span>
 {% if comic is defined and release[comic.keyfield]|default %}
     &nbsp;-&nbsp;<a
-        href="/{{ root }}/showcomics.php?comic={{ comic.id }}&amp;key_field={{ comic.keyfield }}&amp;key_from={{ release[comic.keyfield] }}">{{ release[comic.keyfield] }}</a>
+        href="{{ root }}/showcomics.php?comic={{ comic.id }}&amp;key_field={{ comic.keyfield }}&amp;key_from={{ release[comic.keyfield] }}">{{ release[comic.keyfield] }}</a>
 {% elseif release.uid is defined %}
     &nbsp;-&nbsp;{{ release.uid }}
 {% endif %}
@@ -12,13 +12,13 @@
         <a href="{{ release.file }}"><img src="{{ release.file }}" alt="{{ release.date }} - {{ release.site }}"
                                           class="{{ mode|default }}"/></a>
     {% else %}
-        <a href="/{{ root }}/image.php?file={{ release.file }}">
-            <a href="/{{ root }}/image.php?file={{ release.file }}"><img src="/{{ root }}/image.php?file={{ release.file }}" alt="{{ release.date }} - {{ release.site }}"
+        <a href="{{ root }}/image.php?file={{ release.file }}">
+            <a href="{{ root }}/image.php?file={{ release.file }}"><img src="{{ root }}/image.php?file={{ release.file }}" alt="{{ release.date }} - {{ release.site }}"
                                                                          class="{{ mode|default }}"/></a>
         </a>
     {% endif %}
 {% else %}
-    <img src="/{{ root }}/image.php?release={{ release|json_encode|url_encode }}"
+    <img src="{{ root }}/image.php?release={{ release|json_encode|url_encode }}"
          alt="{{ release.date }} - {{ release.site }}"
          class="{{ mode|default }}"/>
 {% endif %}

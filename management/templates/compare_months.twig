@@ -22,7 +22,7 @@
                         {% if release.key is empty %}
                             <span id="add{{ release.site }}{{ release.date }}" onclick="add_key_uid('{{ comic.id }}','{{ day.key }}', {{ release.uid }})">Add to {{ comic.keyfield }} {{ day.key }}</span><br />
                         {% endif %}
-                            <a href="/{{ root }}/management/edit_release.php?comic={{ comic.id }}&keyfield=uid&key={{ release.uid }}">Edit uid {{ release.uid }}</a>
+                            <a href="{{ root }}/management/edit_release.php?comic={{ comic.id }}&keyfield=uid&key={{ release.uid }}">Edit uid {{ release.uid }}</a>
                     {% endif %}
                 {% endif %}
             </td>
