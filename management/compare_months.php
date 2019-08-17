@@ -10,11 +10,9 @@ if(empty($_POST)) {
 } else {
     $sites = array_combine($_POST['site'], $_POST['start']);
     $sites = array_filter($sites);
-
     $days = array();
     $now = time();
     try {
-
         for ($offset = 0; $offset <= 40; $offset++) //Loop through the days
         {
             foreach ($sites as $site => $start) {
