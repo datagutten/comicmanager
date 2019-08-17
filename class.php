@@ -408,6 +408,8 @@ class comicmanager
 	function filename($site,$date,$create_dir=false)
 	{
 		//Files are stored in [filepath]/site/month/date
+        if(empty($date) || !preg_match('/[0-9]{8}/', $date))
+            throw new InvalidArgumentException('Invalid or empty date');
 
 		$dir=$this->filepath.'/'.$site.'/'.substr($date,0,6);
 
