@@ -1,6 +1,9 @@
 <?php
+
+use datagutten\comicmanager\core;
+
 require 'vendor/autoload.php';
-class comicmanager
+class comicmanager extends core
 {
     /**
      * @var string Error string
@@ -69,9 +72,9 @@ class comicmanager
 	    $loader = new Twig\Loader\FilesystemLoader(array('templates', 'management/templates'), __DIR__);
         $this->twig = new Twig\Environment($loader, array('debug' => true, 'strict_variables' => true));
 
-        $this->db=new pdo_helper;
+        set_include_path(__DIR__);
         try {
-            $this->db->connect_db_config(__DIR__.'/config_db.php');
+            parent::__construct();
         }
         catch (Exception|FileNotFoundException $e)
         {
