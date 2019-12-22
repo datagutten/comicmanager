@@ -2,9 +2,10 @@
 
 {% block content %}
 <form method="post" action="{{ root }}/management/managecomics_process.php">
-    <input type="hidden" name="comic" value="{{comic.id}}">
-    <input type="hidden" name="site" value="{{site}}">
-    <input type="hidden" name="mode" value="{{mode}}">
+    <input type="hidden" name="comic" id="comic" value="{{comic.id}}">
+    <input type="hidden" name="site" id="site" value="{{site}}">
+    <input type="hidden" name="mode" id="mode" value="{{mode}}">
+    <input type="hidden" name="root" id="root" value="{{root}}">
 
     <input type="submit" name="button" value="Submit"/>
 

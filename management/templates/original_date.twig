@@ -1,3 +1,4 @@
 <span>Original date:</span>
-<input type="text" name="value[{{release.date}}]" id="{{release.date}}">
-<span id="fill_date">Use release date</span>
+<input type="text" class="original_date" name="release[{{release.date}}][value]" id="{{release.date}}" onchange="generate_link(this)" />
+<span class="fill_date" onclick="use_release_date(this)">Use release date</span>
+<span id="link_{{ release.date }}" ></span>
