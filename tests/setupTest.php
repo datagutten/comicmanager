@@ -20,12 +20,12 @@ class setupTest extends TestCase
 
     public function setUp(): void
     {
-        $config = require 'config_db_test.php';
+        $config = require 'test_config_db.php';
         $db = new pdo_helper;
         $db->connect_db($config['db_host'], '', $config['db_user'], $config['db_password'], $config['db_type']);
         $db->query('CREATE DATABASE comicmanager_test');
 
-        copy(__DIR__ . '/config_db_test.php', __DIR__.'/config_db.php');
+        copy(__DIR__ . '/test_config_db.php', __DIR__.'/config_db.php');
         $this->class = new setup();
     }
 
