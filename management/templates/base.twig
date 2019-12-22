@@ -11,6 +11,8 @@
     {% if js is defined %}
     <script src="{{ root }}/static/{{ js }}"></script>
     {% endif %}
+    {% block head %}
+    {% endblock %}
 </head>
 
 <body>
