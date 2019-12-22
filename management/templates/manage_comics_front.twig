@@ -4,21 +4,21 @@
 <form method="get" action="managecomics_template.php">
     <input type="hidden" name="comic" value="{{comic.id}}" />
     {% if actions|length>1 %}
+        <h3>Select action:</h3>
+        <p id="mode">
 
-    <p id="mode">
-        <p>Select action:</p>
         {% for action, text in actions %}
         <input type="radio" name="mode" value="{{action}}" id="{{action}}"/>
         <label for="{{action}}">{{text}}</label>
         <br/>
         {% endfor %}
-    </p>
+        </p>
     {% else %}
     <input type="hidden" name="mode" value="id"/>
     {% endif %}
-    <p id="sites">
         {% if sites|length>1 %}
-        <p>Select site:</p>
+    <h3>Select site:</h3>
+    <p id="sites">
         {% for site in sites %}
         <input type="radio" name="site" value="{{site}}" id="{{site}}"/>
         <label for="{{site}}">{{site}}</label>
@@ -30,22 +30,22 @@
         {% endif %}
     </p>
 
-    <p id="date">
-        <p>Enter date: <br/>
+        <h3>Enter date:</h3>
+        <p id="date">
             <label for="month">Month: </label><br/>
             <input type="text" name="month" id="month"/><br/>
             <label for="year">Year: </label><br/>
-            <input type="text" name="year" id="year"/></p>
-    </p>
+            <input type="text" name="year" id="year"/>
+        </p>
 
-    <p id="source">
-        <p>Source: <br/>
+        <h3>Source:</h3>
+        <p id="source">
             {% for id, source in sources %}
             <input type="radio" name="source" value="{{id}}" id="source_{{id}}"/>
             <label for="source_{{id}}">{{source}}</label><br/>
             {% endfor %}
+        </p>
         <input type="submit" value="Submit"/>
-    </p>
 
 </form>
 {% endblock %}
