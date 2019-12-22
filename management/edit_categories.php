@@ -49,7 +49,7 @@ function addfield() //Create a new table row with an empty field
 </script>
 <form method="post">
 <?Php
-require '../class.php';
+require '../vendor/autoload.php';
 
 $comicmanager=new comicmanager;
 $comicinfo=$comicmanager->comicinfo_get();

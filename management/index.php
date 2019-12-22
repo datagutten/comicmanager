@@ -1,5 +1,5 @@
 <?Php
-require '../class.php';
+require '../vendor/autoload.php';
 $comicmanager=new comicmanager;
 $tools=array(
     'edit_categories.php'=>"Add or edit categories",

@@ -7,7 +7,7 @@
 
 <body>
 <?Php
-require '../class.php';
+require '../vendor/autoload.php';
 $comicmanager=new comicmanager;
 $comicinfo=$comicmanager->comicinfo_get();
 if(is_array($comicinfo))

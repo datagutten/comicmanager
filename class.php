@@ -2,7 +2,6 @@
 
 use datagutten\comicmanager\core;
 
-require 'vendor/autoload.php';
 class comicmanager extends core
 {
     /**

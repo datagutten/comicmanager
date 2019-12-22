@@ -1,5 +1,5 @@
 <?Php
-require '../class.php';
+require '../vendor/autoload.php';
 $comicmanager=new comicmanager;
 $tools=array(
     'id_to_customid.php'=>'Set id as customid',

@@ -3,7 +3,7 @@ if(isset($argv)) //CLI
 {
 	if(!isset($comicinfo))
 	{
-		require '../class.php';
+        require '../vendor/autoload.php';
 		$comicmanager=new comicmanager;
 		if(!isset($argv[1]))
 			die("usage: php ".basename($file)." [comic id]\n");

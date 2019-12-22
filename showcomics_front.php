@@ -5,7 +5,7 @@
  * Date: 25.12.2018
  * Time: 15.28
  */
-require 'class.php';
+require 'vendor/autoload.php';
 $comic_manager = new comicmanager;
 $comic_info = $comic_manager->comicinfo_get();
 if (empty($comic_info))

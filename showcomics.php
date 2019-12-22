@@ -6,7 +6,7 @@
  * Time: 17.53
  */
 
-require 'class.php';
+require 'vendor/autoload.php';
 $comic_manager = new comicmanager;
 $comic_info = $comic_manager->comicinfo_get();
 if (empty($comic_info))

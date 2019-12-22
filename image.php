@@ -1,7 +1,7 @@
 <?php
 if(!empty($_GET['uid']) || !empty($_GET['release']))
 {
-    require 'class.php';
+    require 'vendor/autoload.php';
     $comic_manager=new comicmanager;
     if(empty($_GET['release']) && !empty($_GET['uid']))
         $release = $comic_manager->get(array('uid'=>$_GET['uid']));

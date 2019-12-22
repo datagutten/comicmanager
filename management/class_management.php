@@ -1,5 +1,5 @@
 <?php
-require '../class.php';
+require '../vendor/autoload.php';
 class management extends comicmanager
 {
 	function __construct()

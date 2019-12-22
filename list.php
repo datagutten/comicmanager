@@ -1,6 +1,6 @@
 <!doctype html>
 <?php
-require 'class.php';
+require 'vendor/autoload.php';
 $comic_manager=new comicmanager;
 $list_path="/home/Dropbox/Tegneserier/lister/pondus";
 
