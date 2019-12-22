@@ -266,15 +266,14 @@ class comicmanager
             return $this->twig->render($name, $context);
         }
         catch (\Twig\Error\Error $e) {
-
-            //$trace = sprintf('<pre>%s</pre>', $e->getTraceAsString());
             $msg = "Error rendering template:\n" . $e->getMessage();
             try {
                 die($this->twig->render('error.twig', array(
                     'root'=>$this->root,
                     'comic'=>$this->info,
                     'title'=>'Rendering error',
-                    'error'=>$msg)
+                    'error'=>$msg,
+                    'trace'=>$e->getTraceAsString())
                 ));
             }
             catch (\Twig\Error\Error $e_e)
