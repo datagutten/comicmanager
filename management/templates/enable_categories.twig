@@ -1,0 +1,7 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+    <form method="post">
+        <input type="submit" name="enable_{{ comic.id }}" value="Enable categories">
+    </form>
+{% endblock %}
