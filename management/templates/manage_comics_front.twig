@@ -1,31 +1,31 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-<form method="get" action="{{ root }}/management/managecomics_template.php">
-    <input type="hidden" name="comic" value="{{comic.id}}" />
-    {% if actions|length>1 %}
-        <h3>Select action:</h3>
-        <p id="mode">
+    <form method="get" action="{{ root }}/management/managecomics_template.php">
+        <input type="hidden" name="comic" value="{{ comic.id }}"/>
+        {% if actions|length>1 %}
+            <h3>Select action:</h3>
+            <p id="mode">
 
-        {% for action, text in actions %}
-        <input type="radio" name="mode" value="{{action}}" id="{{action}}"/>
-        <label for="{{action}}">{{text}}</label>
-        <br/>
-        {% endfor %}
-        </p>
-    {% else %}
-    <input type="hidden" name="mode" value="id"/>
-    {% endif %}
+                {% for action, text in actions %}
+                    <input type="radio" name="mode" value="{{ action }}" id="{{ action }}"/>
+                    <label for="{{ action }}">{{ text }}</label>
+                    <br/>
+                {% endfor %}
+            </p>
+        {% else %}
+            <input type="hidden" name="mode" value="id"/>
+        {% endif %}
         {% if sites|length>1 %}
-    <h3>Select site:</h3>
-    <p id="sites">
-        {% for site in sites %}
-        <input type="radio" name="site" value="{{site}}" id="{{site}}"/>
-        <label for="{{site}}">{{site}}</label>
-        <br/>
-        {% endfor %}
-    </p>
-    {% endif %}
+            <h3>Select site:</h3>
+            <p id="sites">
+                {% for site in sites %}
+                    <input type="radio" name="site" value="{{ site }}" id="{{ site }}"/>
+                    <label for="{{ site }}">{{ site }}</label>
+                    <br/>
+                {% endfor %}
+            </p>
+        {% endif %}
         <input type="radio" name="site" id="custom_site_radio"/>
         <label for="custom_site">Enter site slug:</label>
         <input type="text" name="custom_site" id="custom_site"/>
@@ -41,11 +41,11 @@
         <h3>Source:</h3>
         <p id="source">
             {% for id, source in sources %}
-            <input type="radio" name="source" value="{{id}}" id="source_{{id}}"/>
-            <label for="source_{{id}}">{{source}}</label><br/>
+                <input type="radio" name="source" value="{{ id }}" id="source_{{ id }}"/>
+                <label for="source_{{ id }}">{{ source }}</label><br/>
             {% endfor %}
         </p>
         <input type="submit" value="Submit"/>
 
-</form>
+    </form>
 {% endblock %}
