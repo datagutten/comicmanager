@@ -17,10 +17,10 @@
 <div class="nav_bar">
     <ul class="toc">
         {% if comic is defined and comic is not empty %}
-            <li><a href="/{{ root }}">Change comic</a></li>
-            <li><a href="/{{ root }}/showcomics_front.php?comic={{ comic.id }}">Show {{ comic.name }}</a></li>
-            <li><a href="/{{ root }}/management/?comic={{ comic.id }}">Manage {{ comic.name }}</a></li>
-            <li><a href="/{{ root }}/maintenance?comic={{ comic.id }}">Maintain {{ comic.name }}</a></li>
+            <li><a href="{{ root }}">Change comic</a></li>
+            <li><a href="{{ root }}/showcomics_front.php?comic={{ comic.id }}">Show {{ comic.name }}</a></li>
+            <li><a href="{{ root }}/management/index.php?comic={{ comic.id }}">Manage {{ comic.name }}</a></li>
+            <li><a href="{{ root }}/maintenance/index.php?comic={{ comic.id }}">Maintain {{ comic.name }}</a></li>
         {% else %}
             <li><a href="{{ root }}">Select comic</a></li>
             <li><a href="{{ root }}/management/addcomic.php">Add comic</a></li>
