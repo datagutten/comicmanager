@@ -177,8 +177,13 @@ class comicmanager
      */
 	public function categories($only_visible=false, $return_object=false)
 	{
-        if($this->info['has_categories']!='1')
-            return array();
+        if($this->info['has_categories']!='1') {
+            if ($return_object === false)
+                return array();
+            else
+                return new PDOStatement();
+        }
+
         if($return_object)
             $fields = '*';
         else
