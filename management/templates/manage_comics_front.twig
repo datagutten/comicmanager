@@ -1,7 +1,7 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-<form method="get" action="managecomics_template.php">
+<form method="get" action="{{ root }}/management/managecomics_template.php">
     <input type="hidden" name="comic" value="{{comic.id}}" />
     {% if actions|length>1 %}
         <h3>Select action:</h3>
