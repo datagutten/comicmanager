@@ -24,11 +24,11 @@
         <label for="{{site}}">{{site}}</label>
         <br/>
         {% endfor %}
-        {% else %}
-        <label for="custom_site">Enter site slug:</label>
-        <input type="text" name="site" id="custom_site" value="{{sites[0]}}"/>
-        {% endif %}
     </p>
+    {% endif %}
+        <input type="radio" name="site" id="custom_site_radio"/>
+        <label for="custom_site">Enter site slug:</label>
+        <input type="text" name="custom_site" id="custom_site"/>
 
         <h3>Enter date:</h3>
         <p id="date">

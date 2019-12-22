@@ -23,7 +23,9 @@ if($comicinfo===false)
     die();
 else
 {
-    if(empty($_GET['site'])) {
+    if(!empty($_GET['custom_site']))
+        $_GET['site'] = $_GET['custom_site'];
+    if(empty($_GET['site']) || empty($_GET['source'])) {
         header('Location: managecomics_front.php?comic=' . $comicinfo['id']);
         die();
     }
