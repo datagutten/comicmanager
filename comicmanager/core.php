@@ -25,6 +25,8 @@ class core
      */
     function __construct()
     {
+        if(get_include_path()=='.:/usr/share/php')
+            set_include_path(__DIR__);
         $this->db=new pdo_helper;
         $this->db->connect_db_config();
     }
