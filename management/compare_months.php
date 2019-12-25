@@ -36,7 +36,7 @@ if(empty($_POST)) {
                     } catch (Exception $e) {
                         $release = null;
                     }
-                } else
+                } elseif(!empty($release[$info['keyfield']]))
                     $release['key'] = $release[$info['keyfield']];
                 $days[$offset]['releases'][$site] = $release;
                 //var_dump($days[$offset][$site]);
