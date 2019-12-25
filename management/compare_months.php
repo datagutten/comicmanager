@@ -1,6 +1,9 @@
 <?php
+
+use datagutten\comicmanager\web;
+
 require '../vendor/autoload.php';
-$comicmanager = new comicmanager();
+$comicmanager = new web();
 $info = $comicmanager->comicinfo_get();
 if(empty($info))
     die();

@@ -3,7 +3,7 @@
  * Called by add_key.js from compare_months.php
  */
 require '../vendor/autoload.php';
-$comicmanager=new comicmanager();
+$comicmanager=new \datagutten\comicmanager\comicmanager();
 if(isset($_GET['date']) and isset($_GET['site']))
     $release = array('date'=>$_GET['date'], 'site'=>$_GET['site']);
 elseif(!empty($_GET['uid']))

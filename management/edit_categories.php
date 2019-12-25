@@ -49,11 +49,14 @@ function addfield() //Create a new table row with an empty field
 </script>
 <form method="post">
 <?Php
+
+use datagutten\comicmanager\web;
+
 require '../vendor/autoload.php';
 
-$comicmanager=new comicmanager;
+$comicmanager=new web;
 $comicinfo=$comicmanager->comicinfo_get();
-$dom=$comicmanager->dom;
+$dom=new DOMDocumentCustom();
 
 if(is_array($comicinfo) && $comicinfo['has_categories']==1)
 {

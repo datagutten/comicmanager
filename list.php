@@ -1,7 +1,10 @@
 <!doctype html>
 <?php
+
+use datagutten\comicmanager\web;
+
 require 'vendor/autoload.php';
-$comic_manager=new comicmanager;
+$comic_manager=new web;
 $list_path="/home/Dropbox/Tegneserier/lister/pondus";
 
 if(!isset($_GET['list']))

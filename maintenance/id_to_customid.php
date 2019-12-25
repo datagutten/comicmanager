@@ -9,7 +9,7 @@ else
 	$st_custom_id = $comicmanager->db->prepare(sprintf('SELECT DISTINCT id FROM %s WHERE customid=?', $comicinfo['id']));
 	$comic=$comicinfo['id'];
 	$keyfield=$comicinfo['keyfield'];
-	$st=$comicmanager->query("SELECT * FROM $comic WHERE id!=0 AND (customid IS NULL OR id!=customid) ORDER BY id");
+	$st=$comicmanager->db->query("SELECT * FROM $comic WHERE id!=0 AND (customid IS NULL OR id!=customid) ORDER BY id");
 
 	while($row=$st->fetch())
 	{

@@ -5,8 +5,10 @@
  * Date: 05.05.2019
  * Time: 21.33
  */
-require 'class_management.php';
-$comic_manager=new management;
+
+use datagutten\comicmanager\web;
+require '../vendor/autoload.php';
+$comic_manager=new web;
 $comic_info=$comic_manager->comicinfo_get();
 if($comic_info===false)
     die();

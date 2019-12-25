@@ -1,6 +1,6 @@
 <?php
 require '../vendor/autoload.php';
-class maintenance extends comicmanager
+class maintenance extends \datagutten\comicmanager\comicmanager
 {
 	function __construct()
 	{

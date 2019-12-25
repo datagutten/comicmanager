@@ -8,8 +8,11 @@
 <body>
 
 <?Php
+
+use datagutten\comicmanager\web;
+
 require '../vendor/autoload.php';
-$comicmanager=new comicmanager;
+$comicmanager=new web;
 $comicinfo=$comicmanager->comicinfo_get();
 
 if(is_array($comicinfo))

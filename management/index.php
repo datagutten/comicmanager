@@ -1,6 +1,9 @@
 <?Php
+
+use datagutten\comicmanager\web;
+
 require '../vendor/autoload.php';
-$comicmanager=new comicmanager;
+$comicmanager=new web();
 $tools=array(
     'edit_categories.php'=>"Add or edit categories",
     'managecomics_front.php'=>'Add id or category to strips',

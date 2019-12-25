@@ -1,6 +1,9 @@
 <?php
+
+use datagutten\comicmanager\web;
+
 require '../vendor/autoload.php';
-class management extends comicmanager
+class management extends web
 {
 	function __construct()
 	{
@@ -19,11 +22,11 @@ class management extends comicmanager
     public function releases_file_date($site, $filter_year=null, $filter_month=null)
 	{
 
-		if(!file_exists($basepath=$this->filepath.'/'.$site))
+		if(!file_exists($basepath=$this->file_path.'/'.$site))
 		    throw new Exception('No folder for site '.$site);
 
 
-		$dir=scandir($basepath=$this->filepath.'/'.$site); //Get months
+		$dir=scandir($basepath=$this->file_path.'/'.$site); //Get months
 		$dir=array_diff($dir,array('.','..','Thumbs.db'));
         $releases = array();
 		foreach ($dir as $month)

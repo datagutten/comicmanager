@@ -2,10 +2,11 @@
 
 use datagutten\comicmanager\metadata;
 use datagutten\comicmanager\setup;
+use datagutten\comicmanager\web;
 
 require 'class_management.php';
 require '../vendor/autoload.php';
-$comicmanager=new comicmanager;
+$comicmanager=new web;
 $setup = new setup();
 
 if(isset($_POST['submit']))

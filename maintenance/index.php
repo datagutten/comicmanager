@@ -1,6 +1,9 @@
 <?Php
+
+use datagutten\comicmanager\web;
+
 require '../vendor/autoload.php';
-$comicmanager=new comicmanager;
+$comicmanager=new web;
 $tools=array(
     'id_to_customid.php'=>'Set id as customid',
     'propagate_categories.php'=>"Propagate category to all copies of a strip",

@@ -4,7 +4,7 @@ if(isset($argv)) //CLI
 	if(!isset($comicinfo))
 	{
         require '../vendor/autoload.php';
-		$comicmanager=new comicmanager;
+		$comicmanager=new \datagutten\comicmanager\comicmanager;
 		if(!isset($argv[1]))
 			die("usage: php ".basename($file)." [comic id]\n");
 		$comicinfo=$comicmanager->comicinfo($argv[1]);

@@ -1,16 +1,17 @@
 <?php
 
 use datagutten\comicmanager\setup;
+use datagutten\comicmanager\web;
 
 require '../vendor/autoload.php';
-$comicmanager = new comicmanager();
+$comicmanager = new web();
+$setup = new setup();
 $comicinfo = $comicmanager->comicinfo_get();
+
 if($comicinfo['has_categories']==1) {
     header('Location: edit_categories.php?comic=' . $_GET['comic']);
     die();
 }
-
-$setup = new setup();
 
 if(!empty($_POST['enable_'.$comicinfo['id']]))
 {

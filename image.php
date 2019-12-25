@@ -2,7 +2,8 @@
 if(!empty($_GET['uid']) || !empty($_GET['release']))
 {
     require 'vendor/autoload.php';
-    $comic_manager=new comicmanager;
+    $comic_manager=new \datagutten\comicmanager\comicmanager();
+    $comic_manager->debug = false;
     if(empty($_GET['release']) && !empty($_GET['uid']))
         $release = $comic_manager->get(array('uid'=>$_GET['uid']));
     else
