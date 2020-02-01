@@ -21,10 +21,6 @@ class core
      */
     public $db;
     /**
-     * @var string Path to comic image files
-     */
-    public $file_path;
-    /**
      * @var array Configuration parameters
      */
     public $config;

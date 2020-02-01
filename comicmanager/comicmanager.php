@@ -42,6 +42,10 @@ class comicmanager extends core
      * @var comics_cache
      */
     public $comics_cache;
+	/**
+	 * @var files File management
+	 */
+    public $files;
 
 	public function __construct()
 	{
@@ -57,9 +61,7 @@ class comicmanager extends core
 
         if(isset($this->config['file_path']))
         {
-            if (!file_exists($this->config['file_path'])) //Invalid image file path
-                throw new FileNotFoundException($this->config['file_path']);
-            $this->file_path = realpath($this->config['file_path']);
+        	$this->files = new files($this->config['file_path']);
             $this->sources['file']='Local files';
         }
     }
@@ -168,18 +170,7 @@ class comicmanager extends core
         return $info;
     }
 
-    function filename($site,$date,$create_dir=false)
-    {
-        //Files are stored in [filepath]/site/month/date
-        if(empty($date) || !preg_match('/[0-9]{8}/', $date))
-            throw new InvalidArgumentException('Invalid or empty date');
 
-        $dir=$this->file_path.'/'.$site.'/'.substr($date,0,6);
-
-        if($create_dir!==false && !file_exists($dir))
-            mkdir($dir,0777,true);
-        return $dir.'/'.$date;
-    }
     /**
      * Find the image file for a database row
      * @param array $row Array with release information
@@ -199,7 +190,7 @@ class comicmanager extends core
                 catch (Exception $e_comics) {
                     //Image not found on comics, try to find local file
                     try {
-                        $image = files::typecheck($filename = $this->filename($row['site'], $row['date']));
+                        $image = files::typecheck($filename = $this->files->filename($row['site'], $row['date']));
                     }
                     catch (Exception $e_file) //File not found, re-throw exception from comics
                     {
@@ -213,9 +204,9 @@ class comicmanager extends core
 		else //Show strip by id
 		{
 			if(!empty($row['id']))
-                $image = files::typecheck($this->file_path . "/{$row['site']}/{$row['id']}");
+                $image = files::typecheck($this->files->file_path . "/{$row['site']}/{$row['id']}");
 			if(isset($row['customid']) && (!isset($image) || $image===false)) //Image not found by id, try customid
-                $image = files::typecheck($this->file_path . "/{$row['site']}/custom_{$row['customid']}");
+                $image = files::typecheck($this->files->file_path . "/{$row['site']}/custom_{$row['customid']}");
 		}
 		if(empty($image))
 			return false;

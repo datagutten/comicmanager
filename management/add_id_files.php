@@ -18,9 +18,9 @@ if(is_array($comicinfo))
 	if(!isset($_GET['site'])) //Select site
 	{
 		echo "<h2>Select site:</h2>\n";
-		foreach(scandir($comicmanager->file_path) as $site)
+		foreach(scandir($comicmanager->files->file_path) as $site)
 		{
-			if(is_dir($comicmanager->file_path."/$site") && substr($site,0,strlen($comicinfo['id']))==$comicinfo['id']) //Show sites for selected comic
+			if(is_dir($comicmanager->files->file_path."/$site") && substr($site,0,strlen($comicinfo['id']))==$comicinfo['id']) //Show sites for selected comic
 			{
 				echo "<a href=\"?comic={$comicinfo['id']}&amp;site=$site\">$site</a><br />\n";
 			}
@@ -33,7 +33,7 @@ if(is_array($comicinfo))
 		$st_insert=$comicmanager->db->prepare("INSERT INTO {$comicinfo['id']} (id,site) VALUES (?,?)");
 		$st_select=$comicmanager->db->prepare("SELECT * FROM {$comicinfo['id']} WHERE id=? AND site=?");
 		echo "<strong>Strips to be added</strong><br />\n";
-		foreach(scandir($dir_site=$comicmanager->file_path."/{$_GET['site']}") as $file)
+		foreach(scandir($dir_site=$comicmanager->files->file_path."/{$_GET['site']}") as $file)
 		{
 			if(is_file($dir_site.'/'.$file) && preg_match('/([0-9]+)/',$file,$matches))
 			{
