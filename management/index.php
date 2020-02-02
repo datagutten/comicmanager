@@ -17,7 +17,10 @@ if($comicinfo!==false)
 {
 	$comic=$comicinfo['id'];
 	if($comicinfo['has_categories']==0)
+	{
 		unset($tools['edit_categories.php']);
+		$tools['enable_categories.php'] = 'Enable categories';
+	}
 	if(array_search('id',$comicinfo['possible_key_fields'])===false)
 		unset($tools['add_id_files.php']);
 
