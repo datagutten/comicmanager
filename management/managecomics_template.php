@@ -6,6 +6,8 @@
  * Time: 11.10
  */
 
+use datagutten\comicmanager\web;
+
 switch($_GET['mode'])
 {
     case 'id': $sortmode='id'; break;
@@ -15,8 +17,8 @@ switch($_GET['mode'])
 }
 
 
-require 'class_management.php';
-$comicmanager=new management;
+require '../vendor/autoload.php';
+$comicmanager=new web;
 $comicinfo=$comicmanager->comicinfo_get();
 
 if($comicinfo===false)

@@ -5,15 +5,16 @@
  * Date: 24.12.2018
  * Time: 14.06
  */
-error_reporting(E_ALL);
-ini_set('display_errors', true);
+
+use datagutten\comicmanager\web;
+
 if(empty($_POST))
     die('No data');
 
 //print_r($_POST);
 
-require 'class_management.php';
-$comicmanager=new management;
+require '../vendor/autoload.php';
+$comicmanager=new web;
 $comicinfo = $comicmanager->comicinfo($_POST['comic']);
 
 foreach($_POST['release'] as $date=>$release)
