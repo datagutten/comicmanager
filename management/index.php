@@ -30,7 +30,7 @@ if($comicinfo!==false)
             'comic'=>$comicinfo,
             'tools'=>$tools,
             'title'=>'Manage '.$comicinfo['name'],
-            'root'=>$comicmanager->root,
+            'header'=>'Tools for editing information in the database',
         ));
 	}
 	elseif(isset($tools[$_GET['tool']]))
