@@ -229,7 +229,7 @@ class comicmanager extends core
      * Get a comic release
      * @param $args
      * @param bool $return_pdo Return PDOStatement
-     * @return array|bool|mixed|PDOStatement|string|null
+     * @return array|PDOStatement
      */
     function get($args, $return_pdo = false)
     {
