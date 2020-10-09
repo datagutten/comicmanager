@@ -4,7 +4,9 @@
 namespace datagutten\comicmanager;
 
 
-use datagutten\comics_tools\comicsException;
+use datagutten\comicmanager\exceptions\comicManagerException;
+use datagutten\comicmanager\exceptions\imageNotFound;
+use datagutten\comics_tools\exceptions\ComicsException;
 use FileNotFoundException;
 use InvalidArgumentException;
 
@@ -32,7 +34,7 @@ class files
      * Try different extensions for a file name
      * @param string $filename File name
      * @return string File name with extension
-     * @throws comicsException File not found
+     * @throws imageNotFound File not found
      */
     public static function typecheck($filename)
     {
@@ -46,7 +48,7 @@ class files
             }
         }
         if (!isset($file)) //File not found
-            throw new comicsException('Image not found by date: ' . $filename);
+            throw new imageNotFound('Image not found: ' . $filename);
 
         return $file;
     }

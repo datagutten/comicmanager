@@ -2,6 +2,7 @@
 
 namespace datagutten\comics_tools;
 
+use datagutten\comics_tools\exceptions;
 use DateInterval;
 use DateTime;
 use Exception;
@@ -31,7 +32,8 @@ class comics
      * Do a request to the comics API
      * @param string $uri Relative URL to get from comics
      * @return array Releases
-     * @throws Exception Request failed
+     * @throws exceptions\HTTPError HTTP error
+     * @throws exceptions\ReleaseNotFound No releases found
      */
 	function request($uri)
 	{
@@ -39,18 +41,18 @@ class comics
 		$data=curl_exec($this->ch);
 		$code=curl_getinfo($this->ch,CURLINFO_HTTP_CODE); //Get HTTP return code
 		if($data===false)
-			throw new Exception('cURL error: '.curl_error($this->ch));
+			throw new exceptions\HTTPError('cURL error: '.curl_error($this->ch));
 		elseif($code==400)
-            throw new Exception('Bad request, check parameters');
+            throw new exceptions\HTTPError('Bad request, check parameters');
 		elseif($code==401)
-            throw new Exception('Invalid secret key');
+            throw new exceptions\HTTPError('Invalid secret key');
 		elseif(empty($data))
-            throw new Exception('Comics returned empty response');
+            throw new exceptions\HTTPError('Comics returned empty response');
 
 		$releases=json_decode($data,true);
 		if(empty($releases['objects']))
 		{
-            throw new exception(sprintf('No releases found for query %s on site %s',
+            throw new exceptions\ReleaseNotFound(sprintf('No releases found for query %s on site %s',
                 basename($uri),
                 $this->site));
 		}
@@ -97,14 +99,15 @@ class comics
      *
      * @param string $slug Comic slug
      * @param string $date Release date
-     * @return string File name or null if not found
-     * @throws exception
+     * @return string File name
+     * @throws exceptions\HTTPError HTTP error
+     * @throws exceptions\ReleaseNotFound No release found
      */
     function release_single($slug, $date)
 	{
 		$release=$this->request("/api/v1/releases/?comic__slug=$slug&pub_date=$date");
-		if($release['meta']['total_count']==0)
-			return null;
+		if($release['meta']['total_count']==0) //TODO: Check if this is hit
+			throw new exceptions\ReleaseNotFound('No release found');
 		else
 			return $release['objects'][0]['images'][0]['file'];
 	}

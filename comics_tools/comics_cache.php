@@ -5,6 +5,7 @@ namespace datagutten\comics_tools;
 
 
 use datagutten\comicmanager\core;
+use datagutten\comics_tools\exceptions;
 use InvalidArgumentException;
 use PDO;
 
@@ -36,10 +37,14 @@ class comics_cache extends core
     }
 
     /**
+     * Get a single release with caching
+     *
      * @param string $slug Comic slug
-     * @param string $date Date in Y-M-D format
-     * @return string Image file
-     * @throws Exception Error from comics or invalid URL
+     * @param string $date Release date in Y-M-D format
+     * @return string Image URL
+     * @throws exceptions\HTTPError HTTP error
+     * @throws exceptions\ReleaseNotFound No release found
+     * @throws exceptions\ComicsException Invalid URL
      */
     function comics_release_single_cache($slug,$date)
     {
@@ -55,12 +60,12 @@ class comics_cache extends core
             //Extract image hash from URL
             preg_match(sprintf('^.+(%s.+/([a-f0-9]+)(?:_[A-Za-z0-9]+)?\..+)^', $slug), $image_url, $fileinfo);
             if(empty($fileinfo))
-                throw new Exception('Invalid URL: '.$image_url);
+                throw new exceptions\ComicsException('Invalid URL: '.$image_url);
             $st_insert->execute(array($fileinfo[2],$slug,$date,$fileinfo[1],$this->comics->site)); //Add image hash to local cache table
             return $image_url;
         }
         $cache = $st_select->fetch(PDO::FETCH_ASSOC);
-        if(!empty($cache['file']))
+        if(!empty($cache['file'])) //File path set
             return $this->config['comics_media'].'/'.$cache['file'];
         else
             return sprintf('%s/%s/%s/%s', $this->config['comics_media'], $slug, $cache['checksum'][0], $cache['basename']);

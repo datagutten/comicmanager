@@ -4,7 +4,7 @@
 namespace datagutten\comicmanager;
 
 
-use datagutten\comics_tools\comicsException;
+use datagutten\comics_tools\exceptions\ComicsException;
 use Exception;
 use Twig;
 
