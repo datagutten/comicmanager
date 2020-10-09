@@ -1,7 +1,7 @@
 <?php
 
 
-namespace datagutten\comicmanager;
+namespace datagutten\comics_tools;
 
 
 use Exception;

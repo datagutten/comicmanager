@@ -19,10 +19,10 @@
         }
     ],
     "autoload": {
-        "classmap": ["class_jodal_comics.php"],
         "psr-4": {
             "datagutten\\comicmanager\\": "comicmanager",
-            "datagutten\\comicmanager\\tests\\": "tests"
+            "datagutten\\comicmanager\\tests\\": "tests",
+            "datagutten\\comics_tools\\": "comics_tools"
         }
     },
     "require-dev": {

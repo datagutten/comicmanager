@@ -4,7 +4,8 @@
 namespace datagutten\comicmanager;
 
 
-use comics;
+use datagutten\comics_tools\comics;
+use datagutten\comics_tools\comics_cache;
 use Exception;
 use FileNotFoundException;
 use InvalidArgumentException;

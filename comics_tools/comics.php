@@ -1,4 +1,12 @@
 <?Php
+
+namespace datagutten\comics_tools;
+
+use DateInterval;
+use DateTime;
+use Exception;
+use InvalidArgumentException;
+
 class comics
 {
 	public $image_host;

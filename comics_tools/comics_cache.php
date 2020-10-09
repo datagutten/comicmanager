@@ -1,11 +1,10 @@
 <?php
 
 
-namespace datagutten\comicmanager;
+namespace datagutten\comics_tools;
 
 
-use comics;
-use Exception;
+use datagutten\comicmanager\core;
 use InvalidArgumentException;
 use PDO;
 
