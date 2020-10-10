@@ -4,8 +4,7 @@
 namespace datagutten\comicmanager;
 
 
-use datagutten\comics_tools\exceptions\ComicsException;
-use Exception;
+use datagutten\comicmanager\exceptions\comicManagerException;
 use Twig;
 
 class web extends comicmanager
@@ -68,16 +67,6 @@ class web extends comicmanager
     }
 
     /**
-     * Show exception with trace
-     * @param Exception $e
-     * @return string Rendered error message
-     */
-    public function error($e)
-    {
-        return $this->render('error.twig', ['title'=>'Error', 'error'=>$e->getMessage(), 'trace'=>$e->getTraceAsString()]);
-    }
-
-    /**
      * Display links to select a comic
      * @return string
      */
@@ -90,9 +79,9 @@ class web extends comicmanager
                 'root' => $this->root);
             return $this->render('select_comic.twig', $context);
         }
-        catch (comicsException $e)
+        catch (comicManagerException $e)
         {
-            return $this->render('error.twig', array('error'=>$e->getMessage()));
+            return $this->render('exception.twig', array('e'=>$e));
         }
     }
 

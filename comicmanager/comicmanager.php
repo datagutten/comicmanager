@@ -88,13 +88,13 @@ class comicmanager extends core
      * Get all available comics and populate $this->comic_list
      *
      * @return array Array with comics, key is id, value is display name
-     * @throws Exception No comics in database
+     * @throws comicManagerException No comics in database
      */
     public function comic_list()
 	{
 		$st=$this->query("SELECT id,name FROM comic_info ORDER BY name", null);
 		if($st->rowCount()===0)
-			throw new Exception('No comics in database');
+			throw new comicManagerException('No comics in database');
 
 		return $st->fetchAll(PDO::FETCH_KEY_PAIR);
 	}
