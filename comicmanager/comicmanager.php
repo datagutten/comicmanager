@@ -10,6 +10,7 @@ use Exception;
 use FileNotFoundException;
 use InvalidArgumentException;
 use PDO;
+use pdo_helper;
 use PDOException;
 use PDOStatement;
 
@@ -76,7 +77,11 @@ class comicmanager extends core
      */
     public function query($query, $fetch = null)
     {
-        return $this->db->query($query, $fetch);
+        $st = $this->db->query($query);
+        if(!empty($fetch))
+                return pdo_helper::fetch($st, $fetch);
+        else
+            return $st;
     }
 
     /**
@@ -124,9 +129,9 @@ class comicmanager extends core
             $fields = 'id, name';
 
         if($only_visible)
-            $st = $this->query(sprintf('SELECT %s FROM %s_categories WHERE visible=1 ORDER BY name',$fields, $this->info['id']), PDO::FETCH_ASSOC);
+            $st = $this->db->query(sprintf('SELECT %s FROM %s_categories WHERE visible=1 ORDER BY name',$fields, $this->info['id']));
         else
-            $st = $this->query(sprintf('SELECT %s FROM %s_categories ORDER BY name', $fields, $this->info['id']), PDO::FETCH_ASSOC);
+            $st = $this->db->query(sprintf('SELECT %s FROM %s_categories ORDER BY name', $fields, $this->info['id']));
 
         if($return_object)
             return $st;
@@ -146,7 +151,10 @@ class comicmanager extends core
         if(!preg_match('/^[a-z]+$/',$comic))
             throw new InvalidArgumentException('Invalid comic id: '.$comic);
 
-        $info=$this->query(sprintf("SELECT * FROM comic_info WHERE id='%s'",$comic),'assoc');
+        $st_comic_info = $this->db->prepare('SELECT * FROM comic_info WHERE id=?');
+        $st_comic_info->execute([$comic]);
+        $info = $st_comic_info->fetch(PDO::FETCH_ASSOC);
+        //$info=$this->query(sprintf("SELECT * FROM comic_info WHERE id='%s'",$comic),'assoc');
 
         if(empty($info))
             throw new InvalidArgumentException('Unknown comic id: '.$comic);
@@ -260,8 +268,7 @@ class comicmanager extends core
 
             $q = sprintf('SELECT * FROM %s WHERE %s', $this->info['id'], $where);
             $st = $this->db->prepare($q);
-
-            $this->db->execute($st, $values);
+            $st->execute($values);
         }
         if($return_pdo)
             return $st;
@@ -355,7 +362,7 @@ class comicmanager extends core
 
         if(!empty($q)){
             $st = $this->db->prepare($q);
-            $this->db->execute($st, $values);
+            $st->execute($values);
             //$debug_q=vsprintf(str_replace('?','%s',$q),$values);
         }
     }
