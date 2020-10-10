@@ -19,6 +19,7 @@ if(is_array($comicinfo) && $comicinfo['has_categories']==1)
 
 	if(isset($_POST['submit']))
 	{
+	    $messages = [];
         foreach ($comicmanager->categories(false, true) as $category)
         {
             try {
@@ -30,7 +31,7 @@ if(is_array($comicinfo) && $comicinfo['has_categories']==1)
                 }
                 if($_POST['categories'][$id]['name']!=$category['name'])
                 {
-                    echo "Name changed to ".$_POST['categories'][$id]['name']."\n";
+                    $messages[]="Name changed to ".$_POST['categories'][$id]['name'];
                     $st_update_name->execute(array($_POST['categories'][$id]['name'], $id));
                 }
 
@@ -57,6 +58,7 @@ if(is_array($comicinfo) && $comicinfo['has_categories']==1)
     echo $comicmanager->render('edit_categories.twig', array( 'name' => 'Comics ID',
         'title' => sprintf('%s categories', $comicinfo['name']),
         'categories' => $comicmanager->categories(false, true),
+        'messages' => $messages,
         'js' => 'add_category.js',
         'extra_css' => 'table_border.css',
     ));

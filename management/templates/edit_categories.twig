@@ -3,6 +3,11 @@
     <script src="{{ root }}/static/add_category.js"></script>
 {% endblock %}
 {% block content %}
+    <p>
+        {% for message in messages %}
+            {{ message }}<br/>
+        {% endfor %}
+    </p>
     <form method="post">
         <table>
             <tr>
