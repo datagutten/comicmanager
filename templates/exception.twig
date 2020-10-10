@@ -1,6 +1,4 @@
 {% extends 'base.twig' %}
 {% block content %}
-    {{e.getmessage}}
-    Trace:
-    <pre>{{ e.getTraceAsString}}</pre>
+    {% include 'exception_base.twig' %}
 {% endblock %}

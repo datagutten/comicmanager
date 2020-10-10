@@ -1,0 +1,8 @@
+{% if e %}
+    {{ e.getMessage }}
+    <pre>{{ e.getTraceAsString }}</pre>
+    {% if e.getPrevious %}
+        {{ e.getPrevious.getMessage }}
+        <pre>{{ e.getPrevious.getTraceAsString }}</pre>
+    {% endif %}
+{% endif %}
