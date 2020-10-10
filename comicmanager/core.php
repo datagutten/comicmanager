@@ -6,6 +6,7 @@ namespace datagutten\comicmanager;
 
 use FileNotFoundException;
 use InvalidArgumentException;
+use PDO;
 use pdo_helper;
 use PDOException;
 use PDOStatement;
@@ -34,12 +35,17 @@ class core
      * @throws FileNotFoundException
      * @throws PDOException
      */
-    function __construct()
+    function __construct(PDO $db=null)
     {
         if(get_include_path()=='.:/usr/share/php')
             set_include_path(__DIR__);
-        $this->db=new pdo_helper;
-        $this->db->connect_db_config();
+        if(!empty($db))
+            $this->db = $db;
+        else
+        {
+            $this->db = new pdo_helper;
+            $this->db->connect_db_config();
+        }
         $this->config = require 'config.php';
         if(isset($this->config['debug']) && $this->config['debug']===true)
             $this->debug = true;

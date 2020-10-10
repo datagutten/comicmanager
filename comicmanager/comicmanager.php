@@ -48,9 +48,9 @@ class comicmanager extends core
 	 */
     public $files;
 
-	public function __construct()
+	public function __construct($db=null)
 	{
-        parent::__construct();
+        parent::__construct($db);
         if(isset($this->config['comics_site']) && isset($this->config['comics_key']))
         {
             $this->comics_cache = new comics_cache($this->config['comics_site'],$this->config['comics_key']);
