@@ -61,12 +61,6 @@ class core
         return preg_replace('/[^a-z0-9_]+/', '', $value);
     }
 
-    public static function comic_table($comic, $query)
-    {
-        $comic = self::clean_value($comic);
-        return str_replace('{comic]', $comic, $query);
-    }
-
     /**
      * Check if a table exists
      * @param string $table Table name
