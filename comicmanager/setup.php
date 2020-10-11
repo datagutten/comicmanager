@@ -5,6 +5,7 @@ namespace datagutten\comicmanager;
 
 
 use InvalidArgumentException;
+use PDO;
 use PDOStatement;
 
 class setup extends core
@@ -22,7 +23,7 @@ class setup extends core
               `has_categories` int(1) NOT NULL DEFAULT 0,
               `possible_key_fields` varchar(45) NOT NULL,
               PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+            );
             ";
         return $this->db->query($q);
     }
@@ -34,11 +35,11 @@ class setup extends core
      */
     function setKeyField($comic, $key_field)
     {
-        if(!$this->hasColumn($comic, $key_field))
+        if(!$this->db_utils->hasColumn($comic, $key_field))
             $this->addKeyField($comic, $key_field);
 
         $st = $this->db->prepare('UPDATE comic_info SET keyfield = ? WHERE id=?');
-        $this->db->execute($st, array($comic, $key_field));
+        $st->execute(array($comic, $key_field));
     }
 
     /**
@@ -51,17 +52,18 @@ class setup extends core
         //$field_definitions=array('id'=>'INT(5)','customid'=>'INT(5)','original_date'=>'INT(11)');
         $lengths = array('id'=>5,'customid'=>5,'original_date'=>11);
         metadata::validateKeyField($key_field);
-        if($this->hasColumn($comic, $key_field))
+        if($this->db_utils->hasColumn($comic, $key_field))
             throw new InvalidArgumentException(sprintf('%s is already added as key field for %s', $key_field, $comic));
-        $this->addColumn($comic, $key_field, 'INT', $lengths[$key_field]);
-        $st = $this->db->prepare('SELECT possible_key_fields FROM comic_info WHERE id=?');
-        $fields_string = $this->db->execute($st, array($comic), 'column');
-        if($st->rowCount()==0)
+        $this->db_utils->addColumn($comic, $key_field, 'INT', $lengths[$key_field]);
+        $st_key_fields = $this->db->prepare('SELECT possible_key_fields FROM comic_info WHERE id=?');
+        $st_key_fields->execute([$comic]);
+        $fields_string = $st_key_fields->fetch(PDO::FETCH_COLUMN);
+        if(empty($fields_string))
             throw new InvalidArgumentException(sprintf('No metadata record for %s', $comic));
         $fields = metadata::appendKeyField($fields_string, $key_field);
 
         $st_update = $this->db->prepare('UPDATE comic_info SET possible_key_fields=? WHERE id=?');
-        $this->db->execute($st_update, array($fields, $comic));
+        $st_update->execute(array($fields, $comic));
     }
 
     /**
@@ -80,11 +82,11 @@ class setup extends core
         $q_comic="CREATE TABLE `$comic` (
                   `date` int(11) DEFAULT NULL,
                   `site` varchar(45) NOT NULL,
-                  `uid` int(11) NOT NULL AUTO_INCREMENT, PRIMARY KEY (`uid`))";
+                  `uid` INTEGER PRIMARY KEY AUTOINCREMENT)";
         $this->db->query($q_comic);
 
         $st_comic_info=$this->db->prepare("INSERT INTO comic_info (id,name,keyfield,possible_key_fields) VALUES (?,?,?,?)");
-        $this->db->execute($st_comic_info, array($comic, $name, $key_field, $key_field));
+        $st_comic_info->execute(array($comic, $name, $key_field, $key_field));
         $this->setKeyField($comic, $key_field);
 
         if($has_categories)
@@ -112,15 +114,14 @@ class setup extends core
     {
         $comic = core::clean_value($comic);
         $q_categories='CREATE TABLE `%s_categories` (
-                      `id` int(2) NOT NULL AUTO_INCREMENT,
+                      `id` INTEGER PRIMARY KEY AUTOINCREMENT,
                       `name` varchar(45) NOT NULL,
-                      `visible` int(1) NOT NULL,
-                      PRIMARY KEY (`id`)
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;';
+                      `visible` int(1) NOT NULL
+                    )';
 
-        $this->db->query(sprintf($q_categories, $comic),null);
-        $this->db->query("ALTER TABLE $comic ADD COLUMN category INT(2) NULL DEFAULT NULL",null);
+        $this->db->query(sprintf($q_categories, $comic));
+        $this->db->query("ALTER TABLE $comic ADD COLUMN category INT(2) NULL DEFAULT NULL");
         $st = $this->db->prepare('UPDATE comic_info SET has_categories = 1 WHERE id=?');
-        $this->db->execute($st, array($comic));
+        $st->execute(array($comic));
     }
 }
