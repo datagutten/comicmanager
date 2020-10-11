@@ -88,7 +88,7 @@ class comicmanager extends core
      */
     public function comic_list()
 	{
-		$st=$this->query("SELECT id,name FROM comic_info ORDER BY name", null);
+		$st=$this->db->query("SELECT id,name FROM comic_info ORDER BY name");
 		if($st->rowCount()===0)
 			throw new comicManagerException('No comics in database');
 
@@ -101,7 +101,8 @@ class comicmanager extends core
      */
     function sites()
 	{
-		return $this->query(sprintf('SELECT DISTINCT site FROM %s',$this->info['id']),'all_column');
+		$st = $this->query(sprintf('SELECT DISTINCT site FROM %s',$this->info['id']));
+		return $st->fetchAll(PDO::FETCH_COLUMN);
 	}
 
     /**
@@ -162,7 +163,6 @@ class comicmanager extends core
         $st_comic_info = $this->db->prepare('SELECT * FROM comic_info WHERE id=?');
         $st_comic_info->execute([$comic]);
         $info = $st_comic_info->fetch(PDO::FETCH_ASSOC);
-        //$info=$this->query(sprintf("SELECT * FROM comic_info WHERE id='%s'",$comic),'assoc');
 
         if(empty($info))
             throw new InvalidArgumentException('Unknown comic id: '.$comic);
@@ -237,9 +237,10 @@ class comicmanager extends core
      */
 	function next_customid()
 	{
-        if(!$this->hasColumn($this->info['id'], 'customid'))
+        if(!$this->db_utils->hasColumn($this->info['id'], 'customid'))
             throw new InvalidArgumentException(sprintf('%s does not have customid', $this->info['name']));
-		return $this->query($q="SELECT max(customid)+1 FROM {$this->info['id']}",'column');
+		$st = $this->query("SELECT max(customid)+1 FROM {$this->info['id']}");
+		return $st->fetch(PDO::FETCH_COLUMN);
 	}
 
     /**
@@ -255,7 +256,6 @@ class comicmanager extends core
         if(!empty($args['uid']) && is_numeric($args['uid']))
         {
             $st = $this->query(sprintf('SELECT * FROM %s WHERE uid=%d', $this->info['id'], $args['uid']));
-            //return $st->fetch(PDO::FETCH_ASSOC);
         }
         else {
 
@@ -314,8 +314,8 @@ class comicmanager extends core
             $this->info['id'],
             $this->info['keyfield']
         ));
-
-        return $this->db->execute($st, array($release[$this->info['keyfield']]), 'assoc');
+        $st->execute(array($release[$this->info['keyfield']]));
+        return $st->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
