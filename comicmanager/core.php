@@ -30,6 +30,10 @@ class core
      * @var bool Show debug output
      */
     public $debug = false;
+    /**
+     * @var DBUtils
+     */
+    public $db_utils;
 
     /**
      * core constructor.
@@ -46,6 +50,7 @@ class core
             $this->config = $config;
 
         $this->db = PDOConnectHelper::connect_db_config($config['db']);
+        $this->db_utils = new DBUtils($this->db);
 
         if(isset($this->config['debug']) && $this->config['debug']===true)
             $this->debug = true;
@@ -68,13 +73,7 @@ class core
      */
     public function tableExists($table)
     {
-        $q = 'SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=? AND TABLE_NAME=?';
-        $st = $this->db->prepare($q);
-        $st->execute(array($this->config['db']['db_name'], $table));
-        if ($st->rowCount() === 0)
-            return false;
-        else
-            return true;
+        return $this->db_utils->tableExists($this->config['db']['db_name'], $table);
     }
 
     /**
@@ -85,32 +84,6 @@ class core
      */
     public function hasColumn($table, $column)
     {
-        $st = $this->db->prepare(sprintf('SHOW COLUMNS FROM %s LIKE ?', core::clean_value($table)));
-        $this->db->execute($st, array(core::clean_value($column)));
-        if ($st->rowCount() === 1)
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * Add a column to a table
-     * @param string $table Table name
-     * @param string $column Column name
-     * @param string $type Data type
-     * @param int $length Field length
-     * @return PDOStatement
-     */
-    public function addColumn($table, $column, $type, $length)
-    {
-        $valid_types = ['VARCHAR', 'INT'];
-        if (array_search($type, $valid_types) === false)
-            throw new InvalidArgumentException('Invalid column type: ' . $type);
-        if (!is_numeric($length))
-            throw new InvalidArgumentException('Length is not numeric');
-
-        /** @noinspection SyntaxError */
-        return $this->db->query(sprintf('ALTER TABLE %s ADD COLUMN `%s` %s(%d) DEFAULT NULL',
-            core::clean_value($table), core::clean_value($column), $type, $length));
+        return $this->db_utils->hasColumn($table, $column);
     }
 }

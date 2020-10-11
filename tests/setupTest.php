@@ -46,7 +46,7 @@ class setupTest extends common
     public function testAddColumn()
     {
         $this->class->createComicInfoTable();
-        $this->class->addColumn('comic_info', 'test', 'VARCHAR', 5);
+        $this->class->db_utils->addColumn('comic_info', 'test', 'VARCHAR', 5);
         $this->assertTrue($this->class->hasColumn('comic_info', 'test'));
     }
 

@@ -19,7 +19,7 @@ class common extends testCase
      */
     public $db;
     /**
-     * @var mixed
+     * @var string
      */
     public $db_driver;
 
