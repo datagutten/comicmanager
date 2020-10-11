@@ -11,22 +11,7 @@ use datagutten\comicmanager\web;
 require 'vendor/autoload.php';
 $comic_manager = new web;
 $comic_info = $comic_manager->comicinfo_get();
-if (empty($comic_info))
-    die();
-
-if (!isset($_GET['comic'])) {
-    echo $comic_manager->render('showcomics_front.twig', array(
-        'title' => 'Show ' . $comic_info['name'],
-        'comic' => $comic_info,
-        'root' => $comic_manager->root,
-        'sites' => $comic_manager->sites(),
-        'extra_css' => 'menu.css',
-        'categories' => $comic_manager->categories(),
-        'range' => $comic_manager->key_high_low($comic_info['keyfield']),
-    ));
-}
-else {
-
+if (!empty($comic_info)) {
     /*Rekkefølge på parametere:
     comic
     view
@@ -65,7 +50,15 @@ else {
         $show_newest = true;
         $title = $comic_manager->category_name((int)$_GET['category']);
     } else {
-        header('Location: showcomics_front.php?comic=' . $comic_info['id']);
+        echo $comic_manager->render('showcomics_front.twig', array(
+            'title' => 'Show ' . $comic_info['name'],
+            'comic' => $comic_info,
+            'root' => $comic_manager->root,
+            'sites' => $comic_manager->sites(),
+            'extra_css' => 'menu.css',
+            'categories' => $comic_manager->categories(),
+            'range' => $comic_manager->key_high_low($comic_info['keyfield']),
+        ));
         die();
     }
 
