@@ -7,26 +7,17 @@ use InvalidArgumentException;
 use pdo_helper;
 use PHPUnit\Framework\TestCase;
 
-class setupTest extends TestCase
+class setupTest extends common
 {
     /**
      * @var setup
      */
     public $class;
-    public static function setUpBeforeClass(): void
-    {
-        set_include_path(__DIR__);
-    }
 
     public function setUp(): void
     {
-        $config = require 'test_config_db.php';
-        $db = new pdo_helper;
-        $db->connect_db($config['db_host'], '', $config['db_user'], $config['db_password'], $config['db_type']);
-        $db->query('CREATE DATABASE comicmanager_test');
-
-        copy(__DIR__ . '/test_config_db.php', __DIR__.'/config_db.php');
-        $this->class = new setup();
+        parent::setUp();
+        $this->class = new setup($this->config);
     }
 
     public function testTable_exists()
@@ -113,11 +104,5 @@ class setupTest extends TestCase
 
         $fields = $this->class->db->query('SELECT possible_key_fields FROM comic_info WHERE id=\'test_comic\'', 'column');
         $this->assertSame('customid', $fields);
-    }
-
-    public function tearDown(): void
-    {
-        unlink(__DIR__.'/config_db.php');
-        $this->class->db->query('DROP DATABASE comicmanager_test');
     }
 }

@@ -21,10 +21,6 @@ class comicmanager extends core
      */
     public $comics;
     /**
-     * @var string Media for comics
-     */
-    public $comics_media;
-    /**
      * @var array Array with info about comics
      */
     public $comic_info;
@@ -49,10 +45,10 @@ class comicmanager extends core
 	 */
     public $files;
 
-	public function __construct($db=null)
+	public function __construct(array $config=null)
 	{
-        parent::__construct($db);
-        if(isset($this->config['comics_site']) && isset($this->config['comics_key']))
+        parent::__construct($config);
+        if(!empty($this->config['comics']))
         {
             $this->comics_cache = new comics_cache($this->config['comics_site'],$this->config['comics_key']);
             if(isset($comics_media))

@@ -3,7 +3,6 @@
 namespace datagutten\comicmanager\tests;
 
 use datagutten\comicmanager\core;
-use PHPUnit\Framework\TestCase;
 
 class coreTest extends common
 {
@@ -19,7 +18,7 @@ class coreTest extends common
     {
         $bad_value = 'test\\_string';
         $clean_value = core::clean_value($bad_value);
-        $this->assertSame('test_string', $clean_value);;
+        $this->assertSame('test_string', $clean_value);
     }
 
     /*public function testAddColumn()

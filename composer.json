@@ -4,7 +4,7 @@
     "type": "project",
     "require": {
         "twig/twig": "^2.11",
-        "datagutten/tools": "^1.1",
+        "datagutten/tools": "^1.9",
         "ext-pdo": "*",
         "ext-json": "*",
         "ext-gd": "*",

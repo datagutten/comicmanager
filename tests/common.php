@@ -4,34 +4,51 @@
 namespace datagutten\comicmanager\tests;
 
 
-use datagutten\comicmanager\setup;
-use pdo_helper;
+use datagutten\tools\PDOConnectHelper;
+use PDO;
 use PHPUnit\Framework\TestCase;
 
 class common extends testCase
 {
+    /**
+     * @var mixed
+     */
+    public $config;
+    /**
+     * @var PDO
+     */
+    public $db;
+    /**
+     * @var mixed
+     */
+    public $db_driver;
+
     public function setUp(): void
     {
-        copy(__DIR__ . '/test_config_db.php', __DIR__.'/config_db.php');
-        set_include_path(__DIR__);
+        $this->config = require 'test_config.php';
+        $this->db = PDOConnectHelper::connect_db_config($this->config['db']);
+        $this->db_driver = $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $this->create_database();
     }
     public function tearDown(): void
     {
-        unlink(__DIR__.'/config_db.php');
-        //$this->class->db->query('DROP DATABASE comicmanager_test');
+        $this->drop_database();
     }
 
     public function create_database()
     {
-        $config = require 'test_config_db.php';
-        $db = new pdo_helper;
-        $db->connect_db($config['db_host'], '', $config['db_user'], $config['db_password'], $config['db_type']);
-        $db->query('CREATE DATABASE comicmanager_test');
+        if($this->db_driver!='sqlite')
+            $this->db->query('CREATE DATABASE comicmanager_test');
     }
 
     public function drop_database()
     {
-        $setup = new setup();
-        $setup->db->query('DROP DATABASE comicmanager_test');
+        if($this->db_driver!='sqlite')
+            $this->db->query('DROP DATABASE comicmanager_test');
+        else
+        {
+            unset($this->db);
+            unlink($this->config['db']['db_file']);
+        }
     }
 }

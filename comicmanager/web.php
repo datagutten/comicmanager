@@ -18,14 +18,14 @@ class web extends comicmanager
      */
     public $root='/comicmanager';
 
-    function __construct()
+    function __construct(array $config = null)
     {
         if($this->debug)
             ini_set('display_errors', true);
 
         $loader = new Twig\Loader\FilesystemLoader(array(__DIR__.'/../templates', __DIR__.'/../management/templates'), __DIR__);
         $this->twig = new Twig\Environment($loader, array('debug' => $this->debug, 'strict_variables' => true));
-        parent::__construct();
+        parent::__construct($config);
     }
 
     /**
