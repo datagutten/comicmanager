@@ -9,7 +9,7 @@ class DBUtilsTest extends common
     /**
      * @var DBUtils
      */
-    private $utils;
+    protected $utils;
 
     public function setUp(): void
     {
@@ -28,9 +28,9 @@ class DBUtilsTest extends common
 
     public function testHasColumn()
     {
-        $exist = $this->utils->hasColumn('test_table', 'test_field');
-        $this->assertFalse($exist);
         $this->db->query('CREATE TABLE `test_table` (`test_field` varchar(100) NOT NULL)');
+        $exist = $this->utils->hasColumn('test_table', 'test_field_bad');
+        $this->assertFalse($exist);
         $exist = $this->utils->hasColumn('test_table', 'test_field');
         $this->assertTrue($exist);
     }
