@@ -276,6 +276,20 @@ class comicmanager extends core
             return $st->fetch(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Get highest and lowest value for a field
+     * @param string $field Field name
+     * @return array
+     */
+    function key_high_low($field)
+    {
+        $q = sprintf('SELECT MIN(%1$s) AS min, MAX(%1$s) AS max FROM %2$s',
+            self::clean_value($field),
+            $this->info['id']);
+        $st = $this->db->query($q);
+        return $st->fetch(PDO::FETCH_ASSOC);
+    }
+
 
     /**
      * Get newest release of a strip

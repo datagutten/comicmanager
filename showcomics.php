@@ -22,11 +22,7 @@ if (!isset($_GET['comic'])) {
         'sites' => $comic_manager->sites(),
         'extra_css' => 'menu.css',
         'categories' => $comic_manager->categories(),
-        'range' => $comic_manager->db->query(
-            $q = sprintf('SELECT MIN(%1$s) AS min, MAX(%1$s) AS max FROM %2$s',
-                $comic_info['keyfield'],
-                $comic_info['id']), 'assoc'),
-
+        'range' => $comic_manager->key_high_low($comic_info['keyfield']),
     ));
 }
 else {
