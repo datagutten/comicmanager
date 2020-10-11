@@ -78,11 +78,20 @@ class setup extends core
     {
         $comic = core::clean_value($comic);
         metadata::validateKeyField($key_field);
-
-        $q_comic="CREATE TABLE `$comic` (
+        if($this->db_utils->db_driver !== 'sqlite')
+        {
+            $q_comic = "CREATE TABLE `$comic` (
+                  `date` int(11) DEFAULT NULL,
+                  `site` varchar(45) NOT NULL,
+                  `uid` int(11) NOT NULL AUTO_INCREMENT, PRIMARY KEY (`uid`))";
+        }
+        else
+        {
+            $q_comic = "CREATE TABLE `$comic` (
                   `date` int(11) DEFAULT NULL,
                   `site` varchar(45) NOT NULL,
                   `uid` INTEGER PRIMARY KEY AUTOINCREMENT)";
+        }
         $this->db->query($q_comic);
 
         $st_comic_info=$this->db->prepare("INSERT INTO comic_info (id,name,keyfield,possible_key_fields) VALUES (?,?,?,?)");
