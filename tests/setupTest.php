@@ -4,8 +4,7 @@ namespace datagutten\comicmanager\tests;
 
 use datagutten\comicmanager\setup;
 use InvalidArgumentException;
-use pdo_helper;
-use PHPUnit\Framework\TestCase;
+use PDO;
 
 class setupTest extends common
 {
@@ -54,8 +53,7 @@ class setupTest extends common
     public function testSetKeyField()
     {
         $this->class->createComicInfoTable();
-        $this->class->db->query('CREATE TABLE test_comic (`date` int(11) DEFAULT NULL)');
-        $this->class->db->query("INSERT INTO comic_info (id,name,keyfield, possible_key_fields) VALUES ('test_comic','Test comic','id', 'id')");
+        $this->class->createComic('test_comic', 'test', 'id', false, ['id']);
         $this->class->setKeyField('test_comic', 'original_date');
         $this->assertTrue($this->class->hasColumn('test_comic', 'original_date'));
     }
@@ -68,7 +66,8 @@ class setupTest extends common
         $this->class->addKeyField('test_comic', 'customid');
         $this->assertTrue($this->class->hasColumn('test_comic', 'customid'));
 
-        $fields = $this->class->db->query('SELECT possible_key_fields FROM comic_info WHERE id=\'test_comic\'', 'column');
+        $st_fields = $this->class->db->query('SELECT possible_key_fields FROM comic_info WHERE id=\'test_comic\'');
+        $fields = $st_fields->fetch(PDO::FETCH_COLUMN);
         $this->assertSame('id,customid', $fields);
     }
 
@@ -89,7 +88,8 @@ class setupTest extends common
         $this->assertTrue($this->class->hasColumn('test_comic', 'id'));
         $this->assertTrue($this->class->hasColumn('test_comic', 'customid'));
 
-        $fields = $this->class->db->query('SELECT possible_key_fields FROM comic_info WHERE id=\'test_comic\'', 'column');
+        $st_fields = $this->class->db->query('SELECT possible_key_fields FROM comic_info WHERE id=\'test_comic\'');
+        $fields = $st_fields->fetch(PDO::FETCH_COLUMN);
         $this->assertSame('id,customid', $fields);
     }
 
@@ -102,7 +102,8 @@ class setupTest extends common
         $this->assertTrue($this->class->hasColumn('test_comic', 'site'));
         $this->assertTrue($this->class->hasColumn('test_comic', 'customid'));
 
-        $fields = $this->class->db->query('SELECT possible_key_fields FROM comic_info WHERE id=\'test_comic\'', 'column');
+        $st_fields = $this->class->db->query('SELECT possible_key_fields FROM comic_info WHERE id=\'test_comic\'');
+        $fields = $st_fields->fetch(PDO::FETCH_COLUMN);
         $this->assertSame('customid', $fields);
     }
 }
