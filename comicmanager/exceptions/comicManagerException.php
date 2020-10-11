@@ -4,7 +4,9 @@
 namespace datagutten\comicmanager\exceptions;
 
 
-class comicManagerException extends \Exception
+use Exception;
+
+class comicManagerException extends Exception
 {
 
 }
