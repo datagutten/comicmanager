@@ -6,7 +6,6 @@ namespace datagutten\comicmanager;
 
 use datagutten\comicmanager\exceptions\comicManagerException;
 use datagutten\comicmanager\exceptions\imageNotFound;
-use datagutten\comics_tools\exceptions\ComicsException;
 use FileNotFoundException;
 use InvalidArgumentException;
 
@@ -60,12 +59,12 @@ class files
 	 * @param string $filter_year
 	 * @param string $filter_month
 	 * @return array
-	 * @throws comicsException
+	 * @throws comicManagerException
 	 */
 	public function releases_file_date($site, $filter_year=null, $filter_month=null)
 	{
 		if(!file_exists($base_path=$this->file_path.'/'.$site))
-			throw new comicsException('No folder for site '.$site);
+			throw new comicManagerException('No folder for site '.$site);
 
 		$dir=scandir($base_path=$this->file_path.'/'.$site); //Get months
 		$dir=array_diff($dir,array('.','..','Thumbs.db'));
