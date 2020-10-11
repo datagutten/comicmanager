@@ -49,11 +49,8 @@ else {
 
     if (!empty($_GET['key_from']) && empty($_GET['key_to'])) //Show single strip by key
     {
-        $query = sprintf('SELECT * FROM %s WHERE %s=?', $comic_info['id'], $key_field);
-        $where = sprintf('%s=?', $key_field);
-        $st = $comic_manager->db->prepare($query);
-        $values = array($_GET['key_from']);
-        $releases = $comic_manager->db->execute($st, array($_GET['key_from']), 'all');
+        $st_releases = $comic_manager->get([$key_field=>$_GET['key_from']], true);
+        $releases = $st_releases->fetchAll(PDO::FETCH_ASSOC);
         $view = 'single';
 
     } elseif (!empty($_GET['key_from']) && !empty($_GET['key_to'])) //Show strip range
@@ -80,8 +77,9 @@ else {
 
     if (!empty($where)) {
         $q = sprintf('SELECT * FROM %s WHERE %s', $comic_info['id'], $where);
-        $st = $comic_manager->db->prepare($q);
-        $releases = $comic_manager->db->execute($st, $values, 'all');
+        $st_releases = $comic_manager->db->prepare($q);
+        $st_releases->execute($values);
+        $releases = $st_releases->fetchAll(PDO::FETCH_ASSOC);
     }
 
     if (empty($releases)) {
