@@ -75,15 +75,4 @@ class core
     {
         return $this->db_utils->tableExists($this->config['db']['db_name'], $table);
     }
-
-    /**
-     * Check if a table has a column
-     * @param string $table Table name
-     * @param string $column Column name
-     * @return bool
-     */
-    public function hasColumn($table, $column)
-    {
-        return $this->db_utils->hasColumn($table, $column);
-    }
 }
