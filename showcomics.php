@@ -63,8 +63,7 @@ else {
         $where = 'category=?'; //GROUP BY %1$s ORDER BY %1$s
         $values = array($_GET['category']);
         $show_newest = true;
-        $title = $comic_manager->db->query(sprintf('SELECT name FROM %s_categories WHERE id=%d',
-            $comic_info['id'], $_GET['category']), 'column');
+        $title = $comic_manager->category_name((int)$_GET['category']);
     } else {
         header('Location: showcomics_front.php?comic=' . $comic_info['id']);
         die();

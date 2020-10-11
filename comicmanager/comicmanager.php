@@ -140,6 +140,18 @@ class comicmanager extends core
 	}
 
     /**
+     * Get category name from id
+     * @param int $category_id Category id
+     * @return string Category name
+     */
+	function category_name(int $category_id)
+    {
+        $st_category_name = $this->db->prepare(sprintf('SELECT name FROM %s_categories WHERE id=?', $this->info['id']));
+        $st_category_name->execute([$category_id]);
+        return $st_category_name->fetch(PDO::FETCH_COLUMN);
+    }
+
+    /**
      * Get information about a comic
      *
      * @param string $comic Comic id
