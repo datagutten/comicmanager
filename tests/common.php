@@ -26,13 +26,10 @@ class common extends testCase
     public function setUp(): void
     {
         $this->config = require 'test_config.php';
+        $this->drop_database();
         $this->create_database();
         $this->db = PDOConnectHelper::connect_db_config($this->config['db']);
         $this->db_driver = $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
-    }
-    public function tearDown(): void
-    {
-        $this->drop_database();
     }
 
     public function create_database()
@@ -48,14 +45,18 @@ class common extends testCase
 
     public function drop_database()
     {
-        if($this->db_driver!='sqlite')
-            $this->db->query('DROP DATABASE comicmanager_test');
+        $config = $this->config['db'];
+        if($config['db_type']!=='sqlite')
+        {
+            unset($config['db_name']);
+            $db = PDOConnectHelper::connect_db_config($config);
+            $db->query('DROP DATABASE comicmanager_test');
+        }
         else
         {
-            //echo "Delete DB\n";
             unset($this->db);
-            $status = unlink($this->config['db']['db_file']);
-            //echo "After delete DB\n";
+            if(file_exists($config['db_file']))
+                unlink($config['db_file']);
         }
     }
 }
