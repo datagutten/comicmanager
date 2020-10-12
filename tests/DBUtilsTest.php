@@ -17,6 +17,11 @@ class DBUtilsTest extends common
         $this->utils = new DBUtils($this->db);
     }
 
+    public function testDBType()
+    {
+        $this->assertEquals($this->config['db']['db_type'], $this->utils->db_driver);
+    }
+
     public function testTableExists()
     {
         $exist = $this->utils->tableExists('comicmanager_test', 'test_table');
