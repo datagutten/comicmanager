@@ -3,6 +3,7 @@
     "description": "A tool to manage comic strips and sort them by category",
     "type": "project",
     "require": {
+        "php": "7.4",
         "twig/twig": "^2.11",
         "datagutten/tools": "^1.9",
         "datagutten/comics-tools": "^1.0",
