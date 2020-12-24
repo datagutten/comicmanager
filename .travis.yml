@@ -14,16 +14,12 @@ matrix:
   allow_failures:
     - php: 'nightly'
 
+env:
+  global:
+    - XDEBUG_MODE=coverage
+
 services:
  - mysql
-
-addons:
- apt:
-  packages:
-   - php-xml
-   - php-mysql
-   - php-gd
-   - php-curl
 
 before_install:
  - mysql -e 'GRANT ALL PRIVILEGES ON `comicmanager_test`.* TO "php_test"@"localhost" IDENTIFIED BY "password";'
