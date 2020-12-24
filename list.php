@@ -81,7 +81,7 @@ else
             if (array_search($comic_id, $filter) === false)
                 continue;
 
-            if (preg_match('^([0-9]{8})(?: - [0-9]+)* - ([a-z]+)^', $strip, $date_and_site)) //date and site
+            if (preg_match('^([0-9]{8})(?:\s+-\s+[0-9]+)*\s+-\s+([a-z]+)^', $strip, $date_and_site)) //date and site
             {
                 $release_temp = array('date' => $date_and_site[1], 'site' => $date_and_site[2]);
             } else //Treat the line as primary key for the comic
