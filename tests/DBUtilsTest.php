@@ -3,6 +3,7 @@
 namespace datagutten\comicmanager\tests;
 
 use datagutten\comicmanager\DBUtils;
+use PDO;
 
 class DBUtilsTest extends common
 {
@@ -15,6 +16,8 @@ class DBUtilsTest extends common
     {
         parent::setUp();
         $this->utils = new DBUtils($this->db);
+        $version = $this->db->getAttribute(PDO::ATTR_CLIENT_VERSION);
+        printf("sqlite version %s\n", $version);
     }
 
     public function testDBType()
