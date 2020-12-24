@@ -2,3 +2,6 @@ config*.php
 gagapakker*
 vendor
 .idea
+clover.xml
+.phpunit.result.cache
+coverage_html
