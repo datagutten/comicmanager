@@ -4,10 +4,9 @@
 namespace datagutten\comicmanager;
 
 
-use datagutten\comics_tools\comics;
-use datagutten\comics_tools\comics_cache;
-use Exception;
-use FileNotFoundException;
+use datagutten\comicmanager\exceptions\comicManagerException;
+use datagutten\comics_tools\comics_api_client as comics;
+use datagutten\comics_tools\comics_api_client\exceptions\ComicsException;
 use InvalidArgumentException;
 use PDO;
 use pdo_helper;
@@ -17,7 +16,7 @@ use PDOStatement;
 class comicmanager extends core
 {
     /**
-     * @var comics
+     * @var comics\ComicsAPICache
      */
     public $comics;
     /**
@@ -36,10 +35,6 @@ class comicmanager extends core
      * @var array Comic sources
      */
     public $sources=array();
-    /**
-     * @var comics_cache
-     */
-    public $comics_cache;
 	/**
 	 * @var files File management
 	 */
@@ -50,11 +45,15 @@ class comicmanager extends core
         parent::__construct($config);
         if(!empty($this->config['comics']))
         {
-            $this->comics_cache = new comics_cache($this->config['comics_site'],$this->config['comics_key']);
-            if(isset($comics_media))
-                $this->comics_media=$comics_media;
-            $this->sources['comics']='Jodal comics';
-            $this->comics = $this->comics_cache->comics;
+            try
+            {
+                $this->comics = new comics\ComicsAPICache($this->config['comics']);
+                $this->sources['comics']='Jodal comics';
+            }
+            catch (ComicsException $e)
+            {
+                echo $e->getMessage();
+            }
         }
 
         if(isset($this->config['file_path']))
