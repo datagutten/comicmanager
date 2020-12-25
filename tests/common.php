@@ -31,8 +31,8 @@ class common extends testCase
         $this->db = PDOConnectHelper::connect_db_config($this->config['db']);
         $this->db_driver = $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
         $driver_version = $this->db->getAttribute(PDO::ATTR_CLIENT_VERSION);
-        if ($this->db_driver === 'sqlite' && version_compare($driver_version, '3.16.0', '<'))
-            $this->markTestSkipped(sprintf('sqlite must be version 3.16.0 or higher, current version is %s', $driver_version));
+/*        if ($this->db_driver === 'sqlite' && version_compare($driver_version, '3.16.0', '<'))
+            $this->markTestSkipped(sprintf('sqlite must be version 3.16.0 or higher, current version is %s', $driver_version));*/
     }
 
     public function create_database()
