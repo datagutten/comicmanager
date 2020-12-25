@@ -48,6 +48,7 @@ class releaseTest extends common
         $this->config['comics'] = null;
         $comicmanager = new comicmanager($this->config);
         $test_image = files::path_join($this->config['file_path'], 'pondus_blad_digirip', '4623.jpg');
+        mkdir(dirname($test_image));
         touch($test_image);
         $comicmanager->comicinfo('pondus');
         $comicmanager->add_or_update(['site'=>'pondus_blad_digirip', 'id'=>4623, 'customid'=>4623]);
