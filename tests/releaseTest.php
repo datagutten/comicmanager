@@ -14,6 +14,9 @@ class releaseTest extends common
     {
         parent::setUp();
         $this->config['comics'] = null;
+        if(!file_exists($this->config['file_path']))
+            mkdir($this->config['file_path']);
+
         $setup = new setup($this->config);
         $setup->createComicInfoTable();
         $setup->createComic('pondus', 'Pondus', 'customid', true, ['id', 'customid']);
