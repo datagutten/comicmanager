@@ -6,6 +6,7 @@ namespace datagutten\comicmanager\tests;
 
 use datagutten\tools\PDOConnectHelper;
 use PDO;
+use PDOException;
 use PHPUnit\Framework\TestCase;
 
 class common extends testCase
@@ -26,7 +27,13 @@ class common extends testCase
     public function setUp(): void
     {
         $this->config = require 'test_config_mysql.php';
-        $this->drop_database();
+        try
+        {
+            $this->drop_database();
+        }
+        catch (PDOException $e)
+        {
+        }
         $this->create_database();
         $this->db = PDOConnectHelper::connect_db_config($this->config['db']);
         $this->db_driver = $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
