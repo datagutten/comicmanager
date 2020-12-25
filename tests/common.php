@@ -25,7 +25,7 @@ class common extends testCase
 
     public function setUp(): void
     {
-        $this->config = require 'test_config.php';
+        $this->config = require 'test_config_mysql.php';
         $this->drop_database();
         $this->create_database();
         $this->db = PDOConnectHelper::connect_db_config($this->config['db']);
