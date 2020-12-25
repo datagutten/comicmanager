@@ -16,6 +16,7 @@ matrix:
 env:
   global:
     - XDEBUG_MODE=coverage
+    - PHP_BUILD_INSTALL_EXTENSION="pdo_sqlite=@"
 
 services:
  - mysql
