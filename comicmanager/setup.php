@@ -123,7 +123,7 @@ class setup extends core
     {
         $comic = core::clean_value($comic);
         $q_categories='CREATE TABLE `%s_categories` (
-                      `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+                      `id` INTEGER PRIMARY KEY AUTO_INCREMENT,
                       `name` varchar(45) NOT NULL,
                       `visible` int(1) NOT NULL
                     )';
