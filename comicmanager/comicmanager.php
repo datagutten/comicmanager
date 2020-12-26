@@ -3,7 +3,7 @@
 
 namespace datagutten\comicmanager;
 
-
+use datagutten\comicmanager\elements\Comic;
 use datagutten\comicmanager\exceptions\comicManagerException;
 use datagutten\comics_tools\comics_api_client as comics;
 use datagutten\comics_tools\comics_api_client\exceptions\ComicsException;
@@ -24,9 +24,9 @@ class comicmanager extends core
      */
     public $comic_info;
     /**
-     * @var array Array with info about the current comic
+     * @var Comic Information about the current comic
      */
-    public $info;
+    public Comic $info;
     /**
      * @var array Array with info about comics, default value from db
      */
@@ -150,36 +150,15 @@ class comicmanager extends core
     /**
      * Get information about a comic
      *
-     * @param string $comic Comic id
-     * @param string $key_field Override the default key field
-     * @return array Array with comic information
+     * @param string $comic_id Comic id
+     * @param string|null $key_field Override the default key field
+     * @return Comic Array with comic information
      */
-    public function comicinfo($comic, $key_field=null)
+    public function comicinfo(string $comic_id, ?string $key_field=null): Comic
     {
-        if(!preg_match('/^[a-z]+$/',$comic))
-            throw new InvalidArgumentException('Invalid comic id: '.$comic);
-
-        $st_comic_info = $this->db->prepare('SELECT * FROM comic_info WHERE id=?');
-        $st_comic_info->execute([$comic]);
-        $info = $st_comic_info->fetch(PDO::FETCH_ASSOC);
-
-        if(empty($info))
-            throw new InvalidArgumentException('Unknown comic id: '.$comic);
-
-        $this->comic_info_db[$info['id']]=$info;
-
-        if(strpos($info['possible_key_fields'],',')!==false)
-            $info['possible_key_fields']=explode(',',$info['possible_key_fields']);
-        else
-            $info['possible_key_fields']=(array)$info['possible_key_fields'];
-        //Default key field is overridden
+        $info = Comic::from_db($this->db, $comic_id);
         if(!empty($key_field))
-        {
-            if(array_search($key_field,$info['possible_key_fields'])===false && $key_field!=='uid')
-                throw new InvalidArgumentException('Invalid key field: '.$key_field);
-            else
-                $info['keyfield']=$key_field;
-        }
+            $info['key_field'] = $key_field;
 
         $this->comic_info[$info['id']]=$info;
         $this->info = $info;
