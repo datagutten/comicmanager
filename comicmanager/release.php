@@ -13,7 +13,7 @@ use PDOStatement;
 class release
 {
     /**
-     * @var string Release date
+     * @var ?string Release date
      */
     public ?string $date;
     /**
@@ -25,7 +25,7 @@ class release
      */
     public int $uid;
     /**
-     * @var string Release custom id
+     * @var ?string Release custom id
      */
     public ?string $customid;
     /**
@@ -33,7 +33,7 @@ class release
      */
     public string $id;
     /**
-     * @var int Release category id
+     * @var ?int Release category id
      */
     public ?int $category;
     public bool $debug = false;

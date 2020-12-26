@@ -87,7 +87,7 @@ class web extends comicmanager
 
     /**
      * Call comicinfo with argument from GET parameter comic or show comic selection
-     * @return array|bool
+     * @return Comic|bool
      */
     public function comicinfo_get()
     {

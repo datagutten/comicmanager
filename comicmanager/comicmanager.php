@@ -22,7 +22,7 @@ class comicmanager extends core
     /**
      * @var array Array with info about comics
      */
-    public $comic_info;
+    public array $comic_info;
     /**
      * @var Comic Information about the current comic
      */
@@ -30,11 +30,11 @@ class comicmanager extends core
     /**
      * @var array Array with info about comics, default value from db
      */
-    public $comic_info_db;
+    public array $comic_info_db;
     /**
      * @var array Comic sources
      */
-    public $sources=array();
+    public array $sources=array();
 	/**
 	 * @var files File management
 	 */
