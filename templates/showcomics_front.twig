@@ -34,7 +34,7 @@
     <div id="menu_key">
         <h2>Show strips by key</h2>
         <p>
-            First {{ comic.keyfield }}: {{ range.min }}, last {{ comic.keyfield }}: {{ range.max }}<br/>
+            First {{ comic.key_field }}: {{ range.min }}, last {{ comic.key_field }}: {{ range.max }}<br/>
         </p>
         <form id="form_key" name="form_key" action="{{ root }}/showcomics.php">
             <input type="hidden" name="comic" value="{{ comic.id }}"/>
@@ -45,7 +45,7 @@
                 <label for="key_field">Key field:</label>
                 <select name="key_field" id="key_field">
                     {% for field in comic.possible_key_fields %}
-                        {% if field==comic.keyfield %}
+                        {% if field==comic.key_field %}
                             <option value="{{ field }}" selected="selected">{{ field }}</option>
                         {% else %}
                             <option value="{{ field }}">{{ field }}</option>
@@ -54,7 +54,7 @@
                 </select>
                 </p>
             {% else %}
-                <input type="hidden" name="key_field" value="{{ comic.keyfield }}"/>
+                <input type="hidden" name="key_field" value="{{ comic.key_field }}"/>
             {% endif %}
             <p>
             <label for="key">From:</label>
