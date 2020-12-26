@@ -33,6 +33,10 @@ class release
      */
     public string $id;
     /**
+     * @var ?string Original publication date
+     */
+    public ?string $original_date;
+    /**
      * @var ?int Release category id
      */
     public ?int $category;
