@@ -6,10 +6,11 @@
  * Time: 21.33
  */
 
+use datagutten\comicmanager\release;
 use datagutten\comicmanager\web;
 require '../vendor/autoload.php';
 $comic_manager=new web;
-$comic_info=$comic_manager->comicinfo_get();
+$comic_info=(array)$comic_manager->comicinfo_get();
 if($comic_info===false)
     die();
 $errors='';

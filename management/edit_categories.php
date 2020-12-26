@@ -7,7 +7,7 @@ if(isset($argv[1]))
 require '../vendor/autoload.php';
 
 $comicmanager=new web();
-$comicinfo=$comicmanager->comicinfo_get();
+$comicinfo=(array)$comicmanager->comicinfo_get();
 
 if(is_array($comicinfo) && $comicinfo['has_categories']==1)
 {
