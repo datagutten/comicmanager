@@ -4,6 +4,13 @@ require 'loader.php';
 
 if($comicinfo!==false)
 {
+    try {
+        $comicinfo->allowedKeyField('id');
+    } catch (InvalidArgumentException $e)
+    {
+        echo $e->getMessage();
+    }
+
 	if($comicinfo['keyfield']=='id')
 		echo "This tool is only useful for comics using an alternate key field";
 	else
