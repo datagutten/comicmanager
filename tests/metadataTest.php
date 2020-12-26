@@ -2,7 +2,7 @@
 
 namespace datagutten\comicmanager\tests;
 
-use datagutten\comicmanager\metadata;
+use datagutten\comicmanager\elements\Comic;
 use PHPUnit\Framework\TestCase;
 
 class metadataTest extends TestCase
@@ -10,37 +10,37 @@ class metadataTest extends TestCase
     public function testParsePossibleKeyFields()
     {
         $fields = 'id,customid';
-        $fields = metadata::parsePossibleKeyFields($fields);
+        $fields = Comic::parsePossibleKeyFields($fields);
         $this->assertSame(['id', 'customid'], $fields);
     }
 
     public function testParsePossibleKeyFieldsSingle()
     {
         $fields = 'id';
-        $fields = metadata::parsePossibleKeyFields($fields);
+        $fields = Comic::parsePossibleKeyFields($fields);
         $this->assertSame(['id'], $fields);
     }
 
     public function testBuildPossibleKeyFields()
     {
         $fields = ['id', 'customid'];
-        $fields = metadata::buildPossibleKeyFields($fields);
+        $fields = Comic::buildPossibleKeyFields($fields);
         $this->assertSame('id,customid', $fields);
     }
 
     public function testBuildPossibleKeyFieldsSingle()
     {
         $fields = ['id'];
-        $fields = metadata::buildPossibleKeyFields($fields);
+        $fields = Comic::buildPossibleKeyFields($fields);
         $this->assertSame('id', $fields);
     }
 
     public function testValidateKeyField()
     {
-        foreach (array_keys(metadata::$valid_key_fields) as $field)
+        foreach (array_keys(Comic::$key_fields) as $field)
         {
-            $text = metadata::validateKeyField($field);
-            $this->assertSame(metadata::$valid_key_fields[$field], $text);
+            $text = Comic::validKeyField($field);
+            $this->assertSame(Comic::$key_fields[$field], $text);
         }
     }
 }
