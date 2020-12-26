@@ -11,24 +11,26 @@ class setupTest extends common
     /**
      * @var setup
      */
-    public $class;
+    public setup $class;
+    public array $comic_data;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->class = new setup($this->config);
+        $this->comic_data = ['id'=>'test_comic', 'name'=>'Test', 'key_field'=>'id', 'has_categories'=>false, 'possible_key_fields'=>['id']];
+        $this->class = new setup($this->comic_data, $this->config);
     }
 
     public function testTable_exists()
     {
-        $this->assertFalse($this->class->tableExists('missing_table'));
+        $this->assertFalse($this->class->db_utils->tableExists($this->config['db']['db_name'], 'missing_table'));
     }
 
     public function testCreateComicInfoTable()
     {
-        $this->assertFalse($this->class->tableExists('comic_info'));
+        $this->assertFalse($this->class->db_utils->tableExists($this->config['db']['db_name'], 'comic_info'));
         $this->class->createComicInfoTable();
-        $this->assertTrue($this->class->tableExists('comic_info'));
+        $this->assertTrue($this->class->db_utils->tableExists($this->config['db']['db_name'], 'comic_info'));
     }
 
     public function testHasNotColumn()
@@ -53,8 +55,8 @@ class setupTest extends common
     public function testSetKeyField()
     {
         $this->class->createComicInfoTable();
-        $this->class->createComic('test_comic', 'test', 'id', false, ['id']);
-        $this->class->setKeyField('test_comic', 'original_date');
+        $this->class->create();
+        $this->class->setKeyField('original_date');
         $this->assertTrue($this->class->db_utils->hasColumn('test_comic', 'original_date'));
     }
 
@@ -63,7 +65,7 @@ class setupTest extends common
         $this->class->createComicInfoTable();
         $this->class->db->query('CREATE TABLE test_comic (`date` int(11) DEFAULT NULL)');
         $this->class->db->query("INSERT INTO comic_info (id,name,keyfield, possible_key_fields) VALUES ('test_comic','Test comic','id', 'id')");
-        $this->class->addKeyField('test_comic', 'customid');
+        $this->class->addKeyField('customid');
         $this->assertTrue($this->class->db_utils->hasColumn('test_comic', 'customid'));
 
         $st_fields = $this->class->db->query('SELECT possible_key_fields FROM comic_info WHERE id=\'test_comic\'');
@@ -75,14 +77,16 @@ class setupTest extends common
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid key field: foobar');
-        $this->class->addKeyField('comic_test', 'foobar');
+        $this->class->addKeyField('foobar');
     }
 
     public function testCreateComic()
     {
         $this->class->createComicInfoTable();
-        $this->class->createComic('test_comic', 'Test', 'customid', true, ['id', 'customid']);
-        $this->assertTrue($this->class->tableExists('test_comic'));
+        $this->class->possible_key_fields = ['id', 'customid'];
+        $this->class->create();
+
+        $this->assertTrue($this->class->db_utils->tableExists($this->config['db']['db_name'], 'test_comic'));
         $this->assertTrue($this->class->db_utils->hasColumn('test_comic', 'date'));
         $this->assertTrue($this->class->db_utils->hasColumn('test_comic', 'site'));
         $this->assertTrue($this->class->db_utils->hasColumn('test_comic', 'id'));
@@ -96,8 +100,10 @@ class setupTest extends common
     public function testCreateComicSingleKey()
     {
         $this->class->createComicInfoTable();
-        $this->class->createComic('test_comic', 'Test', 'customid', true);
-        $this->assertTrue($this->class->tableExists('test_comic'));
+        $this->class->key_field = 'customid';
+        $this->class->possible_key_fields = ['customid'];
+        $this->class->create();
+        $this->assertTrue($this->class->db_utils->tableExists($this->config['db']['db_name'], 'test_comic'));
         $this->assertTrue($this->class->db_utils->hasColumn('test_comic', 'date'));
         $this->assertTrue($this->class->db_utils->hasColumn('test_comic', 'site'));
         $this->assertTrue($this->class->db_utils->hasColumn('test_comic', 'customid'));
