@@ -4,10 +4,10 @@ namespace datagutten\comicmanager\tests\elements;
 
 use datagutten\comicmanager\comicmanager;
 use datagutten\comicmanager\release;
-use datagutten\comicmanager\setup;
 use datagutten\comicmanager\Strip;
+use datagutten\comicmanager\tests\Setup;
 
-class stripTest extends \datagutten\comicmanager\tests\Setup
+class stripTest extends Setup
 {
     public function setUp(): void
     {
@@ -15,9 +15,6 @@ class stripTest extends \datagutten\comicmanager\tests\Setup
         if (!file_exists($this->config['file_path']))
             mkdir($this->config['file_path']);
 
-        $setup = new setup(['id' => 'pondus', 'name' => 'Pondus', 'key_field' => 'customid', 'has_categories' => true, 'possible_key_fields' => ['id', 'customid']], $this->config);
-        $setup->createComicInfoTable();
-        $setup->create();
         $comicmanager = new comicmanager($this->config);
         $comicmanager->comicinfo('pondus');
         $comicmanager->add_or_update(['id' => 4350, 'site' => 'pondusvg', 'date' => '20190813']);
