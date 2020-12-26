@@ -38,7 +38,11 @@ class comicmanager extends core
 	/**
 	 * @var files File management
 	 */
-    public $files;
+    public files $files;
+    /**
+     * @var Queries
+     */
+    protected Queries $queries;
 
 	public function __construct(array $config=null)
 	{
@@ -161,6 +165,7 @@ class comicmanager extends core
             $info['key_field'] = $key_field;
 
         $this->comic_info[$info['id']]=$info;
+        $this->queries = new Queries($this->db, $info->id);
         $this->info = $info;
         return $info;
     }
