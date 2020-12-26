@@ -4,25 +4,10 @@ namespace datagutten\comicmanager\tests;
 
 use datagutten\comicmanager\comicmanager;
 use datagutten\comicmanager\release;
-use datagutten\comicmanager\setup;
 use datagutten\tools\files\files;
-use PDO;
-use PHPUnit\Framework\TestCase;
 
-class releaseTest extends common
+class releaseTest extends Setup
 {
-    function setUp(): void
-    {
-        parent::setUp();
-        $this->config['comics'] = null;
-        if(!file_exists($this->config['file_path']))
-            mkdir($this->config['file_path']);
-
-        $setup = new setup($this->config);
-        $setup->createComicInfoTable();
-        $setup->createComic('pondus', 'Pondus', 'customid', true, ['id', 'customid']);
-    }
-
     function testRelease()
     {
         $comicmanager = new comicmanager($this->config);
@@ -48,7 +33,8 @@ class releaseTest extends common
         $this->config['comics'] = null;
         $comicmanager = new comicmanager($this->config);
         $test_image = files::path_join($this->config['file_path'], 'pondus_blad_digirip', '4623.jpg');
-        mkdir(dirname($test_image));
+        if(!file_exists(dirname($test_image)))
+            mkdir(dirname($test_image));
         touch($test_image);
         $comicmanager->comicinfo('pondus');
         $comicmanager->add_or_update(['site'=>'pondus_blad_digirip', 'id'=>4623, 'customid'=>4623]);
