@@ -7,7 +7,7 @@
     {% for release in releases %}
         {% if first %}
             {% set first = false %}
-            {% include 'image.twig' %}
+            {% include 'image.twig' with {'release': first_release} %}
             {% if comic.has_categories %}
                 <p>{% include 'category.twig' %}</p>
             {% endif %}

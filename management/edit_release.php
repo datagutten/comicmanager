@@ -42,12 +42,13 @@ if(!empty($_POST))
 }
 if(!empty($_GET['keyfield']) && !empty($_GET['key'])) {
     $release = $comic_manager->get(array($_GET['keyfield'] => $_GET['key']), true);
-
     $release->setFetchMode(PDO::FETCH_ASSOC);
+    $releases = $release->fetchAll(PDO::FETCH_ASSOC);
 
     echo $comic_manager->render('edit_release.twig',
         array('title' => 'Edit release',
-            'releases' => $release,
+            'releases' => $releases,
+            'first_release' => new release($comic_manager, $releases[0]),
             'categories' => $comic_manager->categories(false, true),
             'errors' => $errors,
             'js'=>'edit_release.js'));
