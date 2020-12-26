@@ -4,6 +4,7 @@
 namespace datagutten\comicmanager;
 
 
+use datagutten\comicmanager\elements\Comic;
 use datagutten\comicmanager\exceptions\comicManagerException;
 use Twig;
 
@@ -37,24 +38,25 @@ class web extends comicmanager
      * @return string The rendered template
      *
      */
-    public function render($name, $context)
+    public function render(string $name, array $context)
     {
-        $context = array_merge($context, array(
-            'root'=>$this->root,
-            'comic'=>$this->info));
+        $context['root'] = $this->root;
+        if(!empty($this->info))
+            $context['comic'] = $this->info;
+
         try {
             return $this->twig->render($name, $context);
         }
         catch (Twig\Error\Error $e) {
             $msg = "Error rendering template:\n" . $e->getMessage();
             try {
-                die($this->twig->render('error.twig', array(
-                        'root'=>$this->root,
-                        'comic'=>$this->info,
-                        'title'=>'Rendering error',
-                        'error'=>$msg,
-                        'trace'=>$e->getTraceAsString())
-                ));
+                $context += [
+                    'title'=>'Rendering error',
+                    'error'=>$msg,
+                    'trace'=>$e->getTraceAsString()
+                ];
+
+                die($this->twig->render('error.twig', $context));
             }
             catch (Twig\Error\Error $e_e)
             {
