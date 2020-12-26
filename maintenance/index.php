@@ -9,7 +9,6 @@ $tools=array(
     'propagate_categories.php'=>"Propagate category to all copies of a strip",
     'multiple_categories.php'=>'Find strips with multiple categories',
     'propagate_id.php'=>"Propagate id to all copies of a strip",
-    'traceid.php'=>'Trace ID',
     );
 
 $comicinfo=$comicmanager->comicinfo_get();
@@ -20,8 +19,6 @@ if($comicinfo!==false)
 		unset($tools['propagate_categories.php'],$tools['multiple_categories.php']);
 	if(count(array_intersect(array('customid','id'),$comicinfo['possible_key_fields']))!=2)
 		unset($tools['id_to_customid.php']);
-	if(array_search('id',$comicinfo['possible_key_fields'])===false || count($comicinfo['possible_key_fields'])==1)
-		unset($tools['propagate_id.php'],$tools['traceid.php']);
 	
 	if(!isset($_GET['tool']))
 	{
