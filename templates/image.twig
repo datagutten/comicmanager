@@ -1,24 +1,17 @@
 <span class="date">{{ release.date|default }}</span>
-{% if comic is defined and release[comic.keyfield]|default %}
+{% if comic is defined and release.has_key %}
     &nbsp;-&nbsp;<a
-        href="{{ root }}/showcomics.php?comic={{ comic.id }}&amp;key_field={{ comic.keyfield }}&amp;key_from={{ release[comic.keyfield] }}">{{ release[comic.keyfield] }}</a>
+        href="{{ root }}/showcomics.php?comic={{ comic.id }}&amp;key_field={{ comic.key_field }}&amp;key={{ release.key }}">{{ release.key }}</a>
 {% elseif release.uid is defined %}
     &nbsp;-&nbsp;{{ release.uid }}
 {% endif %}
 &nbsp;-&nbsp;{{ release.site }}
 <br/>
-{% if release.file is defined %}
-    {% if release.file|slice(0,4)=='http' %}
-        <a href="{{ release.file }}"><img src="{{ release.file }}" alt="{{ release.date }} - {{ release.site }}"
-                                          class="{{ mode|default }}"/></a>
-    {% else %}
-        <a href="{{ root }}/image.php?file={{ release.file }}">
-            <a href="{{ root }}/image.php?file={{ release.file }}"><img src="{{ root }}/image.php?file={{ release.file }}" alt="{{ release.date }} - {{ release.site }}"
-                                                                         class="{{ mode|default }}"/></a>
-        </a>
-    {% endif %}
+
+{% if not release.image_error %}
+    <a href="{{ release.image.url }}"><img src="{{ release.image.url }}" alt="{{ release.date }} - {{ release.site }}"
+                                           class="{{ mode|default("id") }}"/></a>
 {% else %}
-    <img src="{{ root }}/image.php?release={{ release|json_encode|url_encode }}"
-         alt="{{ release.date }} - {{ release.site }}"
-         class="{{ mode|default }}"/>
+    {% include 'exception_base.twig' with {'e': release.image_error.e_file} %}
+    {% include 'exception_base.twig' with {'e': release.image_error.e_comics} %}
 {% endif %}

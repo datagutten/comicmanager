@@ -1,21 +1,4 @@
 <?php
-if(!empty($_GET['uid']) || !empty($_GET['release']))
-{
-    require 'vendor/autoload.php';
-    $comic_manager=new \datagutten\comicmanager\comicmanager();
-    $comic_manager->debug = false;
-    if(empty($_GET['release']) && !empty($_GET['uid']))
-        $release = $comic_manager->get(array('uid'=>$_GET['uid']));
-    else
-        $release = json_decode($_GET['release'], true);
-    try {
-        $_GET['file'] = $comic_manager->imagefile($release);
-    }
-    catch (Exception $e) {
-        image_error($e->getMessage());
-        error_log($e);
-    }
-}
 if(isset($_GET['file'])) {
     $size = getimagesize($_GET['file']);
     set_error_handler('handler');
