@@ -142,14 +142,6 @@ class release
     }
 
     /**
-     * @param PDOStatement $st
-     */
-    /*public static function from_sql(PDOStatement $st)
-    {
-
-    }*/
-
-    /**
      * @param comicmanager $comicmanager
      * @param array $data
      * @param string $site
