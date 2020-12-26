@@ -10,7 +10,7 @@ class DBUtilsTest extends common
     /**
      * @var DBUtils
      */
-    protected $utils;
+    protected DBUtils $utils;
 
     public function setUp(): void
     {
