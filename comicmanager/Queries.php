@@ -91,6 +91,14 @@ class Queries
         return $st;
     }
 
+    public function date_wildcard(string $site, string $date): PDOStatement
+    {
+        $q = sprintf('SELECT * FROM %s WHERE date LIKE ? AND site=? ORDER BY date', $this->comic);
+        $st = $this->db->prepare($q);
+        $st->execute([$date, $site]);
+        return $st;
+    }
+
     /**
      * Get releases by category
      * @param int $category Category ID

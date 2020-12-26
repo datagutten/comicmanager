@@ -268,6 +268,82 @@ class comicmanager extends core
     }
 
     /**
+     * Get a single strip
+     * @param array $args
+     * @return Strip
+     */
+    public function strip(array $args): Strip
+    {
+        if(!empty($args['key']))
+        {
+            if(!empty($args['key_field']))
+            {
+                $key_field = $args['key_field'];
+                if(array_search($key_field, $this->info['possible_key_fields'])===false)
+                    throw new InvalidArgumentException('Invalid key field');
+            }
+            else
+                $key_field = $this->info['keyfield'];
+
+            return Strip::from_key($this->info['id'], $args['key'], $key_field, $this);
+        }
+        else
+            throw new InvalidArgumentException('Invalid argument combination');
+    }
+
+    public function strip_from_key($key): Strip
+    {
+        return Strip::from_key($this->info->id, $key, $this->info->key_field, $this);
+    }
+
+    /**
+     * @param $from
+     * @param $to
+     * @return Strip[]
+     */
+    public function strip_range($from, $to): array
+    {
+        $strips = [];
+        foreach(range($from, $to) as $key)
+        {
+            $strips[] = Strip::from_key($this->info->id, $key, $this->info->key_field, $this);
+        }
+        return $strips;
+    }
+
+    /**
+     * @param $category
+     * @return Strip[]
+     */
+    public function releases_category(int $category): array
+    {
+        $releases = [];
+        $st = $this->queries->category($category);
+        while ($row = $st->fetch(PDO::FETCH_ASSOC))
+        {
+            if(!empty($row[$this->info->key_field]))
+            {
+                $strip = Strip::from_key($this->info->id, $row[$this->info->key_field], $this->info->key_field, $this);
+                $releases[] = $strip->latest();
+            }
+            else
+                $releases[] = new release($this, $row);
+        }
+        return $releases;
+    }
+
+    public function releases_date_wildcard(string $site, string $date)
+    {
+        $releases = [];
+        $st = $this->queries->date_wildcard($site, $date);
+        while ($row = $st->fetch(PDO::FETCH_ASSOC))
+        {
+            $releases[] = new release($this, $row);
+        }
+        return $releases;
+    }
+
+    /**
      * Get highest and lowest value for a field
      * @param string $field Field name
      * @return array
