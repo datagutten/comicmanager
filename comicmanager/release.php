@@ -160,13 +160,14 @@ class release
     }
 
     /**
+     * Create a release instance from comics
      * @param comicmanager $comicmanager
      * @param array $data
-     * @param string $site
-     * @return release
+     * @param string $site Site slug
+     * @return release Release instance
      * @throws comicManagerException
      */
-    public static function from_comics(comicmanager $comicmanager, array $data, string $site)
+    public static function from_comics(comicmanager $comicmanager, array $data, string $site): release
     {
         try
         {
@@ -182,6 +183,18 @@ class release
             'image_url' => $data['images'][0]['file'],
             'title' => $data['images'][0]['title']];
         return new self($comicmanager, $info);
+    }
+
+    /**
+     * Create a release instance from date and site slug
+     * @param comicmanager $comicmanager Comicmanager instance
+     * @param string $date Release date
+     * @param string $site Release site slug
+     * @return release Release instance
+     */
+    public static function from_date(comicmanager $comicmanager, string $date, string $site): release
+    {
+        return new self($comicmanager, ['date'=>$date, 'site'=>$site]);
     }
 
 }
