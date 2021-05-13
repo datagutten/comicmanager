@@ -1,7 +1,8 @@
 <?php
+set_error_handler('handler');
+
 if(isset($_GET['file'])) {
     $size = getimagesize($_GET['file']);
-    set_error_handler('handler');
     header("Content-type: {$size['mime']}");
 
     $fp = fopen($_GET['file'], 'r');
