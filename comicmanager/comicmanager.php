@@ -166,7 +166,7 @@ class comicmanager extends core
             $info['key_field'] = $key_field;
 
         $this->comic_info[$info['id']]=$info;
-        $this->queries = new Queries($this->db, $info->id);
+        $this->queries = new Queries($this->db, $info);
         $this->info = $info;
         return $info;
     }

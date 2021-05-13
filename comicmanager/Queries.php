@@ -14,17 +14,22 @@ class Queries
     /**
      * @var string Comic ID
      */
-    private string $comic;
+    private string $comic_id;
+    /**
+     * @var elements\Comic Comic instance
+     */
+    private elements\Comic $comic;
 
     /**
      * Queries constructor.
      * @param PDO $db PDO instance
-     * @param string $comic Comic ID
+     * @param elements\Comic $comic Comic instance
      */
-    public function __construct(PDO $db, string $comic)
+    public function __construct(PDO $db, elements\Comic $comic)
     {
         $this->db = $db;
-        $this->comic = core::clean_value($comic);
+        $this->comic_id = core::clean_value($comic->id);
+        $this->comic = $comic;
     }
 
     /**
@@ -37,7 +42,7 @@ class Queries
     public function key(string $key_field, string $key): PDOStatement
     {
         $q = sprintf('SELECT * FROM %s WHERE %s=?',
-            $this->comic,
+            $this->comic_id,
             core::clean_value($key_field));
         $st = $this->db->prepare($q);
         $st->execute([$key]);
@@ -53,7 +58,7 @@ class Queries
      */
     public function latest(string $key_field, string $key): PDOStatement
     {
-        $q = sprintf('SELECT * FROM %s WHERE %s=? ORDER BY date DESC LIMIT 1', $this->comic, $key_field);
+        $q = sprintf('SELECT * FROM %s WHERE %s=? ORDER BY date DESC LIMIT 1', $this->comic_id, $key_field);
         $st_latest = $this->db->prepare($q);
         $st_latest->execute([$key]);
         return $st_latest;
@@ -70,7 +75,7 @@ class Queries
     public function range(string $key_field, string $from, string $to): PDOStatement
     {
         $q = sprintf('SELECT * FROM %s WHERE %2$s>=? AND %2$s<=? GROUP BY %2$s ORDER BY %2$s',
-            $this->comic,
+            $this->comic_id,
             core::clean_value($key_field));
         $st = $this->db->prepare($q);
         $st->execute([$from, $to]);
@@ -85,7 +90,7 @@ class Queries
      */
     public function date(string $site, string $date): PDOStatement
     {
-        $q = sprintf('SELECT * FROM %s WHERE site=? AND date=?', $this->comic);
+        $q = sprintf('SELECT * FROM %s WHERE site=? AND date=?', $this->comic_id);
         $st = $this->db->prepare($q);
         $st->execute([$site, $date]);
         return $st;
@@ -93,7 +98,7 @@ class Queries
 
     public function date_wildcard(string $site, string $date): PDOStatement
     {
-        $q = sprintf('SELECT * FROM %s WHERE date LIKE ? AND site=? ORDER BY date', $this->comic);
+        $q = sprintf('SELECT * FROM %s WHERE date LIKE ? AND site=? ORDER BY date', $this->comic_id);
         $st = $this->db->prepare($q);
         $st->execute([$date, $site]);
         return $st;
@@ -106,7 +111,7 @@ class Queries
      */
     public function category(int $category): PDOStatement
     {
-        $q = sprintf('SELECT * FROM %s WHERE category=?', $this->comic);
+        $q = sprintf('SELECT * FROM %s WHERE category=?', $this->comic_id);
         $st = $this->db->prepare($q);
         $st->execute([$category]);
         return $st;

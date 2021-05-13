@@ -37,9 +37,8 @@ class Strip
     private string $mode;
 
 
-    public function __construct(string $comic, string $mode, comicmanager $comicmanager)
+    public function __construct(elements\Comic $comic, string $mode, comicmanager $comicmanager)
     {
-        $this->comic = $comic;
         $this->mode = $mode;
         $this->comicmanager = $comicmanager;
         $this->queries = new Queries($comicmanager->db, $comic);
@@ -79,9 +78,9 @@ return [];
     {
         if(empty($comicmanager))
             $comicmanager = new comicmanager();
-        $comicmanager->comicinfo($comic);
+        $comic_obj = $comicmanager->comicinfo($comic);
 
-        $strip = new static($comic, 'key', $comicmanager);
+        $strip = new static($comic_obj, 'key', $comicmanager);
         $strip->key = $key;
         $strip->key_field = $key_field;
         return $strip;
@@ -89,6 +88,6 @@ return [];
 
     public function __toString(): string
     {
-        return sprintf('%s %s %s', $this->comic, $this->key_field, $this->key);
+        return sprintf('%s %s %s', $this->comicmanager->info->name, $this->key_field, $this->key);
     }
 }
