@@ -6,7 +6,7 @@
  * Time: 17.53
  */
 
-use datagutten\comicmanager\release;
+use datagutten\comicmanager\elements\Release;
 use datagutten\comicmanager\web;
 
 require 'vendor/autoload.php';
@@ -55,7 +55,7 @@ if (!empty($comic))
             $releases = $comic_manager->releases_date_wildcard($_GET['site'], $_GET['date']);
         } else
         {
-            $releases = [new release($comic_manager, ['site' => $_GET['site'], 'date' => $_GET['date']])];
+            $releases = [new Release($comic_manager, ['site' => $_GET['site'], 'date' => $_GET['date']])];
             /*$where = sprintf('date LIKE ? AND site=? GROUP BY %s ORDER BY date', $key_field);
             $values = array($_GET['date'], $_GET['site']);*/
             $show_newest = false; //Show correct release

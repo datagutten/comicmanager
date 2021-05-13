@@ -6,7 +6,7 @@
  * Time: 11.10
  */
 
-use datagutten\comicmanager\release;
+use datagutten\comicmanager\elements\Release;
 use datagutten\comicmanager\web;
 
 switch($_GET['mode'])
@@ -55,7 +55,7 @@ else
                 $error_text = 'Year and/or month must be specified'; //Filtering is required when using jodal comics
             foreach($releases as $key=>$release)
             {
-                $releases[$key] = release::from_comics($comicmanager, $release, $site);
+                $releases[$key] = Release::from_comics($comicmanager, $release, $site);
             }
         }
         catch (Exception $e) {
@@ -68,7 +68,7 @@ else
             $releases=$comicmanager->files->releases_file_date($site,$filter_year,$filter_month);
             foreach($releases as $key=>$release)
             {
-                $releases[$key] = new release($comicmanager, ['site'=>$site, 'date'=>$release['date'], 'image_file'=>$release['file']]);
+                $releases[$key] = new Release($comicmanager, ['site'=>$site, 'date'=>$release['date'], 'image_file'=>$release['file']]);
             }
         }
         catch (Exception $e) {

@@ -4,6 +4,7 @@
 namespace datagutten\comicmanager;
 
 
+use datagutten\comicmanager\elements\Release;
 use datagutten\comicmanager\exceptions\imageNotFound;
 use datagutten\comics_tools\comics_api_client as comics;
 use datagutten\tools\files\files as file_tools;
@@ -16,7 +17,7 @@ class image
     private files $files;
     public bool $debug = false;
 
-    public release $release;
+    public Release $release;
     /**
      * @var string Image URL
      */

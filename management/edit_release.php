@@ -6,7 +6,7 @@
  * Time: 21.33
  */
 
-use datagutten\comicmanager\release;
+use datagutten\comicmanager\elements\Release;
 use datagutten\comicmanager\web;
 require '../vendor/autoload.php';
 $comic_manager=new web;
@@ -48,7 +48,7 @@ if(!empty($_GET['keyfield']) && !empty($_GET['key'])) {
     echo $comic_manager->render('edit_release.twig',
         array('title' => 'Edit release',
             'releases' => $releases,
-            'first_release' => new release($comic_manager, $releases[0]),
+            'first_release' => new Release($comic_manager, $releases[0]),
             'categories' => $comic_manager->categories(false, true),
             'errors' => $errors,
             'js'=>'edit_release.js'));

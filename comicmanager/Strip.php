@@ -3,10 +3,14 @@
 
 namespace datagutten\comicmanager;
 
-// A comic strip, can have multiple releases
+use datagutten\comicmanager\elements\Release;
 use InvalidArgumentException;
 use PDO;
 
+/**
+ * A comic strip, can have multiple releases
+ * @package datagutten\comicmanager
+ */
 class Strip
 {
     /**
@@ -42,7 +46,7 @@ class Strip
     }
 
     /**
-     * @return release[]
+     * @return Release[]
      */
     public function releases(): array
     {
@@ -54,19 +58,21 @@ class Strip
         $releases = [];
         while ($release = $st_releases->fetch(PDO::FETCH_ASSOC))
         {
-            $releases[] = new release($this->comicmanager, $release);
+if($release===false)
+return [];
+            $releases[] = new Release($this->comicmanager, $release);
         }
         return $releases;
     }
 
     /**
      * Get latest release
-     * @return release
+     * @return Release
      */
-    public function latest(): release
+    public function latest(): Release
     {
         $st = $this->queries->latest($this->key_field, $this->key);
-        return new release($this->comicmanager, $st->fetch(PDO::FETCH_ASSOC));
+        return new Release($this->comicmanager, $st->fetch(PDO::FETCH_ASSOC));
     }
 
     public static function from_key(string $comic, $key, $key_field = 'id', comicmanager $comicmanager=null)

@@ -3,7 +3,7 @@
 namespace datagutten\comicmanager\tests\elements;
 
 use datagutten\comicmanager\comicmanager;
-use datagutten\comicmanager\release;
+use datagutten\comicmanager\elements\Release;
 use datagutten\comicmanager\Strip;
 use datagutten\comicmanager\tests\Setup;
 
@@ -28,7 +28,7 @@ class stripTest extends Setup
         $releases = $strip->releases();
         $this->assertIsArray($releases);
         $this->assertNotEmpty($releases);
-        $this->assertInstanceOf(release::class, $releases[0]);
+        $this->assertInstanceOf(Release::class, $releases[0]);
         $this->assertEquals('4350', $releases[0]->id);
     }
 }

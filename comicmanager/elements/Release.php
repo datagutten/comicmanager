@@ -1,16 +1,18 @@
 <?php
 
 
-namespace datagutten\comicmanager;
+namespace datagutten\comicmanager\elements;
 
 
+use datagutten\comicmanager\comicmanager;
 use datagutten\comicmanager\exceptions\comicManagerException;
 use datagutten\comicmanager\exceptions\imageNotFound;
+use datagutten\comicmanager\image;
 use DateTime;
 use Exception;
 use PDOStatement;
 
-class release
+class Release
 {
     /**
      * @var ?string Release date
@@ -164,10 +166,10 @@ class release
      * @param comicmanager $comicmanager
      * @param array $data
      * @param string $site Site slug
-     * @return release Release instance
+     * @return Release Release instance
      * @throws comicManagerException
      */
-    public static function from_comics(comicmanager $comicmanager, array $data, string $site): release
+    public static function from_comics(comicmanager $comicmanager, array $data, string $site): Release
     {
         try
         {
@@ -190,9 +192,9 @@ class release
      * @param comicmanager $comicmanager Comicmanager instance
      * @param string $date Release date
      * @param string $site Release site slug
-     * @return release Release instance
+     * @return Release Release instance
      */
-    public static function from_date(comicmanager $comicmanager, string $date, string $site): release
+    public static function from_date(comicmanager $comicmanager, string $date, string $site): Release
     {
         return new self($comicmanager, ['date'=>$date, 'site'=>$site]);
     }

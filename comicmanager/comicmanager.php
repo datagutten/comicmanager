@@ -4,6 +4,7 @@
 namespace datagutten\comicmanager;
 
 use datagutten\comicmanager\elements\Comic;
+use datagutten\comicmanager\elements\Release;
 use datagutten\comicmanager\exceptions\comicManagerException;
 use datagutten\comics_tools\comics_api_client as comics;
 use datagutten\comics_tools\comics_api_client\exceptions\ComicsException;
@@ -327,7 +328,7 @@ class comicmanager extends core
                 $releases[] = $strip->latest();
             }
             else
-                $releases[] = new release($this, $row);
+                $releases[] = new Release($this, $row);
         }
         return $releases;
     }
@@ -338,7 +339,7 @@ class comicmanager extends core
         $st = $this->queries->date_wildcard($site, $date);
         while ($row = $st->fetch(PDO::FETCH_ASSOC))
         {
-            $releases[] = new release($this, $row);
+            $releases[] = new Release($this, $row);
         }
         return $releases;
     }
