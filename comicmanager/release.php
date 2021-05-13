@@ -21,7 +21,7 @@ class release
      */
     public string $site;
     /**
-     * @var int Release uid
+     * @var int Release unique id
      */
     public int $uid;
     /**
@@ -29,9 +29,9 @@ class release
      */
     public ?string $customid;
     /**
-     * @var string Release printed id
+     * @var ?string Release printed id
      */
-    public string $id;
+    public ?string $id;
     /**
      * @var ?string Original publication date
      */
@@ -40,6 +40,12 @@ class release
      * @var ?int Release category id
      */
     public ?int $category;
+    /**
+     * @var ?string Image file path
+     */
+    public ?string $image_file;
+
+    public ?string $title;
     public bool $debug = false;
 
     /**
@@ -66,7 +72,7 @@ class release
             $this->image = $this->get_image();
     }
 
-    function get_image()
+    function get_image(): ?image
     {
         try
         {
@@ -109,13 +115,21 @@ class release
         return [null, null];
     }
 
+    /**
+     * Is the grouping key set for the release?
+     * @return bool
+     */
     function has_key()
     {
         $key_field = $this->comicmanager->info['keyfield'];
         return property_exists($this, $key_field) && !empty($this->$key_field);
     }
 
-    function key()
+    /**
+     * Get the grouping key for the release
+     * @return ?string
+     */
+    function key(): ?string
     {
         $key_field = $this->comicmanager->info['keyfield'];
         if ($this->has_key())
@@ -165,7 +179,8 @@ class release
         }
         $info = [
             'site' => $site, 'date' => $date_string, 'date_obj' => $date,
-            'image_url' => $data['images'][0]['file']];
+            'image_url' => $data['images'][0]['file'],
+            'title' => $data['images'][0]['title']];
         return new self($comicmanager, $info);
     }
 
