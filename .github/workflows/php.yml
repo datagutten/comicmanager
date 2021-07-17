@@ -3,8 +3,6 @@ env:
   DB_DATABASE: comicmanager_test
   DB_USER: root
   DB_PASSWORD: root
-  COMICS_KEY: ${{ secrets.COMICS_KEY }}
-  COMICS_SITE: ${{ secrets.COMICS_SITE }}
 
 on:
   push:
@@ -55,6 +53,9 @@ jobs:
 
       - name: Run tests
         run: vendor/bin/phpunit
+        env:
+          COMICS_KEY: ${{ secrets.COMICS_KEY }}
+          COMICS_SITE: ${{ secrets.COMICS_SITE }}
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
@@ -82,3 +83,6 @@ jobs:
 
       - name: Run tests
         run: vendor/bin/phpunit
+        env:
+          COMICS_KEY: ${{ secrets.COMICS_KEY }}
+          COMICS_SITE: ${{ secrets.COMICS_SITE }}
