@@ -117,4 +117,17 @@ class Queries
         $st->execute([$category]);
         return $st;
     }
+
+    /**
+     * Get releases without key, but with category
+     * @param int $category Category ID
+     * @return PDOStatement
+     */
+    public function category_keyless(int $category): PDOStatement
+    {
+        $q = sprintf('SELECT * FROM %s WHERE category=? AND %s IS NULL', $this->comic_id, $this->comic->key_field);
+        $st = $this->db->prepare($q);
+        $st->execute([$category]);
+        return $st;
+    }
 }
