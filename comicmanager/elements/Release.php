@@ -5,6 +5,7 @@ namespace datagutten\comicmanager\elements;
 
 
 use datagutten\comicmanager\comicmanager;
+use datagutten\comicmanager\exceptions;
 use datagutten\comicmanager\exceptions\comicManagerException;
 use datagutten\comicmanager\exceptions\ImageNotFound;
 use DateTime;
@@ -61,6 +62,10 @@ class Release
      * @var Image|null
      */
     public ?Image $image;
+    /**
+     * @var DateTime Release date
+     */
+    public DateTime $date_obj;
 
     function __construct(comicmanager $comicmanager, array $fields, $load_image = true)
     {
@@ -192,10 +197,22 @@ class Release
      * @param string $date Release date
      * @param string $site Release site slug
      * @return Release Release instance
+     * @throws exceptions\comicManagerException Invalid date
      */
-    public static function from_date(comicmanager $comicmanager, string $date, string $site): Release
+    public static function from_date(comicmanager $comicmanager, string $site, string $date): Release
     {
-        return new self($comicmanager, ['date'=>$date, 'site'=>$site]);
-    }
+        try
+        {
+            $date_obj = new DateTime($date);
+        }
+        catch (Exception $e)
+        {
+            throw new exceptions\comicManagerException('Invalid date: ' . $date, 0, $e);
+        }
 
+        $release = new static($comicmanager, ['date' => $date_obj->format('Ymd'), 'site' => $site]);
+        $release->date_obj = $date_obj;
+        $release->load_db();
+        return $release;
+    }
 }
