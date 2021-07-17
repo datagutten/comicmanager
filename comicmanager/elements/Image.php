@@ -28,7 +28,6 @@ class Image
      */
     public string $file;
 
-    public static string $image_proxy_path = '/comicmanager/image.php';
     /**
      * @var string Local file path
      */
@@ -39,46 +38,67 @@ class Image
      * image constructor.
      * @param string $url Image URL
      */
-    function __construct($url)
+    function __construct(string $url)
     {
         $this->url = $url;
     }
 
-    public static function from_file($file)
+    /**
+     * Create image object from a local file
+     * @param string $file File path
+     * @param ?comicmanager $comicmanager
+     * @return Image Image object
+     * @throws exceptions\ImageNotFound Image file not found
+     */
+    public static function from_file(string $file, comicmanager $comicmanager=null): Image
     {
-        $url = self::file_proxy($file);
-        $image = new self($url);
+        if(!file_exists($file))
+            throw new exceptions\ImageNotFound(sprintf('Image file "%s" not found', $file));
+
+        if(!empty($comicmanager))
+        {
+            if(strpos($file, $comicmanager->files->file_path) === 0)
+                $url = str_replace($comicmanager->files->file_path, $comicmanager->web_image_root, $file);
+            else
+                $url = self::file_proxy($file, $comicmanager->web_root);
+        }
+        else
+            $url = self::file_proxy($file);
+
+        $image = new static($url);
         $image->file = $file;
         return $image;
     }
 
     /**
-     * @param $url
-     * @return Image
+     * Create image object from a URL
+     * @param string $url Image URL
+     * @return Image Image object
      */
-    public static function from_url($url)
+    public static function from_url(string $url): Image
     {
         return new self($url);
     }
 
     /**
-     * @param string $site
+     * @param string $site Release site slug
      * @param string $date Date in YMD format
      * @param comicmanager $comicmanager
      * @return Image
      * @throws exceptions\ImageNotFound
      */
-    public static function from_date($site, $date, comicmanager $comicmanager)
+    public static function from_date(string $site, string $date, comicmanager $comicmanager)
     {
         if(!empty($comicmanager->comics))
         {
             try
             {
                 $url = self::comics_lookup($comicmanager->comics, $site, $date);
-                return new self($url);
+                if(!empty($url))
+                    return self::from_url($url);
             }
             catch (comics\exceptions\ComicsException $e_comics)
-            {
+            { // Not found on comics
             }
         }
 
@@ -87,27 +107,19 @@ class Image
             try
             {
                 $file = self::date_file($comicmanager->files, $site, $date);
-                return self::from_file($file);
+                return self::from_file($file, $comicmanager);
             }
             catch (exceptions\ImageNotFound $e_file)
             {
             }
         }
 
-        $e = new exceptions\ImageNotFound('Image not found', 0);
+        $e = new exceptions\ImageNotFound('Image not found', 0, $e_file ?? $e_comics ?? null);
         if (isset($e_comics))
             $e->e_comics = $e_comics;
         if(isset($e_file))
             $e->e_file = $e_file;
         throw $e;
-
-
-        /*if(!empty($e_comics))
-            throw new imageNotFound('Image not found on comics', 0, $e_comics);
-        if(!empty($e))
-            throw new imageNotFound('Image not found', 0, $e);
-        else
-            throw new imageNotFound('No valid image sources found');*/
     }
 
     /**
@@ -121,12 +133,12 @@ class Image
     public static function from_key($site, $key, $keyfield, comicmanager $comicmanager)
     {
         $file = self::key_file($comicmanager->files, $site, $key, $keyfield);
-        return self::from_file($file);
+        return self::from_file($file, $comicmanager);
     }
 
-    public static function file_proxy($file)
+    public static function file_proxy($file, $web_root = '/comicmanager'): string
     {
-        return self::$image_proxy_path . '?file=' . urlencode($file);
+        return $web_root . '/image.php?file=' . urlencode($file);
     }
 
     /**
@@ -154,7 +166,7 @@ class Image
      * @return string Local image file
      * @throws exceptions\ImageNotFound
      */
-    public static function date_file(files $files, $site, $date)
+    public static function date_file(files $files, string $site, string $date): string
     {
         $path =  $files->filename($site, $date);
         return files::typecheck($path);
@@ -169,40 +181,12 @@ class Image
      * @return string Local image file
      * @throws exceptions\ImageNotFound
      */
-    public static function key_file(files $files, $site, $key, $keyfield='id')
+    public static function key_file(files $files, $site, $key, $keyfield='id'): string
     {
         if($keyfield=='customid')
             $key = 'custom_'.$key;
 
         $path = file_tools::path_join($files->file_path, $site, $key);
         return files::typecheck($path);
-    }
-
-    /**
-     * Get image from local file
-     * @return string Local file path
-     * @throws exceptions\ImageNotFound Image not found
-     */
-    function local_file()
-    {
-        $local_paths = [];
-        if(!empty($this->release->date)) //Show strip by date
-            $local_paths[] = $this->files->filename($this->release->site, $this->release->date);
-        if(!empty($this->release->id))
-            $local_paths[] = file_tools::path_join($this->file_path, $this->release->site, $this->release->id);
-        if(!empty($this->release->customid))
-            $local_paths[] = file_tools::path_join($this->file_path, $this->release->site, 'custom_'.$this->release->customid);
-
-        foreach($local_paths as $path)
-        {
-            try {
-                return files::typecheck($path);
-            } catch (exceptions\ImageNotFound $e) //File not found
-            {
-                continue;
-            }
-        }
-
-        throw new exceptions\ImageNotFound('No images found');
     }
 }

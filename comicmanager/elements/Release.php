@@ -80,7 +80,7 @@ class Release
             if(!empty($this->image_url))
                 return Image::from_url($this->image_url);
             if(!empty($this->image_file))
-                return Image::from_file($this->image_file);
+                return Image::from_file($this->image_file, $this->comicmanager);
             list($key_field, $key) = $this->find_key();
             if(!empty($this->site) && !empty($this->date))
                 return Image::from_date($this->site, $this->date, $this->comicmanager);

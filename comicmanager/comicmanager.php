@@ -51,7 +51,7 @@ class comicmanager extends core
     /**
      * @var string Image root URL
      */
-    public $web_image;
+    public $web_image_root;
 
     public function __construct(array $config=null)
 	{
@@ -76,7 +76,7 @@ class comicmanager extends core
         }
 
         $this->web_root = $config['web_root'] ?? '/comicmanager';
-        $this->web_image = $config['web_image'] ?? $this->web_root . '/images';
+        $this->web_image_root = $config['web_image_root'] ?? $this->web_root . '/images';
     }
 
     /**
