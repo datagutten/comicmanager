@@ -6,8 +6,7 @@ namespace datagutten\comicmanager\elements;
 
 use datagutten\comicmanager\comicmanager;
 use datagutten\comicmanager\exceptions\comicManagerException;
-use datagutten\comicmanager\exceptions\imageNotFound;
-use datagutten\comicmanager\image;
+use datagutten\comicmanager\exceptions\ImageNotFound;
 use DateTime;
 use Exception;
 use PDOStatement;
@@ -51,7 +50,7 @@ class Release
     public bool $debug = false;
 
     /**
-     * @var imageNotFound
+     * @var ImageNotFound
      */
     public $image_error;
     /**
@@ -59,9 +58,9 @@ class Release
      */
     public comicmanager $comicmanager;
     /**
-     * @var image|null
+     * @var Image|null
      */
-    public ?image $image;
+    public ?Image $image;
 
     function __construct(comicmanager $comicmanager, array $fields, $load_image = true)
     {
@@ -74,29 +73,29 @@ class Release
             $this->image = $this->get_image();
     }
 
-    function get_image(): ?image
+    function get_image(): ?Image
     {
         try
         {
             if(!empty($this->image_url))
-                return image::from_url($this->image_url);
+                return Image::from_url($this->image_url);
             if(!empty($this->image_file))
-                return image::from_file($this->image_file);
+                return Image::from_file($this->image_file);
             list($key_field, $key) = $this->find_key();
             if(!empty($this->site) && !empty($this->date))
-                return image::from_date($this->site, $this->date, $this->comicmanager);
+                return Image::from_date($this->site, $this->date, $this->comicmanager);
             elseif(!empty($key))
             {
-                return image::from_key(
+                return Image::from_key(
                     $this->site,
                     $key,
                     $key_field,
                     $this->comicmanager);
             }
             else
-                throw new imageNotFound('No valid keys');
+                throw new ImageNotFound('No valid keys');
         }
-        catch (imageNotFound $e)
+        catch (ImageNotFound $e)
         {
             $this->image_error = $e;
             return null;

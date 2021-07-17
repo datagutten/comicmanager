@@ -1,15 +1,16 @@
 <?php
 
 
-namespace datagutten\comicmanager;
+namespace datagutten\comicmanager\elements;
 
 
-use datagutten\comicmanager\elements\Release;
-use datagutten\comicmanager\exceptions\imageNotFound;
+use datagutten\comicmanager\comicmanager;
+use datagutten\comicmanager\exceptions;
+use datagutten\comicmanager\files;
 use datagutten\comics_tools\comics_api_client as comics;
 use datagutten\tools\files\files as file_tools;
 
-class image
+class Image
 {
     /**
      * @var files
@@ -53,7 +54,7 @@ class image
 
     /**
      * @param $url
-     * @return image
+     * @return Image
      */
     public static function from_url($url)
     {
@@ -64,8 +65,8 @@ class image
      * @param string $site
      * @param string $date Date in YMD format
      * @param comicmanager $comicmanager
-     * @return image
-     * @throws imageNotFound
+     * @return Image
+     * @throws exceptions\ImageNotFound
      */
     public static function from_date($site, $date, comicmanager $comicmanager)
     {
@@ -88,12 +89,12 @@ class image
                 $file = self::date_file($comicmanager->files, $site, $date);
                 return self::from_file($file);
             }
-            catch (imageNotFound $e_file)
+            catch (exceptions\ImageNotFound $e_file)
             {
             }
         }
 
-        $e = new imageNotFound('Image not found', 0);
+        $e = new exceptions\ImageNotFound('Image not found', 0);
         if (isset($e_comics))
             $e->e_comics = $e_comics;
         if(isset($e_file))
@@ -114,8 +115,8 @@ class image
      * @param $key
      * @param $keyfield
      * @param comicmanager $comicmanager
-     * @return image
-     * @throws imageNotFound
+     * @return Image
+     * @throws exceptions\ImageNotFound
      */
     public static function from_key($site, $key, $keyfield, comicmanager $comicmanager)
     {
@@ -151,7 +152,7 @@ class image
      * @param $site
      * @param $date
      * @return string Local image file
-     * @throws imageNotFound
+     * @throws exceptions\ImageNotFound
      */
     public static function date_file(files $files, $site, $date)
     {
@@ -166,7 +167,7 @@ class image
      * @param $key
      * @param string $keyfield
      * @return string Local image file
-     * @throws imageNotFound
+     * @throws exceptions\ImageNotFound
      */
     public static function key_file(files $files, $site, $key, $keyfield='id')
     {
@@ -180,7 +181,7 @@ class image
     /**
      * Get image from local file
      * @return string Local file path
-     * @throws imageNotFound Image not found
+     * @throws exceptions\ImageNotFound Image not found
      */
     function local_file()
     {
@@ -196,12 +197,12 @@ class image
         {
             try {
                 return files::typecheck($path);
-            } catch (exceptions\imageNotFound $e) //File not found
+            } catch (exceptions\ImageNotFound $e) //File not found
             {
                 continue;
             }
         }
 
-        throw new exceptions\imageNotFound('No images found');
+        throw new exceptions\ImageNotFound('No images found');
     }
 }
