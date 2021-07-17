@@ -4,7 +4,7 @@
 namespace datagutten\comicmanager\exceptions;
 
 
-use datagutten\comicmanager\Strip;
+use datagutten\comicmanager\elements\Strip;
 use Throwable;
 
 class StripNotFound extends comicManagerException

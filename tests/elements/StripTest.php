@@ -4,11 +4,11 @@ namespace datagutten\comicmanager\tests\elements;
 
 use datagutten\comicmanager\comicmanager;
 use datagutten\comicmanager\elements\Release;
+use datagutten\comicmanager\elements\Strip;
 use datagutten\comicmanager\exceptions;
-use datagutten\comicmanager\Strip;
 use datagutten\comicmanager\tests\Setup;
 
-class stripTest extends Setup
+class StripTest extends Setup
 {
     /**
      * @var comicmanager

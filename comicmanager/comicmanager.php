@@ -5,6 +5,7 @@ namespace datagutten\comicmanager;
 
 use datagutten\comicmanager\elements\Comic;
 use datagutten\comicmanager\elements\Release;
+use datagutten\comicmanager\elements\Strip;
 use datagutten\comicmanager\exceptions\comicManagerException;
 use datagutten\comics_tools\comics_api_client as comics;
 use datagutten\comics_tools\comics_api_client\exceptions\ComicsException;
