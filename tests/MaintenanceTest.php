@@ -26,8 +26,8 @@ class MaintenanceTest extends Setup
 
         $this->comicmanager = new comicmanager($this->config);
         $this->comicmanager->comicinfo('pondus');
-        $this->comicmanager->add_or_update(['customid' => 4350, 'site' => 'pondusvg', 'date' => '20190813', 'category' => 1]);
-        $this->comicmanager->add_or_update(['customid' => 4350, 'site' => 'pondusadressa', 'date' => '20190813']);
+        $this->comicmanager->add_or_update(['customid' => 4350, 'id' => 4350, 'site' => 'pondusvg', 'date' => '20190813', 'category' => 1]);
+        $this->comicmanager->add_or_update(['customid' => 4350, 'id' => 4350, 'site' => 'pondusadressa', 'date' => '20190813']);
         $this->maintenance = new Maintenance($this->comicmanager);
     }
 
@@ -39,5 +39,16 @@ class MaintenanceTest extends Setup
         $this->maintenance->propagateCategories();
         $st->execute();
         $this->assertSame(2, $st->rowCount());
+    }
+
+    public function testIdToCustomId()
+    {
+        $this->comicmanager->add_or_update(['id' => 4310, 'site' => 'pondusadressa', 'date' => '20190813'], 'key');
+        $release = $this->comicmanager->get(['id'=>4310]);
+        $this->assertEmpty($release['customid']);
+        $output = $this->maintenance->idToCustomId();
+        $release = $this->comicmanager->get(['id'=>4310]);
+        $this->assertEquals(4310, $release['customid']);
+        $this->assertContains('Customid 4310 is free', $output);
     }
 }
