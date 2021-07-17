@@ -26,8 +26,8 @@ class web extends comicmanager
 
         $loader = new Twig\Loader\FilesystemLoader(array(__DIR__.'/../templates', __DIR__.'/../management/templates'), __DIR__);
         $this->twig = new Twig\Environment($loader, array('debug' => $this->debug, 'strict_variables' => true));
-        $this->root = $this->web_root;
         parent::__construct($config);
+        $this->root = $this->web_root;
     }
 
     /**
