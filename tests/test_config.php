@@ -1,8 +1,8 @@
 <?php
 $config['file_path'] = __DIR__ . '/images';
 
-$config['comics']['site_url'] = getenv('comics_site');
-$config['comics']['secret_key'] = getenv('comics_key');
+$config['comics']['site_url'] = getenv('COMICS_SITE');
+$config['comics']['secret_key'] = getenv('COMICS_KEY');
 $config['debug'] = true;
 
 $config['db']['db_user'] = "php_test";
