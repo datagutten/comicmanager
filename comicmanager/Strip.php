@@ -47,7 +47,9 @@ class Strip
     }
 
     /**
+     * Get all releases of this strip
      * @return Release[]
+     * @throws exceptions\StripNotFound
      */
     public function releases(): array
     {
@@ -56,11 +58,12 @@ class Strip
         else
             throw new InvalidArgumentException('Unable to fetch releases using mode ' . $this->mode);
 
+        if($st_releases->rowCount() === 0)
+            throw new exceptions\StripNotFound($this);
+
         $releases = [];
         while ($release = $st_releases->fetch(PDO::FETCH_ASSOC))
         {
-if($release===false)
-return [];
             $releases[] = new Release($this->comicmanager, $release);
         }
         return $releases;
@@ -69,10 +72,13 @@ return [];
     /**
      * Get latest release
      * @return Release
+     * @throws exceptions\StripNotFound
      */
     public function latest(): Release
     {
         $st = $this->queries->latest($this->key_field, $this->key);
+        if($st->rowCount() === 0)
+            throw new exceptions\StripNotFound($this);
         return new Release($this->comicmanager, $st->fetch(PDO::FETCH_ASSOC));
     }
 
