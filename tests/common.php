@@ -26,7 +26,7 @@ class common extends testCase
 
     public function setUp(): void
     {
-        $this->config = require 'test_config_mysql.php';
+        $this->config = require __DIR__.'/test_config_mysql.php';
         try
         {
             $this->drop_database();
