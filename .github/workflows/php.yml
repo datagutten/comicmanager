@@ -45,7 +45,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: xdebug
-          extensions: curl, pdo_mysql
+          extensions: curl, pdo_mysql, gd
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
@@ -67,7 +67,7 @@ jobs:
       - name: Setup PHP with Xdebug
         uses: shivammathur/setup-php@v2
         with:
-          extensions: curl, pdo_mysql
+          extensions: curl, pdo_mysql, gd
 
       - name: Install MariaDB
         uses: ankane/setup-mariadb@v1
