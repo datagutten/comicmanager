@@ -111,7 +111,8 @@ class Queries
      */
     public function category(int $category): PDOStatement
     {
-        $q = sprintf('SELECT * FROM %s WHERE category=?', $this->comic_id);
+        $q = sprintf('SELECT DISTINCT %1$s FROM %2$s WHERE category=? AND %1$s IS NOT NULL ORDER BY %1$s',
+            $this->comic->key_field, $this->comic_id);
         $st = $this->db->prepare($q);
         $st->execute([$category]);
         return $st;
