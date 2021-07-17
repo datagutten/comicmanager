@@ -8,6 +8,7 @@
 
 use datagutten\comicmanager\elements\Release;
 use datagutten\comicmanager\web;
+use datagutten\comicmanager\exceptions;
 
 switch($_GET['mode'])
 {
@@ -102,7 +103,14 @@ else {
     foreach ($releases as $key=>$release)
     {
         //Check if release already is in DB
-        $release->load_db();
+        try
+        {
+            $release->load_db();
+        }
+        catch (exceptions\ReleaseNotFound $e)
+        {
+            continue;
+        }
         $release->site = $_GET['site'];
 
         if(!empty($release->$sortmode)) //Already sorted

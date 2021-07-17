@@ -144,6 +144,9 @@ class Release
             return null;
     }
 
+    /**
+     * @throws exceptions\ReleaseNotFound
+     */
     public function load_db()
     {
         //if(!empty($this->date) && !empty($this->site))
@@ -158,7 +161,7 @@ class Release
         $fields = array_filter($fields);*/
         $info = $this->comicmanager->get($fields);
         if(empty($info))
-            return;
+            throw new exceptions\ReleaseNotFound($this);
         foreach ($info as $key => $value)
         {
             $this->$key = $value;
