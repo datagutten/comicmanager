@@ -39,6 +39,17 @@ class stripTest extends Setup
         $this->assertEquals('4350', $releases[0]->id);
     }
 
+    public function testFromKey()
+    {
+        $strip = Strip::from_grouping_key($this->comicmanager, '4350', 'id');
+        $this->assertInstanceOf(Strip::class, $strip);
+        $releases = $strip->releases();
+        $this->assertIsArray($releases);
+        $this->assertNotEmpty($releases);
+        $this->assertInstanceOf(Release::class, $releases[0]);
+        $this->assertEquals('4350', $releases[0]->id);
+    }
+
     public function testFromInvalidKey()
     {
         $this->expectException(exceptions\StripNotFound::class);

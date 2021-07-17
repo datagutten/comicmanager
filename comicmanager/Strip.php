@@ -82,7 +82,30 @@ class Strip
         return new Release($this->comicmanager, $st->fetch(PDO::FETCH_ASSOC));
     }
 
-    public static function from_key(string $comic, $key, $key_field = 'id', comicmanager $comicmanager=null)
+    /**
+     * Get strip by key
+     * @param comicmanager $comicmanager
+     * @param string $key
+     * @param null $key_field
+     * @return static
+     */
+    public static function from_grouping_key(comicmanager $comicmanager, string $key, $key_field=null): self
+    {
+        $strip = new static($comicmanager->info, 'key', $comicmanager);
+        $strip->key = $key;
+        $strip->key_field = $key_field ?? $comicmanager->info->key_field;
+        return $strip;
+    }
+
+    /**
+     * @param string $comic
+     * @param string $key
+     * @param string $key_field
+     * @param comicmanager|null $comicmanager
+     * @return static
+     * @deprecated Use from_grouping_key
+     */
+    public static function from_key(string $comic, string $key, string $key_field = 'id', comicmanager $comicmanager = null): self
     {
         if(empty($comicmanager))
             $comicmanager = new comicmanager();
