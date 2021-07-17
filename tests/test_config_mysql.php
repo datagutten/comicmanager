@@ -2,6 +2,8 @@
 $config['file_path'] = __DIR__ . '/images';
 
 $config['comics']['site_url'] = getenv('COMICS_SITE');
+if($config['comics']['site_url']===false)
+    throw new RuntimeException('COMICS_SITE not set');
 $config['comics']['secret_key'] = getenv('COMICS_KEY');
 $config['web_root'] = '/comicmanager';
 $config['web_image_root'] = '/comicmanager/images'; //Web accessible path to image files, should point to the same folder as file_path
