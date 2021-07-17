@@ -1,17 +1,21 @@
 <?Php
-
+use datagutten\comicmanager\maintenance\Maintenance;
 use datagutten\comicmanager\web;
 
 require '../vendor/autoload.php';
+$config = require __DIR__.'/../comicmanager/config.php';
+
 $comicmanager=new web;
+
 $tools=array(
-    'id_to_customid.php'=>'Set id as customid',
-    'propagate_categories.php'=>"Propagate category to all copies of a strip",
+    'id_to_customid'=>'Set id as customid',
+    'propagate_categories'=>"Propagate category to all copies of a strip",
     'multiple_categories.php'=>'Find strips with multiple categories',
     'propagate_id.php'=>"Propagate id to all copies of a strip",
     );
 
 $comicinfo=$comicmanager->comicinfo_get();
+$maintenance = new Maintenance($comicmanager);
 if($comicinfo!==false)
 {
 	$comic=$comicinfo['id'];
@@ -19,7 +23,6 @@ if($comicinfo!==false)
 		unset($tools['propagate_categories.php'],$tools['multiple_categories.php']);
 	if(count(array_intersect(array('customid','id'),$comicinfo['possible_key_fields']))!=2)
 		unset($tools['id_to_customid.php']);
-	
 	if(!isset($_GET['tool']))
 	{
 	    echo $comicmanager->render('select_tool.twig', array(
@@ -27,6 +30,10 @@ if($comicinfo!==false)
                 'tools'=>$tools,
                 'header'=>'Tools for maintaining the database'));
 	}
+	elseif($_GET['tool']=='propagate_categories')
+        $output = $maintenance->propagateCategories();
+	elseif($_GET['tool']=='id_to_customid')
+        $output = $maintenance->idToCustomId();
 	elseif(isset($tools[$_GET['tool']]))
 	{
 	    ob_start();
@@ -41,4 +48,11 @@ if($comicinfo!==false)
 	}
 	else
 		echo "Invalid tool: {$_GET['tool']}";
+
+    if (isset($output))
+    {
+        echo $comicmanager->render('tool_output.twig', array(
+            'tool' => $tools[$_GET['tool']],
+            'output' => implode('<br />', $output)));
+    }
 }
