@@ -3,6 +3,7 @@
 
 namespace datagutten\comicmanager;
 
+use datagutten\comicmanager\elements\Comic;
 use datagutten\comicmanager\elements\Release;
 use InvalidArgumentException;
 use PDO;
@@ -14,9 +15,9 @@ use PDO;
 class Strip
 {
     /**
-     * @var string Comic ID
+     * @var Comic Comic object
      */
-    public string $comic;
+    public Comic $comic;
     /**
      * @var string Comic key field
      */
@@ -37,8 +38,9 @@ class Strip
     private string $mode;
 
 
-    public function __construct(elements\Comic $comic, string $mode, comicmanager $comicmanager)
+    public function __construct(Comic $comic, string $mode, comicmanager $comicmanager)
     {
+        $this->comic = $comic;
         $this->mode = $mode;
         $this->comicmanager = $comicmanager;
         $this->queries = new Queries($comicmanager->db, $comic);
