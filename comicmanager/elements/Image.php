@@ -164,7 +164,7 @@ class Image
      * @param $site
      * @param $date
      * @return string Local image file
-     * @throws exceptions\ImageNotFound
+     * @throws exceptions\ImageNotFound|exceptions\comicManagerException
      */
     public static function date_file(files $files, string $site, string $date): string
     {

@@ -99,11 +99,19 @@ class files
 		return $releases;
 	}
 
-	function filename($site,$date,$create_dir=false)
-	{
+    /**
+     * Get file name
+     * @param string $site Site slug
+     * @param string $date Date
+     * @param false $create_dir Create folder if not exists
+     * @return string File path and name without extension
+     * @throws comicManagerException
+     */
+    function filename(string $site, string $date, $create_dir = false): string
+    {
 		//Files are stored in [filepath]/site/month/date
 		if(empty($date) || !preg_match('/[0-9]{8}/', $date))
-			throw new InvalidArgumentException('Invalid or empty date');
+			throw new comicManagerException('Invalid or empty date');
 
 		$dir=$this->file_path.'/'.$site.'/'.substr($date,0,6);
 
