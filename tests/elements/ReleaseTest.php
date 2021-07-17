@@ -1,13 +1,14 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
-namespace datagutten\comicmanager\tests;
+namespace datagutten\comicmanager\tests\elements;
 
 use datagutten\comicmanager\comicmanager;
 use datagutten\comicmanager\elements\Release;
 use datagutten\comicmanager\exceptions\ImageNotFound;
+use datagutten\comicmanager\tests\Setup;
 use datagutten\tools\files\files;
 
-class releaseTest extends Setup
+class ReleaseTest extends Setup
 {
     /**
      * @var comicmanager
