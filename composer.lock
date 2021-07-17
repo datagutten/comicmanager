@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "14a3eb972f2b60332625328b0df39dd4",
+    "content-hash": "5dfbf1f2c3ee6cb32349952801a3ad8d",
     "packages": [
         {
             "name": "datagutten/comics-tools",
-            "version": "v1.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/datagutten/comics-tools.git",
-                "reference": "79219f59122fc4117925192284736124ffeb419a"
+                "reference": "743c438e9ed0dae19137bac14a6178024ec6afd6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/datagutten/comics-tools/zipball/79219f59122fc4117925192284736124ffeb419a",
-                "reference": "79219f59122fc4117925192284736124ffeb419a",
+                "url": "https://api.github.com/repos/datagutten/comics-tools/zipball/743c438e9ed0dae19137bac14a6178024ec6afd6",
+                "reference": "743c438e9ed0dae19137bac14a6178024ec6afd6",
                 "shasum": ""
             },
             "require": {
@@ -47,7 +47,11 @@
                 }
             ],
             "description": "Tools for the web comics aggregator by jodal (jodal/comics)",
-            "time": "2020-12-24T15:17:28+00:00"
+            "support": {
+                "issues": "https://github.com/datagutten/comics-tools/issues",
+                "source": "https://github.com/datagutten/comics-tools/tree/v1.0.1"
+            },
+            "time": "2021-07-17T14:01:35+00:00"
         },
         {
             "name": "datagutten/tools",
@@ -2163,6 +2167,68 @@
                 }
             ],
             "time": "2020-09-28T06:39:44+00:00"
+        },
+        {
+            "name": "symfony/filesystem",
+            "version": "v5.3.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/filesystem.git",
+                "reference": "19b71c8f313b411172dd5f470fd61f24466d79a9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/19b71c8f313b411172dd5f470fd61f24466d79a9",
+                "reference": "19b71c8f313b411172dd5f470fd61f24466d79a9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.5",
+                "symfony/polyfill-ctype": "~1.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Filesystem\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Provides basic utilities for the filesystem",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/filesystem/tree/v5.3.3"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2021-06-30T07:27:52+00:00"
         },
         {
             "name": "theseer/tokenizer",
