@@ -58,7 +58,10 @@ class Image
         if(!empty($comicmanager))
         {
             if(strpos($file, $comicmanager->files->file_path) === 0)
+            {
                 $url = str_replace($comicmanager->files->file_path, $comicmanager->web_image_root, $file);
+                $url = str_replace('\\', '/', $url);
+            }
             else
                 $url = self::file_proxy($file, $comicmanager->web_root);
         }
