@@ -8,6 +8,7 @@
 
 use datagutten\comicmanager\elements\Release;
 use datagutten\comicmanager\web;
+use datagutten\comicmanager\exceptions;
 
 require 'vendor/autoload.php';
 $comic_manager = new web;
@@ -55,10 +56,14 @@ if (!empty($comic))
             $releases = $comic_manager->releases_date_wildcard($_GET['site'], $_GET['date']);
         } else
         {
-            $releases = [new Release($comic_manager, ['site' => $_GET['site'], 'date' => $_GET['date']])];
-            /*$where = sprintf('date LIKE ? AND site=? GROUP BY %s ORDER BY date', $key_field);
-            $values = array($_GET['date'], $_GET['site']);*/
-            $show_newest = false; //Show correct release
+            try
+            {
+                $releases = [Release::from_date($comic_manager, $_GET['site'], $_GET['date'])];
+            }
+            catch (exceptions\comicManagerException $e)
+            {
+                die($comic_manager->render('exception.twig', ['e' => $e]));
+            }
         }
     } elseif (!empty($_GET['category']))
     {
