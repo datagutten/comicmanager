@@ -10,7 +10,6 @@ use datagutten\comicmanager\exceptions\comicManagerException;
 use datagutten\comicmanager\exceptions\ImageNotFound;
 use DateTime;
 use Exception;
-use PDOStatement;
 
 class Release
 {
@@ -48,12 +47,11 @@ class Release
     public ?string $image_file;
 
     public ?string $title;
-    public bool $debug = false;
 
     /**
-     * @var ImageNotFound
+     * @var ?ImageNotFound
      */
-    public $image_error;
+    public ?ImageNotFound $image_error = null;
     /**
      * @var comicmanager
      */
@@ -78,6 +76,10 @@ class Release
             $this->image = $this->get_image();
     }
 
+    /**
+     * Get image for the release
+     * @return ?Image
+     */
     function get_image(): ?Image
     {
         try
@@ -108,9 +110,10 @@ class Release
     }
 
     /**
+     * Find the key and key field
      * @return array[key field, key]
      */
-    function find_key()
+    function find_key(): array
     {
         $fields = $this->comicmanager->info['possible_key_fields'];
         foreach($fields as $key_field)
@@ -125,7 +128,7 @@ class Release
      * Is the grouping key set for the release?
      * @return bool
      */
-    function has_key()
+    function has_key(): bool
     {
         $key_field = $this->comicmanager->info['keyfield'];
         return property_exists($this, $key_field) && !empty($this->$key_field);
@@ -149,7 +152,6 @@ class Release
      */
     public function load_db()
     {
-        //if(!empty($this->date) && !empty($this->site))
         $fields = [];
         foreach (['date', 'site', 'id'] as $field)
         {
@@ -157,8 +159,6 @@ class Release
                 $fields[$field] = $this->$field;
         }
 
-        /*$fields = ['date' => $this->date, 'site' => $this->site, 'id' => $this->id];
-        $fields = array_filter($fields);*/
         $info = $this->comicmanager->get($fields);
         if(empty($info))
             throw new exceptions\ReleaseNotFound($this);
