@@ -44,8 +44,16 @@ class comicmanager extends core
      * @var Queries
      */
     protected Queries $queries;
+    /**
+     * @var string Web site root path
+     */
+    public $web_root;
+    /**
+     * @var string Image root URL
+     */
+    public $web_image;
 
-	public function __construct(array $config=null)
+    public function __construct(array $config=null)
 	{
         parent::__construct($config);
         if(!empty($this->config['comics']))
@@ -66,6 +74,9 @@ class comicmanager extends core
         	$this->files = new files($this->config['file_path']);
             $this->sources['file']='Local files';
         }
+
+        $this->web_root = $config['web_root'] ?? '/comicmanager';
+        $this->web_image = $config['web_image'] ?? $this->web_root . '/images';
     }
 
     /**
