@@ -313,22 +313,24 @@ class comicmanager extends core
     }
 
     /**
-     * @param $category
-     * @return Strip[]
+     * Show releases in a category
+     * @param int $category Category ID
+     * @return Strip[] Array of Strip instances
      */
     public function releases_category(int $category): array
     {
         $releases = [];
         $st = $this->queries->category($category);
-        while ($row = $st->fetch(PDO::FETCH_ASSOC))
+
+        while ($key = $st->fetch(PDO::FETCH_COLUMN))
         {
-            if(!empty($row[$this->info->key_field]))
-            {
-                $strip = Strip::from_key($this->info->id, $row[$this->info->key_field], $this->info->key_field, $this);
-                $releases[] = $strip->latest();
-            }
-            else
-                $releases[] = new Release($this, $row);
+            $strip = Strip::from_grouping_key($this, $key);
+            $releases[] = $strip->latest();
+        }
+        $st = $this->queries->category_keyless($category);
+        while($row = $st->fetch(PDO::FETCH_ASSOC))
+        {
+            $releases[] = new Release($this, $row);
         }
         return $releases;
     }
