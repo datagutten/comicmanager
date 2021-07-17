@@ -4,10 +4,24 @@ namespace datagutten\comicmanager\tests;
 
 use datagutten\comicmanager\comicmanager;
 use datagutten\comicmanager\elements\Release;
+use datagutten\comicmanager\exceptions\ImageNotFound;
 use datagutten\tools\files\files;
 
 class releaseTest extends Setup
 {
+    /**
+     * @var comicmanager
+     */
+    public comicmanager $comicmanager;
+
+    function setUp(): void
+    {
+        parent::setUp();
+        $this->config['comics'] = null;
+        $this->comicmanager = new comicmanager($this->config);
+        $this->comicmanager->comicinfo('pondus');
+    }
+
     function testRelease()
     {
         $comicmanager = new comicmanager($this->config);
@@ -44,5 +58,25 @@ class releaseTest extends Setup
         if(!empty($release->image_error))
             throw $release->image_error;
         $this->assertEquals(4623, $release->id);
+    }
+
+    function testHasKey()
+    {
+        $release = new Release($this->comicmanager, ['site'=>'pondusadressa', 'date'=>'20201009'], false);
+        $this->assertFalse($release->has_key());
+        $this->assertEmpty($release->key());
+    }
+
+    function testGetKey()
+    {
+        $release = new Release($this->comicmanager, ['site'=>'pondusbt', 'id'=>4623, 'customid'=>4623], false);
+        $this->assertSame('4623', $release->key());
+    }
+
+    function testGetImageInvalidKey()
+    {
+        //$this->expectException(ImageNotFound::class);
+        $release = new Release($this->comicmanager, ['site'=>'pondusbt']);
+        $this->assertInstanceOf(ImageNotFound::class, $release->image_error);
     }
 }
