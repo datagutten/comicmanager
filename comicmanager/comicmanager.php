@@ -171,50 +171,6 @@ class comicmanager extends core
         return $info;
     }
 
-
-    /**
-     * Find the image file for a database row
-     * @param array $row Array with release information
-     * @return string Image file
-     * @throws Exception Image not found
-     */
-    public function imagefile($row)
-    {
-        if(!empty($row['date'])) //Show strip by date
-        {
-            $comics_date=preg_replace('/([0-9]{4})([0-9]{2})([0-9]{2})/','$1-$2-$3',$row['date']); //Rewrite date for comics
-            if(is_object($this->comics_cache)) {
-                try {
-                    //Check if the strip is found on comics
-                    $image=$this->comics_cache->comics_release_single_cache($row['site'],$comics_date);
-                }
-                catch (Exception $e_comics) {
-                    //Image not found on comics, try to find local file
-                    try {
-                        $image = files::typecheck($filename = $this->files->filename($row['site'], $row['date']));
-                    }
-                    catch (Exception $e_file) //File not found, re-throw exception from comics
-                    {
-                        throw $e_comics;
-                    }
-                }
-            }
-            elseif($this->debug)
-                echo "Comics not available\n";
-        }
-		else //Show strip by id
-		{
-			if(!empty($row['id']))
-                $image = files::typecheck($this->files->file_path . "/{$row['site']}/{$row['id']}");
-			if(isset($row['customid']) && (!isset($image) || $image===false)) //Image not found by id, try customid
-                $image = files::typecheck($this->files->file_path . "/{$row['site']}/custom_{$row['customid']}");
-		}
-		if(empty($image))
-			return false;
-		else
-			return $image;
-	}
-
     /**
      * Find first unused custom id
      * @return string
