@@ -66,6 +66,8 @@ class files
 			throw new comicManagerException('No folder for site '.$site);
 
 		$dir=scandir($base_path=$this->file_path.'/'.$site); //Get months
+        if($dir===false)
+            return [];
 		$dir=array_diff($dir,array('.','..','Thumbs.db'));
 		$releases = array();
 		foreach ($dir as $month)
@@ -83,6 +85,8 @@ class files
 				continue;
 
 			$month_dir=scandir($base_path.'/'.$month); //Get the files for this month
+            if ($month_dir===false)
+                continue;
 
 			foreach ($month_dir as $file)
 			{
