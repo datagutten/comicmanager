@@ -36,7 +36,7 @@ class files
      */
     public static function typecheck($filename)
     {
-        $types = array('jpg', 'gif', 'png');
+        $types = array('jpg', 'jpeg', 'gif', 'png');
         foreach ($types as $type)
         {
             if (file_exists($filename . '.' . $type))
