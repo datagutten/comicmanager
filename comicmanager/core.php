@@ -45,7 +45,7 @@ class core
             set_include_path(__DIR__);
 
         if(empty($config))
-            $this->config = require 'config.php';
+            $this->config = require __DIR__.'/../config.php';
         else
             $this->config = $config;
 

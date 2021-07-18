@@ -3,7 +3,6 @@ use datagutten\comicmanager\maintenance\Maintenance;
 use datagutten\comicmanager\web;
 
 require '../vendor/autoload.php';
-$config = require __DIR__.'/../comicmanager/config.php';
 
 $comicmanager=new web;
 

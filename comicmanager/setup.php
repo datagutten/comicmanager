@@ -14,7 +14,7 @@ class setup extends Comic
     public PDO $db;
     public DBUtils $db_utils;
 
-    public function __construct(array $values, array $config)
+    public function __construct(array $values, array $config = null)
     {
         parent::__construct($values);
         $core = new core($config);

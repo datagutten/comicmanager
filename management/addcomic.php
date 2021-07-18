@@ -5,7 +5,6 @@ use datagutten\comicmanager\web;
 
 require '../vendor/autoload.php';
 $comicmanager=new web;
-$config = require '../comicmanager/config.php';
 
 if(isset($_POST['submit']))
 {
@@ -17,7 +16,7 @@ if(isset($_POST['submit']))
 	try {
 	    $fields = ['id'=>$_POST['comic'], 'name'=>$_POST['name'], 'key_field'=>$_POST['key_field'], 'has_categories'=>isset($_POST['has_categories'])];
 	    $fields['possible_key_fields'] = array_merge([$_POST['key_field']], $_POST['extra_keys']);
-	    $comic = new setup($fields, $config);
+	    $comic = new setup($fields);
         $comic->create();
         //$setup->createComic(strtolower($_POST['comic']), $_POST['name'], $_POST['key_field'], isset($_POST['has_categories']), $_POST['extra_keys']);
         header('Location: managecomics_front.php?comic='.$_POST['comic']);
