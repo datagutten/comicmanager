@@ -5,6 +5,7 @@ namespace datagutten\comicmanager\elements;
 
 
 use ArrayAccess;
+use datagutten\comicmanager\exceptions\comicManagerException;
 use InvalidArgumentException;
 use PDO;
 
@@ -43,11 +44,21 @@ class Comic implements ArrayAccess
         }
     }
 
-    public static function from_db(PDO $db, string $id)
+    /**
+     * Load comic information from database
+     * @param PDO $db
+     * @param string $id
+     * @return static
+     * @throws comicManagerException
+     */
+    public static function from_db(PDO $db, string $id): Comic
     {
         $st = $db->prepare('SELECT * FROM comic_info WHERE id=?');
         $st->execute([$id]);
         $values = $st->fetch(PDO::FETCH_ASSOC);
+        if($values===false)
+            throw new comicManagerException('Comic not found');
+
         return new static([
             'id' => $values['id'],
             'name' => $values['name'],
