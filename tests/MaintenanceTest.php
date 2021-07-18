@@ -4,7 +4,6 @@ namespace datagutten\comicmanager\tests;
 
 use datagutten\comicmanager\comicmanager;
 use datagutten\comicmanager\maintenance\Maintenance;
-use PHPUnit\Framework\TestCase;
 
 class MaintenanceTest extends Setup
 {

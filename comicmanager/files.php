@@ -7,7 +7,6 @@ namespace datagutten\comicmanager;
 use datagutten\comicmanager\exceptions\comicManagerException;
 use datagutten\comicmanager\exceptions\ImageNotFound;
 use FileNotFoundException;
-use InvalidArgumentException;
 
 class files
 {

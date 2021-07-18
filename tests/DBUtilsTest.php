@@ -3,7 +3,6 @@
 namespace datagutten\comicmanager\tests;
 
 use datagutten\comicmanager\DBUtils;
-use PDO;
 
 class DBUtilsTest extends common
 {

@@ -5,12 +5,7 @@ namespace datagutten\comicmanager;
 
 
 use datagutten\tools\PDOConnectHelper;
-use FileNotFoundException;
-use InvalidArgumentException;
 use PDO;
-use pdo_helper;
-use PDOException;
-use PDOStatement;
 
 /**
  * SQL connection and database utilities
