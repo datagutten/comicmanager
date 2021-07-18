@@ -4,7 +4,7 @@ namespace datagutten\comicmanager\tests\elements;
 
 use datagutten\comicmanager\comicmanager;
 use datagutten\comicmanager\elements\Release;
-use datagutten\comicmanager\exceptions\ImageNotFound;
+use datagutten\comicmanager\exceptions;
 use datagutten\comicmanager\tests\Setup;
 use datagutten\tools\files\files;
 
@@ -18,7 +18,8 @@ class ReleaseTest extends Setup
     function setUp(): void
     {
         parent::setUp();
-        $this->config['comics'] = null;
+        if (empty($this->config['comics']['secret_key']))
+            $this->config['comics'] = null;
         $this->comicmanager = new comicmanager($this->config);
         $this->comicmanager->comicinfo('pondus');
     }
@@ -41,6 +42,13 @@ class ReleaseTest extends Setup
         $this->assertTrue(empty($release->uid));
         $release->load_db();
         $this->assertNotEmpty($release->uid);
+    }
+
+    function testLoadDbNotFound()
+    {
+        $this->expectException(exceptions\ReleaseNotFound::class);
+        $release = new Release($this->comicmanager, ['site' => 'pondusadressa', 'date' => '20201009'], false);
+        $release->load_db();
     }
 
     function testNoDate()
@@ -79,5 +87,44 @@ class ReleaseTest extends Setup
         //$this->expectException(ImageNotFound::class);
         $release = new Release($this->comicmanager, ['site'=>'pondusbt']);
         $this->assertInstanceOf(ImageNotFound::class, $release->image_error);
+    }
+
+    function testGetImage()
+    {
+        $release = new Release($this->comicmanager, ['site' => 'pondusbt', 'image_url' => 'http://test']);
+        $this->assertSame('http://test', $release->image->url);
+        $file = files::path_join(sys_get_temp_dir(), '4623.jpg');
+        touch($file);
+        $release = new Release($this->comicmanager, ['site' => 'pondusbt', 'image_file' => $file]);
+        $this->assertSame($file, $release->image->file);
+    }
+
+    function testFromComics()
+    {
+        $release_comics = $this->comicmanager->comics->releases_date('pondusadressa', '2021-07-18');
+        $release = Release::from_comics($this->comicmanager, $release_comics[0], 'pondusadressa');
+        $this->assertStringContainsString('/media/pondusadressa/9/9766c598b5f7b1037e5ade94fc21877b9e07ab2518aabd5ecd0f5cfd1c8961b3.jpg', $release->image_url);
+    }
+
+    function testFromComicsInvalidDate()
+    {
+        $this->expectException(exceptions\comicManagerException::class);
+        $this->expectExceptionMessage('Failed to parse time string (2021-07-32) at position 9 (2): Unexpected character');
+        Release::from_comics($this->comicmanager, ['pub_date' => '2021-07-32'], 'pondusadressa');
+    }
+
+    function testFromDate()
+    {
+        $this->comicmanager->add_or_update(['site' => 'pondusadressa', 'date' => '20201009', 'category' => 48, 'id' => 5690, 'customid' => 5690]);
+        $release = Release::from_date($this->comicmanager, 'pondusadressa', '20201009');
+        $this->assertSame('20201009', $release->date);
+        $this->assertSame('pondusadressa', $release->site);
+    }
+
+    function testFromInvalidDate()
+    {
+        $this->expectException(exceptions\comicManagerException::class);
+        $this->expectExceptionMessage('Invalid date: 2021-07-32');
+        Release::from_date($this->comicmanager, 'pondusadressa', '2021-07-32');
     }
 }
