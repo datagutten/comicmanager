@@ -6,6 +6,7 @@ namespace datagutten\comicmanager;
 
 use datagutten\comicmanager\elements\Comic;
 use datagutten\comicmanager\exceptions\comicManagerException;
+use Throwable;
 use Twig;
 
 class web extends comicmanager
@@ -67,6 +68,16 @@ class web extends comicmanager
             }
             //die($this->render($this->render()))
         }
+    }
+
+    public function render_error(string $error): string
+    {
+        return $this->render('error.twig', ['error' => $error, 'title'=>'error']);
+    }
+
+    public function render_exception(Throwable $throwable): string
+    {
+        return $this->render('exception.twig', ['e' => $throwable, 'title'=>'exception']);
     }
 
     /**
