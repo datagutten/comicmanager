@@ -46,7 +46,10 @@ if (!empty($comic))
     elseif (!empty($_GET['key_from']))
     {
         if (empty($_GET['key_to']))
+        {
+            $show_duplicates = false;
             $strips = [$comic_manager->strip_from_key($_GET['key_from'])];
+        }
         else
             $strips = $comic_manager->strip_range($_GET['key_from'], $_GET['key_to']);
     } elseif (!empty($_GET['site']) && !empty($_GET['date'])) //Specific release
