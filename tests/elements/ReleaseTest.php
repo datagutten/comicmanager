@@ -18,8 +18,6 @@ class ReleaseTest extends Setup
     function setUp(): void
     {
         parent::setUp();
-        if (empty($this->config['comics']['secret_key']))
-            $this->config['comics'] = null;
         $this->comicmanager = new comicmanager($this->config);
         $this->comicmanager->comicinfo('pondus');
     }

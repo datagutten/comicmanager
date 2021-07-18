@@ -13,6 +13,8 @@ class Setup extends common
         parent::setUp();
         if (!file_exists($this->config['file_path']))
             mkdir($this->config['file_path']);
+        if (empty($this->config['comics']['secret_key']))
+            $this->config['comics'] = null;
 
         $setup = new \datagutten\comicmanager\setup(['id' => 'pondus', 'name' => 'Pondus', 'key_field' => 'customid', 'has_categories' => true, 'possible_key_fields' => ['id', 'customid']], $this->config);
         $setup->createComicInfoTable();
