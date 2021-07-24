@@ -64,4 +64,10 @@ class ComicTest extends Setup
         unset($this->comic['key_field']);
         $this->assertFalse(isset($this->comic->key_field));
     }
+
+    public function testFields()
+    {
+        $fields = $this->comic->fields;
+        $this->assertEquals(['date', 'site', 'uid', 'customid', 'category', 'id'], $fields);
+    }
 }

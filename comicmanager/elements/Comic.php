@@ -12,6 +12,10 @@ use PDO;
 class Comic implements ArrayAccess
 {
     /**
+     * @var array All valid database fields for the comic
+     */
+    public array $fields;
+    /**
      * @var array All possible key fields
      */
     public static array $key_fields = ['id' => 'ID (printed on strip)', 'customid' => 'Custom grouping id', 'original_date' => 'Original published date', 'uid'=>'Unique release id'];
@@ -59,12 +63,17 @@ class Comic implements ArrayAccess
         if($values===false)
             throw new comicManagerException('Comic not found');
 
+        $st = $db->query('SHOW COLUMNS FROM '.$id);
+        $columns = $st->fetchAll(PDO::FETCH_ASSOC);
+        $fields = array_column($columns, 'Field');
+
         return new static([
             'id' => $values['id'],
             'name' => $values['name'],
             'key_field' => $values['keyfield'],
             'has_categories' => $values['has_categories'] == 1,
             'possible_key_fields' => self::parsePossibleKeyFields($values['possible_key_fields']),
+            'fields' => $fields,
         ]);
     }
 
