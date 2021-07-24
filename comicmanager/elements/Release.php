@@ -65,6 +65,13 @@ class Release
      */
     public DateTime $date_obj;
 
+    /**
+     * Release constructor.
+     * @param comicmanager $comicmanager
+     * @param array $fields
+     * @param bool $load_image
+     * @throws comicManagerException
+     */
     function __construct(comicmanager $comicmanager, array $fields, $load_image = true)
     {
         $this->comicmanager = $comicmanager;
@@ -72,7 +79,12 @@ class Release
         {
             $this->$field = $value;
         }
-        if($load_image)
+        if (isset($this->date) && !isset($this->date_obj))
+            $this->date_obj = self::parse_date($this->date);
+        elseif (!isset($this->date) && isset($this->date_obj))
+            $this->date = $this->date_obj->format('Ymd');
+
+        if ($load_image)
             $this->image = $this->get_image();
     }
 
@@ -169,6 +181,24 @@ class Release
     }
 
     /**
+     * Parse a string date to a DateTime object
+     * @param string $date
+     * @return DateTime
+     * @throws comicManagerException
+     */
+    public static function parse_date(string $date): DateTime
+    {
+        try
+        {
+            return new DateTime($date);
+        }
+        catch (Exception $e)
+        {
+            throw new exceptions\comicManagerException('Invalid date: ' . $date, 0, $e);
+        }
+    }
+
+    /**
      * Create a release instance from comics
      * @param comicmanager $comicmanager
      * @param array $data
@@ -178,17 +208,10 @@ class Release
      */
     public static function from_comics(comicmanager $comicmanager, array $data, string $site): Release
     {
-        try
-        {
-            $date = new DateTime($data['pub_date']);
-            $date_string = $date->format('Ymd');
-        }
-        catch (Exception $e)
-        {
-            throw new comicManagerException($e->getMessage(), 0, $e);
-        }
+        $date = self::parse_date($data['pub_date']);
+
         $info = [
-            'site' => $site, 'date' => $date_string, 'date_obj' => $date,
+            'site' => $site, 'date_obj' => $date,
             'image_url' => $data['images'][0]['file'],
             'title' => $data['images'][0]['title']];
         return new self($comicmanager, $info);
@@ -204,17 +227,7 @@ class Release
      */
     public static function from_date(comicmanager $comicmanager, string $site, string $date): Release
     {
-        try
-        {
-            $date_obj = new DateTime($date);
-        }
-        catch (Exception $e)
-        {
-            throw new exceptions\comicManagerException('Invalid date: ' . $date, 0, $e);
-        }
-
-        $release = new static($comicmanager, ['date' => $date_obj->format('Ymd'), 'site' => $site]);
-        $release->date_obj = $date_obj;
+        $release = new static($comicmanager, ['date' => $date, 'site' => $site]);
         $release->load_db();
         return $release;
     }

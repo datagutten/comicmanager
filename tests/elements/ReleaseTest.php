@@ -100,7 +100,7 @@ class ReleaseTest extends Setup
     function testFromComicsInvalidDate()
     {
         $this->expectException(exceptions\comicManagerException::class);
-        $this->expectExceptionMessage('Failed to parse time string (2021-07-32) at position 9 (2): Unexpected character');
+        $this->expectExceptionMessage('Invalid date: 2021-07-32');
         Release::from_comics($this->comicmanager, ['pub_date' => '2021-07-32'], 'pondusadressa');
     }
 
