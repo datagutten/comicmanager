@@ -53,9 +53,9 @@ class Release
      */
     public ?ImageNotFound $image_error = null;
     /**
-     * @var comicmanager
+     * @var Comic
      */
-    public comicmanager $comicmanager;
+    public Comic $comic;
     /**
      * @var Image|null
      */
@@ -74,7 +74,7 @@ class Release
      */
     function __construct(comicmanager $comicmanager, array $fields, $load_image = true)
     {
-        $this->comicmanager = $comicmanager;
+        $this->comic = $comicmanager->info;
         foreach ($fields as $field => $value)
         {
             $this->$field = $value;
@@ -85,31 +85,33 @@ class Release
             $this->date = $this->date_obj->format('Ymd');
 
         if ($load_image)
-            $this->image = $this->get_image();
+            $this->image = $this->get_image($comicmanager);
     }
 
     /**
      * Get image for the release
+     * @param comicmanager $comicmanager
      * @return ?Image
+     * @throws exceptions\comicManagerException
      */
-    function get_image(): ?Image
+    function get_image(comicmanager $comicmanager): ?Image
     {
         try
         {
             if(!empty($this->image_url))
                 return Image::from_url($this->image_url);
             if(!empty($this->image_file))
-                return Image::from_file($this->image_file, $this->comicmanager);
+                return Image::from_file($this->image_file, $comicmanager);
             list($key_field, $key) = $this->find_key();
             if(!empty($this->site) && !empty($this->date))
-                return Image::from_date($this->site, $this->date, $this->comicmanager);
+                return Image::from_date($this->site, $this->date, $comicmanager);
             elseif(!empty($key))
             {
                 return Image::from_key(
                     $this->site,
                     $key,
                     $key_field,
-                    $this->comicmanager);
+                    $comicmanager);
             }
             else
                 throw new ImageNotFound('No valid keys');
@@ -127,7 +129,7 @@ class Release
      */
     function find_key(): array
     {
-        $fields = $this->comicmanager->info['possible_key_fields'];
+        $fields = $this->comic->possible_key_fields;
         foreach($fields as $key_field)
         {
             if(property_exists($this, $key_field) && !empty($this->$key_field))
@@ -142,7 +144,7 @@ class Release
      */
     function has_key(): bool
     {
-        $key_field = $this->comicmanager->info['keyfield'];
+        $key_field = $this->comic->key_field;
         return property_exists($this, $key_field) && !empty($this->$key_field);
     }
 
@@ -152,7 +154,7 @@ class Release
      */
     function key(): ?string
     {
-        $key_field = $this->comicmanager->info['keyfield'];
+        $key_field = $this->comic->key_field;
         if ($this->has_key())
             return $this->$key_field;
         else

@@ -54,7 +54,7 @@ class ReleaseTest extends Setup
         $this->comicmanager->add_or_update(['site' => 'pondus_blad_digirip', 'id' => 4623, 'customid' => 4623]);
         $release = new Release($this->comicmanager, ['id' => 4623], false);
         $release->load_db();
-        $release->image = $release->get_image();
+        $release->image = $release->get_image($this->comicmanager);
         if (!empty($release->image_error))
             throw $release->image_error;
         $this->assertEquals(4623, $release->id);
