@@ -54,6 +54,12 @@ class comicmanager extends core
      */
     public $web_image_root;
 
+    /**
+     * comicmanager constructor.
+     * @param ?array $config
+     * @throws FileNotFoundException File path not found
+     * @throws comicManagerException
+     */
     public function __construct(array $config=null)
 	{
         parent::__construct($config);
