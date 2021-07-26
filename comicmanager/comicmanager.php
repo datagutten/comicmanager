@@ -66,7 +66,7 @@ class comicmanager extends core
             }
             catch (ComicsException $e)
             {
-                echo $e->getMessage();
+                throw new exceptions\comicManagerException('Error initializing comics', 0, $e);
             }
         }
 
