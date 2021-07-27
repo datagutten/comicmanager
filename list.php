@@ -1,11 +1,14 @@
 <!doctype html>
 <?php
 
+use datagutten\comicmanager\exceptions;
 use datagutten\comicmanager\web;
 
 require 'vendor/autoload.php';
 $comic_manager=new web;
 $list_path="/home/Dropbox/Tegneserier/lister/pondus";
+if(!isset($_GET['list']) && isset($argv[1]))
+    $_GET['list'] = $argv[1];
 
 if(!isset($_GET['list']))
 {
@@ -80,33 +83,26 @@ else
 
             if (array_search($comic_id, $filter) === false)
                 continue;
-
-            if (preg_match('^([0-9]{8})(?:\s+-\s+[0-9]+)*\s+-\s+([a-z]+)^', $strip, $date_and_site)) //date and site
+            try
             {
-                $release_temp = array('date' => $date_and_site[1], 'site' => $date_and_site[2]);
-            } else //Treat the line as primary key for the comic
+                if (preg_match('^([0-9]{8})(?:\s+-\s+[0-9]+)*\s+-\s+([a-z]+)^', $strip, $date_and_site)) //date and site
+                {
+                    $release_temp = array('date' => $date_and_site[1], 'site' => $date_and_site[2]);
+                    $releases[$set_id]['releases'][] = $comic_manager->releases->release(['date' => $date_and_site[1], 'site' => $date_and_site[2]]);
+                }
+                else //Treat the line as primary key for the comic
+                {
+                    $release_temp = array($comic['keyfield'] => $strip);
+                    $releases[$set_id]['releases'][] = $comic_manager->strips->from_key($strip)->latest();
+                }
+            }
+            catch (exceptions\StripNotFound $e)
             {
-                $release_temp = array($comic['keyfield']=>$strip);
-                //$release_temp[$comic['keyfield']] = $strip;
-            }
-            try {
-                unset($release);
-                $release = $comic_manager->get($release_temp);
-            }
-            catch (Exception $e)
-            {
-                $error_text = sprintf('Error showing line %d parsed as %s: %s', $line_num, print_r($release_temp, true), $e->getMessage());
-                $releases[$set_id]['releases'][]['error'] = $error_text;
-                //$dom->createElement_simple('p', $body, array('class' => 'error'), $error_text);
-                unset($release);
-                continue;
-            }
-
-            if (empty($release))
                 $releases[$set_id]['releases'][]['error'] = "Not found: $comic_id $strip";
-            else {
-                $releases[$set_id]['releases'][]=$release;
-
+            }
+            catch (exceptions\comicManagerException $e)
+            {
+                $releases[$set_id]['releases'][]['error'] = sprintf('Error showing line %d: %s', $line_num, $e->getMessage());
             }
         }
 	}
