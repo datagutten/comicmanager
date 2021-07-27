@@ -4,8 +4,8 @@
 namespace datagutten\comicmanager\tests;
 
 
-use datagutten\comics_tools\comics_api_client\ComicsAPICache;
 use datagutten\comicmanager\elements;
+use datagutten\comics_tools\comics_api_client\ComicsAPICache;
 
 class Setup extends common
 {
@@ -27,6 +27,6 @@ class Setup extends common
             'has_categories' => true,
             'possible_key_fields' => ['id', 'customid']]);
         $this->comic->create();
-        ComicsAPICache::create_table($this->queries_comic_meta);
+        ComicsAPICache::create_table($this->db);
     }
 }
