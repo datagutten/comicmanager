@@ -45,10 +45,10 @@ class Maintenance
 
         $q = sprintf('SELECT %1$s,category FROM %2$s WHERE category IS NOT NULL AND %1$s IS NOT NULL GROUP BY %1$s', $keyfield, $comic->id);
 
-        $st_strips = $this->comicmanager->db->query($q); //Get all unique strips with category
+        $st_strips = $this->queries->query($q); //Get all unique strips with category
         $categories = $st_strips->fetchAll(PDO::FETCH_KEY_PAIR);
 
-        $st_missing = $this->comicmanager->db->query("SELECT * FROM $table WHERE $keyfield IS NOT NULL AND category IS NULL");
+        $st_missing = $this->queries->query("SELECT * FROM $table WHERE $keyfield IS NOT NULL AND category IS NULL");
 
         foreach ($st_missing->fetchAll(PDO::FETCH_ASSOC) as $strip)
         {
@@ -80,7 +80,7 @@ class Maintenance
 
         foreach($releases as $release_obj)
         {
-            $output[] = '<pre>' . print_r($release_obj, true) . '</pre>';
+            //$output[] = '<pre>' . print_r($release_obj, true) . '</pre>';
             //Find releases with customid similar to this release id
             $st_custom_id = $this->queries->differentIdForCustomId($release_obj);
 
