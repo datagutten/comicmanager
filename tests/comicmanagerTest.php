@@ -2,9 +2,9 @@
 
 namespace datagutten\comicmanager\tests;
 
+use Cake\Database;
 use datagutten\comicmanager\comicmanager;
 use datagutten\comicmanager\elements\Comic;
-use Cake\Database;
 
 class comicmanagerTest extends Setup
 {
@@ -39,6 +39,7 @@ class comicmanagerTest extends Setup
         $categories = $this->comicmanager->info->categories(true, true);
         $this->assertInstanceOf(Database\StatementInterface::class, $categories);
     }
+
     public function testComicList()
     {
         $comics = $this->comicmanager->comic_list();
@@ -47,8 +48,8 @@ class comicmanagerTest extends Setup
 
     public function testSites()
     {
-        $this->comicmanager->add_or_update(['site' => 'pondusadressa', 'date' => '20201009', 'category' => 48, 'id' => 5690, 'customid' => 5690]);
-        $sites = $this->comicmanager->sites();
+        $this->comicmanager->releases->save(['site' => 'pondusadressa', 'date' => '20201009', 'category' => 48, 'id' => 5690, 'customid' => 5690]);
+        $sites = $this->comicmanager->info->sites();
         $this->assertContains('pondusadressa', $sites);
     }
 }

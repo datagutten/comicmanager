@@ -48,7 +48,7 @@ class Maintenance
         {
             if (isset($categories[$strip[$keyfield]]))
             {
-                $this->comicmanager->add_or_update(['uid' => $strip['uid'], 'category' => $categories[$strip[$keyfield]]]);
+                $this->comicmanager->releases->save(['uid' => $strip['uid'], 'category' => $categories[$strip[$keyfield]]]);
                 $output[] = sprintf('Set category to %d for uid %d', $categories[$strip[$keyfield]], $strip['uid']);
             }
         }

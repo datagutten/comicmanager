@@ -7,7 +7,6 @@ use datagutten\comicmanager\elements\Image;
 use datagutten\comicmanager\exceptions\ImageNotFound;
 use datagutten\comicmanager\tests\Setup;
 use datagutten\tools\files\files;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
 class ImageTest extends Setup
@@ -15,7 +14,7 @@ class ImageTest extends Setup
     /**
      * @var comicmanager
      */
-    private comicmanager $comicmanager;
+    protected comicmanager $comicmanager;
     private string $file;
 
     public function setUp(): void
@@ -27,7 +26,7 @@ class ImageTest extends Setup
 
         $this->comicmanager = new comicmanager($this->config);
         $this->comicmanager->comicinfo('pondus');
-        $this->comicmanager->add_or_update(['id' => 4350, 'site' => 'pondusvg', 'date' => '20190813']);
+        $this->comicmanager->releases->release(['id' => 4350, 'site' => 'pondusvg', 'date' => '20190813'], false)->save();
     }
 
     public function testFromRandomFile()

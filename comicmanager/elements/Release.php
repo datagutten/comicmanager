@@ -4,14 +4,16 @@
 namespace datagutten\comicmanager\elements;
 
 
+use Cake\Database;
 use datagutten\comicmanager\comicmanager;
 use datagutten\comicmanager\exceptions;
 use datagutten\comicmanager\exceptions\comicManagerException;
 use datagutten\comicmanager\exceptions\ImageNotFound;
+use datagutten\comicmanager\Queries;
 use DateTime;
 use Exception;
 
-class Release
+class Release extends DatabaseObject
 {
     /**
      * @var ?string Release date
@@ -45,7 +47,13 @@ class Release
      * @var ?string Image file path
      */
     public ?string $image_file;
-
+    /**
+     * @var ?string Image URL
+     */
+    public ?string $image_url;
+    /**
+     * @var ?string Release title
+     */
     public ?string $title;
 
     /**
@@ -64,6 +72,10 @@ class Release
      * @var DateTime Release date
      */
     public DateTime $date_obj;
+    /**
+     * @var Queries\Release
+     */
+    private Queries\Release $queries;
 
     /**
      * Release constructor.
@@ -75,15 +87,13 @@ class Release
     function __construct(comicmanager $comicmanager, array $fields, $load_image = true)
     {
         $this->comic = $comicmanager->info;
-        foreach ($fields as $field => $value)
-        {
-            $this->$field = $value;
-        }
-        if (isset($this->date) && !isset($this->date_obj))
+        parent::__construct($fields);
+        if (isset($this->date) && !isset($this->date_obj) && !empty($this->date))
             $this->date_obj = self::parse_date($this->date);
         elseif (!isset($this->date) && isset($this->date_obj))
             $this->date = $this->date_obj->format('Ymd');
 
+        $this->queries = new Queries\Release($comicmanager->config['db']);
         if ($load_image)
             $this->image = $this->get_image($comicmanager);
     }
@@ -162,19 +172,62 @@ class Release
     }
 
     /**
-     * @throws exceptions\ReleaseNotFound
+     * Save the release to the database
+     * @param bool $allow_insert Allow inserting new rows
+     * @return ?Database\StatementInterface
+     * @throws exceptions\comicManagerException
+     * @throws exceptions\DatabaseException
+     */
+    public function save($allow_insert = true): ?Database\StatementInterface
+    {
+        if (empty($this->uid))
+        {
+            try
+            {
+                $uid = $this->queries->get_uid($this);
+            }
+            catch (exceptions\ComicInvalidArgumentException $e)
+            {
+                if (!$allow_insert)
+                    throw $e;
+                else
+                    $uid = null;
+            }
+            if ($uid === null)
+            {
+                if (!$allow_insert)
+                    throw new comicManagerException('UID not found, but insert is not allowed');
+                $st = $this->queries->insert($this);
+                $this->uid = $st->lastInsertId();
+                return $st;
+            }
+            else
+                $this->uid = $uid;
+        }
+
+        return $this->queries->update($this);
+    }
+
+    /**
+     * @throws exceptions\ReleaseNotFound|comicManagerException
      */
     public function load_db()
     {
-        $fields = [];
-        foreach (['date', 'site', 'id'] as $field)
+        $st = $this->queries->get($this);
+        if ($st->rowCount() > 1)
         {
-            if(!empty($this->$field))
-                $fields[$field] = $this->$field;
+            $field_string = '';
+            foreach ($this->comic->fields as $key)
+            {
+                if (isset($this->$key))
+                    $field_string .= sprintf('%s=%s ', $key, $this->$key);
+            }
+            throw new exceptions\comicManagerException('Multiple releases found for ' . $field_string);
         }
+        else
+            $info = $st->fetch('assoc');
 
-        $info = $this->comicmanager->get($fields);
-        if(empty($info))
+        if (empty($info))
             throw new exceptions\ReleaseNotFound($this);
         foreach ($info as $key => $value)
         {
@@ -232,5 +285,15 @@ class Release
         $release = new static($comicmanager, ['date' => $date, 'site' => $site]);
         $release->load_db();
         return $release;
+    }
+
+    public function values(): array
+    {
+        $values = [];
+        foreach ($this->comic->fields as $field)
+        {
+            $values[$field] = $this->$field;
+        }
+        return $values;
     }
 }

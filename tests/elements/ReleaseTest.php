@@ -2,7 +2,9 @@
 
 namespace datagutten\comicmanager\tests\elements;
 
+use Cake\Database;
 use datagutten\comicmanager\comicmanager;
+use datagutten\comicmanager\elements;
 use datagutten\comicmanager\elements\Release;
 use datagutten\comicmanager\exceptions;
 use datagutten\comicmanager\tests\Setup;
@@ -31,11 +33,35 @@ class ReleaseTest extends Setup
 
     function testLoadDb()
     {
-        $this->comicmanager->add_or_update(['site' => 'pondusadressa', 'date' => '20201009', 'category' => 48, 'id' => 5690, 'customid' => 5690]);
+        $this->comicmanager->releases->save(['site' => 'pondusadressa', 'date' => '20201009', 'category' => 48, 'id' => 5690, 'customid' => 5690]);
         $release = new Release($this->comicmanager, ['site' => 'pondusadressa', 'date' => '20201009']);
         $this->assertTrue(empty($release->uid));
         $release->load_db();
         $this->assertNotEmpty($release->uid);
+    }
+
+    function testInsert()
+    {
+        $release = new Release($this->comicmanager, ['id' => 3341, 'category' => 6, 'date' => '20081105', 'site' => 'pondus', 'customid' => 3341]);
+        $this->assertFalse(isset($release->uid));
+        $st = $release->save();
+        $this->assertEquals(1, $st->rowCount());
+        $release2 = new Release($this->comicmanager, ['id' => 3341], false);
+        $release2->load_db();
+        $this->assertNotEmpty($release2->uid);
+        $this->assertEquals('20081105', $release2->date);
+    }
+
+    function testUpdate()
+    {
+        $release = new Release($this->comicmanager, ['id' => 3341, 'category' => 6, 'date' => '20081105', 'site' => 'pondus', 'customid' => 3341]);
+        $release->save();
+        $release->category = 7;
+        $release->save();
+
+        $release2 = new Release($this->comicmanager, ['id' => 3341], false);
+        $release2->load_db();
+        $this->assertEquals(7, $release2->category);
     }
 
     function testLoadDbNotFound()
@@ -51,7 +77,7 @@ class ReleaseTest extends Setup
         mkdir(dirname($test_image));
         touch($test_image);
 
-        $this->comicmanager->add_or_update(['site' => 'pondus_blad_digirip', 'id' => 4623, 'customid' => 4623]);
+        $this->comicmanager->releases->save(['site' => 'pondus_blad_digirip', 'id' => 4623, 'customid' => 4623]);
         $release = new Release($this->comicmanager, ['id' => 4623], false);
         $release->load_db();
         $release->image = $release->get_image($this->comicmanager);
@@ -65,6 +91,22 @@ class ReleaseTest extends Setup
         $release = new Release($this->comicmanager, ['site' => 'pondusadressa', 'date' => '20201009'], false);
         $this->assertFalse($release->has_key());
         $this->assertEmpty($release->key());
+    }
+
+    function testHasKey2()
+    {
+        $setup = new elements\Comic($this->config['db'], [
+            'id' => 'hjalmar',
+            'name' => 'Hjalmar',
+            'key_field' => 'id',
+            'has_categories' => true,
+            'possible_key_fields' => ['id']]);
+        $setup->create();
+
+        $this->comicmanager->comicinfo('hjalmar');
+        $release = new Release($this->comicmanager, ['date' => '20130327', 'site' => 'hjalmar', 'id' => 574, 'category' => 1]);
+        $release->save();
+        $this->assertTrue($release->has_key());
     }
 
     function testGetKey()
@@ -106,7 +148,7 @@ class ReleaseTest extends Setup
 
     function testFromDate()
     {
-        $this->comicmanager->add_or_update(['site' => 'pondusadressa', 'date' => '20201009', 'category' => 48, 'id' => 5690, 'customid' => 5690]);
+        $this->comicmanager->releases->save(['site' => 'pondusadressa', 'date' => '20201009', 'category' => 48, 'id' => 5690, 'customid' => 5690]);
         $release = Release::from_date($this->comicmanager, 'pondusadressa', '20201009');
         $this->assertSame('20201009', $release->date);
         $this->assertSame('pondusadressa', $release->site);
@@ -117,5 +159,23 @@ class ReleaseTest extends Setup
         $this->expectException(exceptions\comicManagerException::class);
         $this->expectExceptionMessage('Invalid date: 2021-07-32');
         Release::from_date($this->comicmanager, 'pondusadressa', '2021-07-32');
+    }
+
+    function testUpdateNoChanges()
+    {
+        $release = new Release($this->comicmanager, ['id' => 3341, 'category' => 6, 'date' => '20081105', 'site' => 'pondus', 'customid' => 3341]);
+        $this->assertInstanceOf(Database\StatementInterface::class, $release->save());
+        $this->assertEmpty($release->save());
+    }
+
+    function testUpdateNoUid()
+    {
+        $release = new Release($this->comicmanager, ['id' => 3341, 'category' => 6, 'date' => '20081105', 'site' => 'pondus', 'customid' => 3341]);
+        $release->save();
+
+        $release2 = new Release($this->comicmanager, ['id' => 3341, 'category' => 7, 'date' => '20081105', 'site' => 'pondus', 'customid' => 3341]);
+        $release2->save(false);
+        $release2->load_db();
+        $this->assertEquals(7, $release2->category);
     }
 }

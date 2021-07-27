@@ -29,9 +29,9 @@ class Strip
     public string $key;
 
     /**
-     * @var Queries
+     * @var Queries\Strip
      */
-    private Queries $queries;
+    private Queries\Strip $queries;
     /**
      * @var comicmanager
      */
@@ -44,7 +44,7 @@ class Strip
         $this->comic = $comic;
         $this->mode = $mode;
         $this->comicmanager = $comicmanager;
-        $this->queries = new Queries($comicmanager->db, $comic);
+        $this->queries = new Queries\Strip($comicmanager->config['db']);
     }
 
     /**
@@ -55,19 +55,14 @@ class Strip
     public function releases(): array
     {
         if ($this->mode === 'key')
-            $st_releases = $this->queries->key($this->key_field, $this->key);
+            $st_releases = $this->queries->key($this->comic, $this->key, $this->key_field);
         else
             throw new InvalidArgumentException('Unable to fetch releases using mode ' . $this->mode);
 
         if($st_releases->rowCount() === 0)
             throw new exceptions\StripNotFound($this);
 
-        $releases = [];
-        while ($release = $st_releases->fetch(PDO::FETCH_ASSOC))
-        {
-            $releases[] = new Release($this->comicmanager, $release);
-        }
-        return $releases;
+        return Releases::from_query($this->comicmanager, $st_releases);
     }
 
     /**
@@ -77,7 +72,7 @@ class Strip
      */
     public function latest(): Release
     {
-        $st = $this->queries->latest($this->key_field, $this->key);
+        $st = $this->queries->latest($this->comic, $this->key, $this->key_field);
         if($st->rowCount() === 0)
             throw new exceptions\StripNotFound($this);
         return new Release($this->comicmanager, $st->fetch(PDO::FETCH_ASSOC));

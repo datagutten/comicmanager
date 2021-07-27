@@ -24,7 +24,7 @@ class StripTest extends Setup
 
         $this->comicmanager = new comicmanager($this->config);
         $this->comicmanager->comicinfo('pondus');
-        $this->comicmanager->add_or_update(['id' => 4350, 'site' => 'pondusvg', 'date' => '20190813']);
+        $this->comicmanager->releases->release(['id' => 4350, 'site' => 'pondusvg', 'date' => '20190813'])->save();
     }
 
     public function testFrom_key()
@@ -53,7 +53,7 @@ class StripTest extends Setup
     public function testFromInvalidKey()
     {
         $this->expectException(exceptions\StripNotFound::class);
-        $strip = $this->comicmanager->strip(['comic' => 'pondus', 'key_field' => 'id', 'key' => '4']);
+        $strip = $this->comicmanager->strips->from_key(4, 'id');
         $strip->latest();
     }
 }
