@@ -14,7 +14,7 @@ class web extends comicmanager
     /**
      * @var Twig\Environment
      */
-    public $twig;
+    public Twig\Environment $twig;
     /**
      * @var string Web site root directory
      */
@@ -40,7 +40,7 @@ class web extends comicmanager
      * @return string The rendered template
      *
      */
-    public function render(string $name, array $context)
+    public function render(string $name, array $context): string
     {
         $context['root'] = $this->root;
         if(!empty($this->info))
@@ -84,7 +84,7 @@ class web extends comicmanager
      * Display links to select a comic
      * @return string
      */
-    public function select_comic()
+    public function select_comic(): string
     {
         try {
             $context = array(

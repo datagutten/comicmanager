@@ -103,8 +103,8 @@ class comicmanager extends core
      * @return array Array with comics, key is id, value is display name
      * @throws comicManagerException No comics in database
      */
-    public function comic_list()
-	{
+    public function comic_list(): array
+    {
 		$st=$this->db->query("SELECT id,name FROM comic_info ORDER BY name");
 		if($st->rowCount()===0)
 			throw new comicManagerException('No comics in database');
