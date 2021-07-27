@@ -7,6 +7,7 @@ namespace datagutten\comicmanager\maintenance;
 use datagutten\comicmanager\comicmanager;
 use datagutten\comicmanager\elements;
 use datagutten\comicmanager\exceptions;
+use datagutten\comicmanager\Queries;
 use PDO;
 
 class Maintenance
@@ -16,17 +17,22 @@ class Maintenance
      */
     public comicmanager $comicmanager;
     public elements\Comic $comic;
+    /**
+     * @var Queries\Maintenance
+     */
+    private Queries\Maintenance $queries;
 
     function __construct(comicmanager $comicmanager)
     {
         $this->comicmanager = $comicmanager;
         $this->comic = $this->comicmanager->info;
+        $this->queries = new Queries\Maintenance($this->comicmanager->config['db']);
     }
 
     /**
      * Propagate category to all releases of a strip
      * @return string[] Output lines
-     * @throws exceptions\InvalidMaintenanceTool
+     * @throws exceptions\InvalidMaintenanceTool|exceptions\comicManagerException
      */
     function propagateCategories(): array
     {
@@ -57,7 +63,10 @@ class Maintenance
 
     /**
      * @return string[] Output lines
+     * @throws exceptions\ComicInvalidArgumentException This tool is only useful for comics using customid
+     * @throws exceptions\DatabaseException Database error
      * @throws exceptions\InvalidMaintenanceTool
+     * @throws exceptions\comicManagerException
      */
     function idToCustomId(): array
     {
@@ -66,40 +75,43 @@ class Maintenance
         if ($this->comic->key_field == 'id')
             throw new exceptions\InvalidMaintenanceTool('This tool is only useful for comics using an alternate key field');
 
-        $st_custom_id = $this->comicmanager->db->prepare(sprintf('SELECT DISTINCT id FROM %s WHERE customid=?', $this->comic->id));
-        $comic = $this->comic->id;
-        $st = $this->comicmanager->db->query("SELECT * FROM $comic WHERE id!=0 AND (customid IS NULL OR id!=customid) ORDER BY id");
+        $st = $this->queries->idNotLikeCustomId($this->comic);
+        $releases = elements\Releases::from_query($this->comicmanager, $st);
 
-        while ($row = $st->fetch())
+        foreach($releases as $release_obj)
         {
-            $output[] = '<pre>' . print_r($row, true) . '</pre>';
-            //$st_custom_id = $comicmanager->get(array('customid'=>$row['id']), true);
-            $st_custom_id->execute(array($row['id'])); //Find releases with customid similar to this release id
+            $output[] = '<pre>' . print_r($release_obj, true) . '</pre>';
+            //Find releases with customid similar to this release id
+            $st_custom_id = $this->queries->differentIdForCustomId($release_obj);
+
             $count = $st_custom_id->rowCount();
             if ($count > 1)
             {
-                $output[] = sprintf("Multiple ids for customid %d", $row['customid']);
+                $output[] = sprintf("Multiple ids for customid %d", $release_obj->customid);
                 while ($row_id = $st_custom_id->fetch())
                 {
                     $output[] = $row_id[0];
                 }
                 continue;
-            } elseif ($count == 1)
+            }
+            elseif ($count == 1)
             {
-                $release = $st_custom_id->fetch();
-                if ($release['id'] != $row['id']) //Check if the matching release has the same id
+                $release = $st_custom_id->fetch('assoc');
+                if ($release['id'] != $release_obj->id) //Check if the matching release has the same id
                 {
-                    $output[] = sprintf("Release with customid %d has different id: %d", $row['id'], $release['id']);
+                    $output[] = sprintf("Release with customid %d has different id: %d", $release_obj->id, $release['id']);
                     continue;
                 } else
-                    $output[] = sprintf("Release with customid %d and uid %d has same id as customid %d", $row['customid'], $row['uid'], $row['id']);
-            } else
+                    $output[] = sprintf("Release with customid %d and uid %d has same id as customid %d", $release_obj['customid'], $release_obj['uid'], $release_obj['id']);
+            }
+            else
             {
-                $output[] = sprintf("Customid %d is free", $row['id']);
+                $output[] = sprintf("Customid %d is free", $release_obj['id']);
             }
             try
             {
-                $this->comicmanager->add_or_update(array('customid' => $row['id'], 'uid' => $row['uid']));
+                $release_obj->customid = $release_obj->id;
+                $release_obj->save(false);
             }
             catch (exceptions\comicManagerException $e)
             {
