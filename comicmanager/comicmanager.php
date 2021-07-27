@@ -82,22 +82,6 @@ class comicmanager extends core
     }
 
     /**
-     * Run a database query
-     * @param string $query SQL query
-     * @param string|int $fetch Fetch type, passed to fetch method
-     * @return PDOStatement|array|string|null
-     * @throws PDOException
-     */
-    public function query($query, $fetch = null)
-    {
-        $st = $this->db->query($query);
-        if(!empty($fetch))
-                return pdo_helper::fetch($st, $fetch);
-        else
-            return $st;
-    }
-
-    /**
      * Get all available comics and populate $this->comic_list
      *
      * @return array Array with comics, key is id, value is display name

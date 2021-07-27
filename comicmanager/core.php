@@ -15,6 +15,7 @@ class core
 {
     /**
      * @var PDO
+     * @deprecated
      */
     public $db;
     /**
@@ -25,10 +26,6 @@ class core
      * @var bool Show debug output
      */
     public $debug = false;
-    /**
-     * @var DBUtils
-     */
-    public $db_utils;
 
     /**
      * core constructor.
@@ -45,29 +42,8 @@ class core
             $this->config = $config;
 
         $this->db = PDOConnectHelper::connect_db_config($config['db']);
-        $this->db_utils = new DBUtils($this->db);
 
         if(isset($this->config['debug']) && $this->config['debug']===true)
             $this->debug = true;
-    }
-
-    /**
-     * Make a value safe for SQL by removing all other characters than a-z 0-9 _
-     * @param string $value Value to be cleaned
-     * @return string
-     */
-    public static function clean_value($value)
-    {
-        return preg_replace('/[^a-z0-9_]+/', '', $value);
-    }
-
-    /**
-     * Check if a table exists
-     * @param string $table Table name
-     * @return bool
-     */
-    public function tableExists($table)
-    {
-        return $this->db_utils->tableExists($this->config['db']['db_name'], $table);
     }
 }
