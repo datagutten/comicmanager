@@ -56,14 +56,14 @@ class Comic extends DatabaseObject
     /**
      * Load comic metadata from the database
      * @return self
-     * @throws comicManagerException
+     * @throws exceptions\ComicNotFound Metadata not found
      * @throws exceptions\DatabaseException
      */
     public function load_db(): self
     {
         $st = $this->queries_metadata->info($this);
         if ($st->rowCount() === 0)
-            throw new exceptions\comicManagerException('Metadata not found, invalid comic id?');
+            throw new exceptions\ComicNotFound('Metadata not found, invalid comic id?');
 
         $values = $st->fetch('assoc');
 

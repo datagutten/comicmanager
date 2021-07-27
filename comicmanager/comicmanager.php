@@ -4,12 +4,10 @@
 namespace datagutten\comicmanager;
 
 use datagutten\comicmanager\elements\Comic;
-use datagutten\comicmanager\elements\Strip;
 use datagutten\comicmanager\exceptions\comicManagerException;
 use datagutten\comics_tools\comics_api_client as comics;
 use datagutten\comics_tools\comics_api_client\exceptions\ComicsException;
 use FileNotFoundException;
-use InvalidArgumentException;
 use PDO;
 
 class comicmanager extends core
@@ -120,7 +118,8 @@ class comicmanager extends core
      * @param string $comic_id Comic id
      * @param string|null $key_field Override the default key field
      * @return elements\Comic Comic object
-     * @throws comicManagerException
+     * @throws exceptions\ComicNotFound Comic not found
+     * @throws exceptions\DatabaseException Database error
      */
     public function comicinfo(string $comic_id, ?string $key_field=null): elements\Comic
     {

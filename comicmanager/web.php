@@ -102,6 +102,8 @@ class web extends comicmanager
     /**
      * Call comicinfo with argument from GET parameter comic or show comic selection
      * @return Comic|bool
+     * @throws exceptions\ComicNotFound Comic not found
+     * @throws exceptions\DatabaseException Database error
      */
     public function comicinfo_get()
     {
