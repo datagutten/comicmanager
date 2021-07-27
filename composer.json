@@ -12,7 +12,8 @@
         "ext-gd": "*",
         "ext-curl": "*",
         "ext-simplexml": "*",
-        "cakephp/database": "^4.2"
+        "cakephp/database": "^4.2",
+        "cakephp/core": "^4.2"
     },
     "license": "GPL-3.0-or-later",
     "authors": [
