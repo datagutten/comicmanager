@@ -4,9 +4,6 @@
 namespace datagutten\comicmanager;
 
 
-use datagutten\tools\PDOConnectHelper;
-use PDO;
-
 /**
  * SQL connection and database utilities
  * @package datagutten\comicmanager
@@ -14,10 +11,9 @@ use PDO;
 class core
 {
     /**
-     * @var PDO
-     * @deprecated
+     * @var Queries\Common
      */
-    public $db;
+    public Queries\Common $db;
     /**
      * @var array Configuration parameters
      */
@@ -41,7 +37,7 @@ class core
         else
             $this->config = $config;
 
-        $this->db = PDOConnectHelper::connect_db_config($config['db']);
+        $this->db = new Queries\Common($config['db']);
 
         if(isset($this->config['debug']) && $this->config['debug']===true)
             $this->debug = true;

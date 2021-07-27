@@ -33,8 +33,7 @@ class MaintenanceTest extends Setup
 
     public function testPropagateCategories()
     {
-        $st = $this->comicmanager->db->prepare('SELECT * FROM pondus WHERE category=1');
-        $st->execute();
+        $st = $this->comicmanager->db->query('SELECT * FROM pondus WHERE category=1');
         $this->assertSame(1, $st->rowCount());
         $this->maintenance->propagateCategories();
         $st->execute();
