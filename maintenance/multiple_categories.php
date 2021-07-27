@@ -1,4 +1,5 @@
 <?Php
+/** @noinspection PhpUndefinedVariableInspection */
 $file=__FILE__;
 require 'loader.php';
 
