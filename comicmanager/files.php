@@ -14,27 +14,27 @@ class files
 	 * @var string Path to comic image files
 	 */
 	public $file_path;
-	public $debug = false;
+	public bool $debug = false;
 
-	/**
-	 * files constructor.
-	 * @param string $file_path Path to image files
-	 * @throws FileNotFoundException
-	 */
-	function __construct($file_path)
+    /**
+     * files constructor.
+     * @param string $file_path Path to image files
+     * @throws FileNotFoundException File path not found
+     */
+	function __construct(string $file_path)
 	{
 		if(!file_exists($file_path))
 			throw new FileNotFoundException($file_path);
 		$this->file_path = realpath($file_path);
 	}
 
-	/**
+    /**
      * Try different extensions for a file name
      * @param string $filename File name
      * @return string File name with extension
      * @throws ImageNotFound File not found
      */
-    public static function typecheck($filename)
+    public static function typecheck(string $filename): string
     {
         $types = array('jpg', 'jpeg', 'gif', 'png');
         foreach ($types as $type)
@@ -51,19 +51,18 @@ class files
         return $file;
     }
 
-	/**
-	 * Get comic strips from files
-	 *
-	 * @param string $site slug
-	 * @param string $filter_year
-	 * @param string $filter_month
-	 * @return array
-	 * @throws comicManagerException
-	 */
-	public function releases_file_date($site, $filter_year=null, $filter_month=null)
-	{
+    /**
+     * Get comic strips from files
+     * @param string $site Site slug
+     * @param null $filter_year Year
+     * @param null $filter_month Month
+     * @return array
+     * @throws exceptions\ComicInvalidArgumentException No folder for site
+     */
+	public function releases_file_date(string $site, $filter_year=null, $filter_month=null): array
+    {
 		if(!file_exists($base_path=$this->file_path.'/'.$site))
-			throw new comicManagerException('No folder for site '.$site);
+			throw new exceptions\ComicInvalidArgumentException('No folder for site '.$site);
 
 		$dir=scandir($base_path=$this->file_path.'/'.$site); //Get months
         if($dir===false)
@@ -108,13 +107,13 @@ class files
      * @param string $date Date
      * @param false $create_dir Create folder if not exists
      * @return string File path and name without extension
-     * @throws comicManagerException
+     * @throws exceptions\ComicInvalidArgumentException Invalid or empty date
      */
     function filename(string $site, string $date, $create_dir = false): string
     {
 		//Files are stored in [filepath]/site/month/date
 		if(empty($date) || !preg_match('/[0-9]{8}/', $date))
-			throw new comicManagerException('Invalid or empty date');
+			throw new exceptions\ComicInvalidArgumentException('Invalid or empty date');
 
 		$dir=$this->file_path.'/'.$site.'/'.substr($date,0,6);
 

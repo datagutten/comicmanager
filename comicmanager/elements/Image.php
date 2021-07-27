@@ -33,7 +33,6 @@ class Image
      */
     private string $file_path;
 
-
     /**
      * image constructor.
      * @param string $url Image URL
@@ -84,13 +83,15 @@ class Image
     }
 
     /**
+     * Create image object from date
      * @param string $site Release site slug
      * @param string $date Date in YMD format
      * @param comicmanager $comicmanager
      * @return Image
      * @throws exceptions\ImageNotFound
+     * @throws exceptions\ComicInvalidArgumentException Invalid date
      */
-    public static function from_date(string $site, string $date, comicmanager $comicmanager)
+    public static function from_date(string $site, string $date, comicmanager $comicmanager): Image
     {
         if(!empty($comicmanager->comics))
         {
@@ -126,14 +127,15 @@ class Image
     }
 
     /**
-     * @param $site
-     * @param $key
-     * @param $keyfield
+     * Create image object from key
+     * @param string $site
+     * @param string $key
+     * @param string $keyfield
      * @param comicmanager $comicmanager
-     * @return Image
+     * @return Image Image object
      * @throws exceptions\ImageNotFound
      */
-    public static function from_key($site, $key, $keyfield, comicmanager $comicmanager)
+    public static function from_key(string $site, string $key, string $keyfield, comicmanager $comicmanager): Image
     {
         $file = self::key_file($comicmanager->files, $site, $key, $keyfield);
         return self::from_file($file, $comicmanager);
@@ -154,7 +156,7 @@ class Image
      * @throws comics\exceptions\NoResultsException No release found
      * @throws comics\exceptions\ComicsException
      */
-    public static function comics_lookup(comics\ComicsAPICache $comics, $site, $date)
+    public static function comics_lookup(comics\ComicsAPICache $comics, string $site, string $date): string
     {
         $comics_date = preg_replace('/([0-9]{4})([0-9]{2})([0-9]{2})/', '$1-$2-$3', $date); //Rewrite date for comics
         $release = $comics->releases_date_cache($site, $comics_date);
@@ -167,7 +169,8 @@ class Image
      * @param $site
      * @param $date
      * @return string Local image file
-     * @throws exceptions\ImageNotFound|exceptions\comicManagerException
+     * @throws exceptions\ImageNotFound File not found
+     * @throws exceptions\ComicInvalidArgumentException Invalid date
      */
     public static function date_file(files $files, string $site, string $date): string
     {
