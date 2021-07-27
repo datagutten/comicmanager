@@ -77,7 +77,7 @@ class web extends comicmanager
 
     public function render_exception(Throwable $throwable): string
     {
-        return $this->render('exception.twig', ['e' => $throwable, 'title'=>'exception']);
+        return $this->render('exception.twig', ['e' => $throwable, 'title'=>'exception', 'show_trace'=>$this->debug ? 'true': '']);
     }
 
     /**
