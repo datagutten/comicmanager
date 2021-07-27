@@ -11,7 +11,8 @@
         "ext-json": "*",
         "ext-gd": "*",
         "ext-curl": "*",
-        "ext-simplexml": "*"
+        "ext-simplexml": "*",
+        "cakephp/database": "^4.2"
     },
     "license": "GPL-3.0-or-later",
     "authors": [

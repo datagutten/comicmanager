@@ -118,68 +118,18 @@ class comicmanager extends core
 	}
 
     /**
-     * Find valid sites for a comic
-     * @return array
-     */
-    function sites()
-	{
-		$st = $this->query(sprintf('SELECT DISTINCT site FROM %s',$this->info['id']));
-		return $st->fetchAll(PDO::FETCH_COLUMN);
-	}
-
-    /**
-     * Get all categories for a comic
-     * @param bool $only_visible Return only categories marked as visible
-     * @param bool $return_object Return the PDOStatement object
-     * @return array|PDOStatement
-     */
-	public function categories($only_visible=false, $return_object=false)
-	{
-        if($this->info['has_categories']!='1') {
-            if ($return_object === false)
-                return array();
-            else
-                return new PDOStatement();
-        }
-
-        if($return_object)
-            $fields = '*';
-        else
-            $fields = 'id, name';
-
-        if($only_visible)
-            $st = $this->db->query(sprintf('SELECT %s FROM %s_categories WHERE visible=1 ORDER BY name',$fields, $this->info['id']));
-        else
-            $st = $this->db->query(sprintf('SELECT %s FROM %s_categories ORDER BY name', $fields, $this->info['id']));
-
-        if($return_object)
-            return $st;
-        else
-            return $st->fetchAll(PDO::FETCH_KEY_PAIR);
-	}
-
-    /**
-     * Get category name from id
-     * @param int $category_id Category id
-     * @return string Category name
-     */
-	function category_name(int $category_id)
-    {
-        $st_category_name = $this->db->prepare(sprintf('SELECT name FROM %s_categories WHERE id=?', $this->info['id']));
-        $st_category_name->execute([$category_id]);
-        return $st_category_name->fetch(PDO::FETCH_COLUMN);
-    }
-
-    /**
      * Get information about a comic
      *
      * @param string $comic_id Comic id
      * @param string|null $key_field Override the default key field
-     * @return Comic Array with comic information
+     * @return elements\Comic Comic object
+     * @throws comicManagerException
      */
-    public function comicinfo(string $comic_id, ?string $key_field=null): Comic
+    public function comicinfo(string $comic_id, ?string $key_field=null): elements\Comic
     {
-        $info = Comic::from_db($this->db, $comic_id);
+        $info = new Comic($this->config['db'], ['id'=>$comic_id]);
+        $info->load_db();
+
         if(!empty($key_field))
             $info['key_field'] = $key_field;
 

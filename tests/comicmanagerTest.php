@@ -4,7 +4,7 @@ namespace datagutten\comicmanager\tests;
 
 use datagutten\comicmanager\comicmanager;
 use datagutten\comicmanager\elements\Comic;
-use PDOStatement;
+use Cake\Database;
 
 class comicmanagerTest extends Setup
 {
@@ -30,14 +30,14 @@ class comicmanagerTest extends Setup
 
     public function testCategoriesArray()
     {
-        $categories = $this->comicmanager->categories(true);
+        $categories = $this->comicmanager->info->categories(true);
         $this->assertIsArray($categories);
     }
 
     public function testCategoriesObject()
     {
-        $categories = $this->comicmanager->categories(true, true);
-        $this->assertInstanceOf(PDOStatement::class, $categories);
+        $categories = $this->comicmanager->info->categories(true, true);
+        $this->assertInstanceOf(Database\StatementInterface::class, $categories);
     }
     public function testComicList()
     {

@@ -72,17 +72,15 @@ if (!empty($comic))
     {
         $releases = $comic_manager->releases_category(intval($_GET['category']));
         $show_newest = true;
-        $title = $comic_manager->category_name((int)$_GET['category']);
+        $title = $comic->categoryName((int)$_GET['category']);
         $show_duplicates = false;
     } else
     {
         echo $comic_manager->render('showcomics_front.twig', array(
             'title' => 'Show ' . $comic['name'],
-            'comic' => $comic,
-            'root' => $comic_manager->root,
-            'sites' => $comic_manager->sites(),
+            'sites' => $comic->sites(),
             'extra_css' => 'menu.css',
-            'categories' => $comic_manager->categories(),
+            'categories' => $comic->categories(),
             'range' => $comic_manager->key_high_low($comic['key_field']),
         ));
         die();

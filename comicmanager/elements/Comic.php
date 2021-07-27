@@ -3,13 +3,13 @@
 
 namespace datagutten\comicmanager\elements;
 
-
-use ArrayAccess;
+use Cake\Database;
+use datagutten\comicmanager\exceptions;
 use datagutten\comicmanager\exceptions\comicManagerException;
-use InvalidArgumentException;
+use datagutten\comicmanager\Queries;
 use PDO;
 
-class Comic implements ArrayAccess
+class Comic extends DatabaseObject
 {
     /**
      * @var array All valid database fields for the comic
@@ -32,49 +32,153 @@ class Comic implements ArrayAccess
      */
     public bool $has_categories;
     /**
-     * @var string Comic ID
+     * @var string ComicMetadata ID
      */
     public string $id;
     /**
-     * @var string Comic name
+     * @var string ComicMetadata name
      */
     public string $name;
 
-    public function __construct(array $values)
+    protected Queries\ComicMetadata $queries_metadata;
+    /**
+     * @var Queries\Comic
+     */
+    private Queries\Comic $queries;
+
+    public function __construct($db_config, array $values)
     {
-        foreach ($values as $key => $value)
-        {
-            $this[$key] = $value;
-        }
+        parent::__construct($values);
+        $this->queries_metadata = new Queries\ComicMetadata($db_config);
+        $this->queries = new Queries\Comic($db_config);
     }
 
     /**
-     * Load comic information from database
-     * @param PDO $db
-     * @param string $id
-     * @return static
+     * Load comic metadata from the database
+     * @return self
+     * @throws comicManagerException
+     * @throws exceptions\DatabaseException
+     */
+    public function load_db(): self
+    {
+        $st = $this->queries_metadata->info($this);
+        if ($st->rowCount() === 0)
+            throw new exceptions\comicManagerException('Metadata not found, invalid comic id?');
+
+        $values = $st->fetch('assoc');
+
+        $this->id = $values['id'];
+        $this->name = $values['name'];
+        $this->key_field = $values['keyfield'] ?? $values['key_field'];
+        $this->has_categories = $values['has_categories'] == 1;
+        $this->possible_key_fields = self::parsePossibleKeyFields($values['possible_key_fields']);
+        $this->fields = $this->queries_metadata->fields($this);
+        return $this;
+    }
+
+    /**
+     * Save changes in comic metadata to the database
+     * @return Database\StatementInterface
+     * @throws exceptions\ComicInvalidArgumentException
+     * @throws exceptions\DatabaseException
+     */
+    public function save(): Database\StatementInterface
+    {
+        $this->allowedKeyField($this->key_field);
+        return $this->queries_metadata->update($this);
+    }
+
+    /**
+     * Create a new comic
+     * @throws exceptions\DatabaseException
+     * @throws exceptions\comicManagerException
+     */
+    public function create()
+    {
+        if(!$this->queries->tableExists('comic_info'))
+            $this->queries_metadata->createMetadataTable();
+
+        //Add metadata
+        $this->queries_metadata->insert($this);
+        //Create table
+        $this->queries->createTable($this);
+        //Add key field columns
+        foreach ($this->possible_key_fields as $key_field)
+        {
+            $this->queries_metadata->addKeyField($this, $key_field);
+        }
+        if($this->has_categories)
+            $this->queries->enableCategories($this);
+        $this->load_db();
+    }
+
+    /**
+     * Add a new key field for comic
+     * Alter metadata and add column to comic table if needed
+     * @param $key_field
      * @throws comicManagerException
      */
-    public static function from_db(PDO $db, string $id): Comic
+    public function addKeyField($key_field)
     {
-        $st = $db->prepare('SELECT * FROM comic_info WHERE id=?');
-        $st->execute([$id]);
-        $values = $st->fetch(PDO::FETCH_ASSOC);
-        if($values===false)
-            throw new comicManagerException('Comic not found');
+        self::validKeyField($key_field); //Check if the key field is valid
+        $this->queries_metadata->addKeyField($this, $key_field);
+        $this->possible_key_fields[] = $key_field;
+        $this->save();
+    }
 
-        $st = $db->query('SHOW COLUMNS FROM '.$id);
-        $columns = $st->fetchAll(PDO::FETCH_ASSOC);
-        $fields = array_column($columns, 'Field');
+    /**
+     * Find sites for a comic
+     * @return array Site slugs
+     * @throws exceptions\DatabaseException Database error
+     */
+    public function sites(): array
+    {
+        $st = $this->queries->sites($this);
+        return $st->fetchAll(PDO::FETCH_COLUMN);
+    }
 
-        return new static([
-            'id' => $values['id'],
-            'name' => $values['name'],
-            'key_field' => $values['keyfield'],
-            'has_categories' => $values['has_categories'] == 1,
-            'possible_key_fields' => self::parsePossibleKeyFields($values['possible_key_fields']),
-            'fields' => $fields,
-        ]);
+    /**
+     * Get categories for the comic
+     * @param bool $only_visible Show only categories marked as visible
+     * @param bool $return_object Return statement object
+     * @return array|Database\StatementInterface
+     * @throws exceptions\ComicInvalidArgumentException Comic does not have categories
+     * @throws exceptions\DatabaseException Database error
+     */
+    public function categories($only_visible=false, $return_object=false)
+    {
+        if(!$this->has_categories)
+            throw new exceptions\ComicInvalidArgumentException('Comic does not have categories');
+
+        return $this->queries_metadata->categories($this, $only_visible, $return_object);
+    }
+
+    /**
+     * Get the name of a category
+     * @param int $category Category id
+     * @return string Category name
+     * @throws exceptions\ComicInvalidArgumentException Comic does not have categories
+     * @throws exceptions\DatabaseException Database error
+     */
+    public function categoryName(int $category): string
+    {
+        $categories = $this->categories();
+        return $categories[$category];
+    }
+
+    /**
+     * Enable categories for the comic
+     * @return Database\StatementInterface
+     * @throws exceptions\ComicInvalidArgumentException Comic already has categories
+     * @throws exceptions\DatabaseException Database error
+     */
+    function enableCategories(): Database\StatementInterface
+    {
+        if($this->has_categories)
+            throw new exceptions\ComicInvalidArgumentException('Comic already has categories');
+        $this->has_categories = true;
+        $this->save();
+        return $this->queries->enableCategories($this);
     }
 
     /**
@@ -117,26 +221,26 @@ class Comic implements ArrayAccess
      * Check if a field is allowed for the current comic and return its description text
      * @param string $key_field Field to be validate
      * @return string Field description
-     * @throws InvalidArgumentException Field is not valid
+     * @throws exceptions\ComicInvalidArgumentException Field is not valid
      */
     public function allowedKeyField(string $key_field)
     {
         if(array_search($key_field, $this->possible_key_fields) !== false)
             return self::$key_fields[$key_field];
         else
-            throw new InvalidArgumentException(sprintf('%s is not a valid key field for %s', $key_field, $this->id));
+            throw new exceptions\ComicInvalidArgumentException(sprintf('%s is not a valid key field for %s', $key_field, $this->id));
     }
 
     /**
      * Check if a field is valid and return its description text
      * @param string $key_field Field to be validate
      * @return string Field description
-     * @throws InvalidArgumentException Field is not valid
+     * @throws exceptions\ComicInvalidArgumentException Field is not valid
      */
     public static function validKeyField(string $key_field)
     {
         if(!isset(self::$key_fields[$key_field]))
-            throw new InvalidArgumentException('Invalid key field: '.$key_field);
+            throw new exceptions\ComicInvalidArgumentException('Invalid key field: '.$key_field);
         else
             return self::$key_fields[$key_field];
     }
@@ -144,17 +248,12 @@ class Comic implements ArrayAccess
     /**
      * Change key field
      * @param string $key_field
-     * @throws InvalidArgumentException Field is not valid
+     * @throws exceptions\ComicInvalidArgumentException Field is not valid
      */
     public function setKeyField(string $key_field)
     {
         $this->allowedKeyField($key_field);
         $this->key_field = $key_field;
-    }
-
-    public function offsetExists($offset)
-    {
-        return !empty($this->$offset);
     }
 
     public function offsetGet($offset)
@@ -164,18 +263,18 @@ class Comic implements ArrayAccess
         return $this->$offset;
     }
 
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     * @throws exceptions\ComicInvalidArgumentException
+     */
     public function offsetSet($offset, $value)
     {
         if($offset==='key_field' && !isset(self::$key_fields[$value]))
-            throw new InvalidArgumentException('Invalid key field: '.$value);
+            throw new exceptions\ComicInvalidArgumentException('Invalid key field: '.$value);
         if($offset==='id' && !preg_match('/^[a-z_]+$/',$value))
-            throw new InvalidArgumentException('Invalid comic id: '.$value);
+            throw new exceptions\ComicInvalidArgumentException('Invalid comic id: '.$value);
 
         $this->$offset = $value;
-    }
-
-    public function offsetUnset($offset)
-    {
-        unset($this->$offset);
     }
 }

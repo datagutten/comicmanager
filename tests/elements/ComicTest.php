@@ -1,24 +1,14 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 namespace datagutten\comicmanager\tests\elements;
 
 use datagutten\comicmanager\elements\Comic;
+use datagutten\comicmanager\elements;
 use datagutten\comicmanager\tests\Setup;
-use InvalidArgumentException;
+use datagutten\comicmanager\exceptions;
 
 class ComicTest extends Setup
 {
-    /**
-     * @var Comic
-     */
-    public Comic $comic;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->comic = Comic::from_db($this->db, 'pondus');
-    }
-
     public function testFrom_db()
     {
         $this->assertEquals('pondus', $this->comic->id);
@@ -34,7 +24,7 @@ class ComicTest extends Setup
 
     public function testNotAllowedKeyField()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(exceptions\ComicInvalidArgumentException::class);
         $this->expectExceptionMessage('original_date is not a valid key field for pondus');
         $this->comic->allowedKeyField('original_date');
     }
@@ -68,6 +58,49 @@ class ComicTest extends Setup
     public function testFields()
     {
         $fields = $this->comic->fields;
-        $this->assertEquals(['date', 'site', 'uid', 'customid', 'category', 'id'], $fields);
+        $this->assertEquals(['uid', 'date', 'site', 'id', 'customid', 'category'], $fields);
+    }
+
+    public function testAddKeyField()
+    {
+        $this->comic->addKeyField('original_date');
+        $this->comic->allowedKeyField('original_date');
+        $this->comic->load_db();
+        $this->assertEquals(['id', 'customid' ,'original_date'], $this->comic->possible_key_fields);
+        $this->assertEquals('customid', $this->comic->key_field, 'Primary key field should not be changed');
+    }
+
+    public function testAddInvalidKeyField()
+    {
+        $this->expectException(exceptions\ComicInvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid key field: foobar');
+        $this->comic->addKeyField('foobar');
+    }
+
+    public function testUpdate()
+    {
+        $this->assertEquals('Pondus', $this->comic->name);
+        $this->comic->name = 'Pondus test';
+        $this->comic->save();
+        $this->comic->load_db();
+        $this->assertEquals('Pondus test', $this->comic->name);
+    }
+
+    public function testCategoriesInvalidComic()
+    {
+        $comic = new elements\Comic(
+            $this->config['db'], [
+            'id' => 'test_comic',
+            'name' => 'Test comic',
+            'key_field' => 'id',
+            'has_categories' => false,
+            'possible_key_fields' => [
+                'id',
+                'customid'
+            ]
+        ]);
+        $comic->create();
+        $this->expectExceptionMessage('Comic does not have categories');
+        $comic->categories();
     }
 }

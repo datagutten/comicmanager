@@ -2,7 +2,7 @@
 $file=__FILE__;
 require 'loader.php';
 
-$valid_categories=$comicmanager->categories(); //Get valid categories
+$valid_categories=$comicmanager->info->categories(); //Get valid categories
 $comic=$comicinfo['id'];
 $keyfield=$comicinfo['keyfield'];
 

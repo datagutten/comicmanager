@@ -49,8 +49,9 @@ if(!empty($_GET['keyfield']) && !empty($_GET['key'])) {
         array('title' => 'Edit release',
             'releases' => $releases,
             'first_release' => new Release($comic_manager, $releases[0]),
-            'categories' => $comic_manager->categories(false, true),
+            'categories' => $comic_info->categories(false, true),
             'errors' => $errors,
+            'comic'=>$comic_info,
             'js'=>'edit_release.js'));
 }
 else

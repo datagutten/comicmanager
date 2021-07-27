@@ -8,6 +8,7 @@ use datagutten\tools\PDOConnectHelper;
 use PDO;
 use PDOException;
 use PHPUnit\Framework\TestCase;
+use datagutten\comicmanager\Queries;
 
 class common extends testCase
 {
@@ -24,6 +25,11 @@ class common extends testCase
      */
     public $db_driver;
 
+    /**
+     * @var Queries\ComicMetadata
+     */
+    protected Queries\ComicMetadata $queries_comic_meta;
+
     public function setUp(): void
     {
         $this->config = require __DIR__.'/test_config_mysql.php';
@@ -35,6 +41,7 @@ class common extends testCase
         {
         }
         $this->create_database();
+        $this->queries_comic_meta = new queries\ComicMetadata($this->config['db']);
         $this->db = PDOConnectHelper::connect_db_config($this->config['db']);
         $this->db_driver = $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
         $driver_version = $this->db->getAttribute(PDO::ATTR_CLIENT_VERSION);

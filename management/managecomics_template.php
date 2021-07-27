@@ -115,9 +115,16 @@ else {
 
         if(!empty($release->$sortmode)) //Already sorted
             unset($releases[$key]);
-        else
-            $releases[$key]+=$release_db; //Append information from DB
     }
+    if($_GET['mode']=='original_date')
+        $js = 'release_date.js';
+    else
+        $js = 'id_link.js';
+
+    if($comicinfo->has_categories)
+        $categories = $comicmanager->info->categories(true, true);
+    else
+        $categories = [];
 
     echo $comicmanager->render('manage_comics.twig', array(
         'name' => 'Comics ID',
@@ -128,7 +135,7 @@ else {
         'releases' => $releases,
         'mode' => $_GET['mode'],
         'root' => $comicmanager->root,
-        'categories' => $comicmanager->categories(true, true)->fetchAll(),
-        'js' => 'release_date.js',
+        'categories' => $categories,
+        'js' => $js,
     ));
 }

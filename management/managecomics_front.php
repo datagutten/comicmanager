@@ -36,7 +36,7 @@ else
 
     try
     {
-        $context['sites'] = $comic_manager->sites();
+        $context['sites'] = $comic_info->sites();
         echo $comic_manager->render('manage_comics_front.twig', $context);
     }
     catch (Exception $e)

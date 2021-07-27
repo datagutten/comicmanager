@@ -5,9 +5,12 @@ namespace datagutten\comicmanager\tests;
 
 
 use datagutten\comics_tools\comics_api_client\ComicsAPICache;
+use datagutten\comicmanager\elements;
 
 class Setup extends common
 {
+    public elements\Comic $comic;
+
     function setUp(): void
     {
         parent::setUp();
@@ -16,9 +19,14 @@ class Setup extends common
         if (empty($this->config['comics']['secret_key']))
             $this->config['comics'] = null;
 
-        $setup = new \datagutten\comicmanager\setup(['id' => 'pondus', 'name' => 'Pondus', 'key_field' => 'customid', 'has_categories' => true, 'possible_key_fields' => ['id', 'customid']], $this->config);
-        $setup->createComicInfoTable();
-        $setup->create();
-        ComicsAPICache::create_table($setup->db);
+
+        $this->comic = new elements\Comic($this->config['db'], [
+            'id' => 'pondus',
+            'name' => 'Pondus',
+            'key_field' => 'customid',
+            'has_categories' => true,
+            'possible_key_fields' => ['id', 'customid']]);
+        $this->comic->create();
+        ComicsAPICache::create_table($this->queries_comic_meta);
     }
 }
