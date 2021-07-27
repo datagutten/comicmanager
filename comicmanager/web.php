@@ -6,6 +6,7 @@ namespace datagutten\comicmanager;
 
 use datagutten\comicmanager\elements\Comic;
 use datagutten\comicmanager\exceptions\comicManagerException;
+use Exception;
 use Throwable;
 use Twig;
 
@@ -27,7 +28,16 @@ class web extends comicmanager
 
         $loader = new Twig\Loader\FilesystemLoader(array(__DIR__.'/../templates', __DIR__.'/../management/templates'), __DIR__);
         $this->twig = new Twig\Environment($loader, array('debug' => $this->debug, 'strict_variables' => true));
-        parent::__construct($config);
+
+        try
+        {
+            parent::__construct($config);
+        }
+        catch (Exception $e)
+        {
+            $this->root = $config['web_root'] ?? '/comicmanager';
+            die($this->render_exception($e));
+        }
         $this->root = $this->web_root;
     }
 
