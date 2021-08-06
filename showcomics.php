@@ -76,11 +76,16 @@ if (!empty($comic))
         $show_duplicates = false;
     } else
     {
+        if ($comic->has_categories)
+            $categories = $comic->categories();
+        else
+            $categories = [];
+
         echo $comic_manager->render('showcomics_front.twig', array(
             'title' => 'Show ' . $comic['name'],
             'sites' => $comic->sites(),
             'extra_css' => 'menu.css',
-            'categories' => $comic->categories(),
+            'categories' => $categories,
             'range' => $comic_manager->key_high_low($comic['key_field']),
         ));
         die();
