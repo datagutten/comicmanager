@@ -76,8 +76,8 @@ class Release extends Common
         $st = $this->execute($query);
         if ($st->rowCount() == 0)
             return null;
-
-        return $st->fetchColumn(0);
+        $row = $st->fetch(PDO::FETCH_ASSOC);
+        return $row['uid'];
     }
 
     public function insert(elements\Release $release): Database\StatementInterface
