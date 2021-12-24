@@ -33,7 +33,7 @@ if (!empty($comic))
         }
         catch (InvalidArgumentException $e)
         {
-            die($e->getMessage()); //TODO: Use error template
+            die($comic_manager->render_exception($e));
         }
     }
 
@@ -65,7 +65,7 @@ if (!empty($comic))
             }
             catch (exceptions\comicManagerException $e)
             {
-                die($comic_manager->render('exception.twig', ['e' => $e]));
+                die($comic_manager->render_exception($e));
             }
         }
     } elseif (!empty($_GET['category']))
