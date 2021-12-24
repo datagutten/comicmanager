@@ -54,21 +54,19 @@ if (!empty($comic))
             $strips = $comic_manager->strip_range($_GET['key_from'], $_GET['key_to']);
     } elseif (!empty($_GET['site']) && !empty($_GET['date'])) //Specific release
     {
-        if (strpos($_GET['date'], '%') !== false)
+        try
         {
-            $releases = $comic_manager->releases->date_wildcard($_GET['site'], $_GET['date']);
-        } else
-        {
-            try
-            {
+            if (strpos($_GET['date'], '%') !== false)
+                $releases = $comic_manager->releases->date_wildcard($_GET['site'], $_GET['date']);
+            else
                 $releases = [Release::from_date($comic_manager, $_GET['site'], $_GET['date'])];
-            }
-            catch (exceptions\comicManagerException $e)
-            {
-                die($comic_manager->render_exception($e));
-            }
         }
-    } elseif (!empty($_GET['category']))
+        catch (exceptions\comicManagerException $e)
+        {
+            die($comic_manager->render_exception($e));
+        }
+    }
+    elseif (!empty($_GET['category']))
     {
         $releases = $comic_manager->releases->category(intval($_GET['category']));
         $show_newest = true;
