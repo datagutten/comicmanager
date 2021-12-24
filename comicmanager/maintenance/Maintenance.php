@@ -62,6 +62,59 @@ class Maintenance
     }
 
     /**
+     * Propagate id to all releases of a strip
+     * @return string[] Output lines
+     * @throws exceptions\DatabaseException Database error
+     * @throws exceptions\InvalidMaintenanceTool Maintenance tool is not valid for this comic
+     */
+    function propagateId(): array
+    {
+        try
+        {
+            $this->comic->allowedKeyField('id');
+        }
+        catch (exceptions\ComicInvalidArgumentException $e)
+        {
+            throw new exceptions\InvalidMaintenanceTool($e->getMessage(), $e->getCode(), $e);
+        }
+        if ($this->comic->key_field == 'id')
+            throw new exceptions\InvalidMaintenanceTool('This tool is only useful for comics using an alternate key field');
+
+        $st_keys = $this->queries->idGroupId($this->comic);
+        $keys = $st_keys->fetchAll(PDO::FETCH_KEY_PAIR);
+        $st_missing = $this->queries->missingId($this->comic);
+
+        $output = [];
+        foreach ($st_missing->fetchAll(PDO::FETCH_ASSOC) as $row)
+        {
+            try
+            {
+                $release = new elements\Release($this->comicmanager, $row, false);
+            }
+            catch (exceptions\comicManagerException $e)
+            {
+                $output[] = sprintf('Error creating release object for uid %d', $row['uid']);
+                continue;
+            }
+            $key = $release->key();
+            if (isset($keys[$key]))
+            {
+                $release->id = $keys[$key];
+                try
+                {
+                    $release->save(false);
+                    $output[] = sprintf('Set id to %s for uid %d with %s %s', $release->id, $release->uid, $this->comic->key_field, $release->key());
+                }
+                catch (exceptions\comicManagerException | exceptions\DatabaseException $e)
+                {
+                    $output[] = sprintf('Error setting id to %s for uid %d with %s %s: %s', $release->id, $release->uid, $this->comic->key_field, $release->key(), $e->getMessage());
+                }
+            }
+        }
+        return $output;
+    }
+
+    /**
      * @return string[] Output lines
      * @throws exceptions\ComicInvalidArgumentException This tool is only useful for comics using customid
      * @throws exceptions\DatabaseException Database error

@@ -37,4 +37,30 @@ class Maintenance extends Common
             ->select('id')->from($release->comic->id)->distinct('id')->where(['customid' => $release->id]);
         return $this->execute($query);
     }
+
+    /**
+     * Get all printed ids and grouping ids
+     * @param elements\Comic $comic Comic object
+     * @return Database\StatementInterface
+     * @throws exceptions\DatabaseException Database error
+     */
+    function idGroupId(elements\Comic $comic): Database\StatementInterface
+    {
+        $query = $this->connection->newQuery()
+            ->select([$comic->key_field, 'id'])->from($comic->id)->whereNotNull('id')->whereNotNull($comic->key_field)->group($comic->key_field);
+        return $this->execute($query);
+    }
+
+    /**
+     * Get releases where grouping key is set, but not printed id
+     * @param elements\Comic $comic Comic object
+     * @return Database\StatementInterface
+     * @throws exceptions\DatabaseException Database error
+     */
+    function missingId(elements\Comic $comic): Database\StatementInterface
+    {
+        $query = $this->connection->newQuery()
+            ->select('*')->from($comic->id)->whereNotNull($comic->key_field)->whereNull('id');
+        return $this->execute($query);
+    }
 }

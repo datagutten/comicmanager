@@ -1,4 +1,5 @@
 <?Php
+
 use datagutten\comicmanager\maintenance\Maintenance;
 use datagutten\comicmanager\web;
 
@@ -10,7 +11,7 @@ $tools=array(
     'id_to_customid'=>'Set id as customid',
     'propagate_categories'=>"Propagate category to all copies of a strip",
     'multiple_categories.php'=>'Find strips with multiple categories',
-    'propagate_id.php'=>"Propagate id to all copies of a strip",
+    'propagate_id'=>"Propagate id to all copies of a strip",
     );
 
 $comicinfo=$comicmanager->comicinfo_get();
@@ -33,6 +34,8 @@ if($comicinfo!==false)
         $output = $maintenance->propagateCategories();
 	elseif($_GET['tool']=='id_to_customid')
         $output = $maintenance->idToCustomId();
+    elseif($_GET['tool']=='propagate_id')
+        $output = $maintenance->propagateId();
 	elseif(isset($tools[$_GET['tool']]))
 	{
 	    ob_start();
