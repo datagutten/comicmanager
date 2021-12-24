@@ -56,7 +56,7 @@ if (!empty($comic))
     {
         if (strpos($_GET['date'], '%') !== false)
         {
-            $releases = $comic_manager->releases_date_wildcard($_GET['site'], $_GET['date']);
+            $releases = $comic_manager->releases->date_wildcard($_GET['site'], $_GET['date']);
         } else
         {
             try
@@ -70,7 +70,7 @@ if (!empty($comic))
         }
     } elseif (!empty($_GET['category']))
     {
-        $releases = $comic_manager->releases_category(intval($_GET['category']));
+        $releases = $comic_manager->releases->category(intval($_GET['category']));
         $show_newest = true;
         $title = $comic->categoryName((int)$_GET['category']);
         $show_duplicates = false;
