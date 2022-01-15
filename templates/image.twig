@@ -1,13 +1,14 @@
-<span class="date">{{ release.date|default }}</span>
-{% if comic is defined and release.has_key %}
-    &nbsp;-&nbsp;<a
-        href="{{ root }}/showcomics.php?comic={{ comic.id }}&amp;key_field={{ comic.key_field }}&amp;key={{ release.key }}">{{ release.key }}</a>
-{% elseif release.uid is defined %}
-    &nbsp;-&nbsp;{{ release.uid }}
+{% if not hide_header|default('') %}
+    <span class="date">{{ release.date|default }}</span>
+    {% if comic is defined and release.has_key %}
+        &nbsp;-&nbsp;<a
+            href="{{ root }}/showcomics.php?comic={{ comic.id }}&amp;key_field={{ comic.key_field }}&amp;key={{ release.key }}">{{ release.key }}</a>
+    {% elseif release.uid is defined %}
+        &nbsp;-&nbsp;{{ release.uid }}
+    {% endif %}
+    &nbsp;-&nbsp;{{ release.site }}
+    <br/>
 {% endif %}
-&nbsp;-&nbsp;{{ release.site }}
-<br/>
-
 {% if not release.image_error %}
     <a href="{{ release.image.url }}"><img src="{{ release.image.url }}" alt="{{ release.date }} - {{ release.site }}"
                                            class="{{ mode|default("id") }}"/></a>
