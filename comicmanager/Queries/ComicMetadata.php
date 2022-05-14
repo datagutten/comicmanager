@@ -121,7 +121,7 @@ class ComicMetadata extends Common
      */
     function categories(elements\Comic $comic, $only_visible = false, $return_object = false)
     {
-        $query = $this->connection->newQuery()->from($comic->id . '_categories');
+        $query = $this->connection->newQuery()->from($comic->id . '_categories')->order('name');
         if ($return_object)
             $query = $query->select('*');
         else
