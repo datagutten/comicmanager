@@ -4,8 +4,8 @@
 namespace datagutten\comicmanager;
 
 
-use datagutten\comicmanager\exceptions\comicManagerException;
 use datagutten\comicmanager\exceptions\ImageNotFound;
+use datagutten\tools\files\files as file_tools;
 use FileNotFoundException;
 
 class files
@@ -49,6 +49,16 @@ class files
             throw new ImageNotFound('Image not found: ' . $filename);
 
         return $file;
+    }
+
+    /**
+     * Get path to site folder
+     * @param string $site
+     * @return string Site folder path
+     */
+    public function site(string $site): string
+    {
+        return file_tools::path_join($this->file_path, $site);
     }
 
     /**
