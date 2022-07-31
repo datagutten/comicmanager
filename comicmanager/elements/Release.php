@@ -264,6 +264,8 @@ class Release extends DatabaseObject
     public static function from_comics(comicmanager $comicmanager, array $data, string $site): Release
     {
         $date = self::parse_date($data['pub_date']);
+        if(empty($data['images']))
+            throw new exceptions\ComicInvalidArgumentException('No image in provided data');
 
         $info = [
             'site' => $site, 'date_obj' => $date,
