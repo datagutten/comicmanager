@@ -53,13 +53,14 @@ else
             elseif (!empty($_GET['year']) && !empty($_GET['month']))
                 $releases = $comicmanager->comics->releases_month($site, $_GET['year'], $_GET['month']);
             else
-                $error_text = 'Year and/or month must be specified'; //Filtering is required when using jodal comics
+                die($comicmanager->render_error('Year and/or month must be specified')); //Filtering is required when using jodal comics
             foreach($releases as $key=>$release)
             {
                 $releases[$key] = Release::from_comics($comicmanager, $release, $site);
             }
         }
         catch (Exception $e) {
+            die($comicmanager->render_exception($e));
         }
     }
     elseif($_GET['source']=='file')
@@ -79,7 +80,7 @@ else
             $error_text='No file releases found'; // TODO: Check if this can be empty
     }
     else
-        $error_text=sprintf('Invalid source: %s',$_GET['source']);
+        die($comicmanager->render_error(sprintf('Invalid source: %s',$_GET['source'])));
 }
 
 if(!empty($error_text))
