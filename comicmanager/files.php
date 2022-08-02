@@ -7,6 +7,7 @@ namespace datagutten\comicmanager;
 use datagutten\comicmanager\exceptions\ImageNotFound;
 use datagutten\tools\files\files as file_tools;
 use FileNotFoundException;
+use Symfony\Component\Filesystem\Filesystem;
 
 class files
 {
@@ -15,6 +16,7 @@ class files
 	 */
 	public $file_path;
 	public bool $debug = false;
+    public Filesystem $filesystem;
 
     /**
      * files constructor.
@@ -23,6 +25,7 @@ class files
      */
 	function __construct(string $file_path)
 	{
+        $this->filesystem = new Filesystem();
 		if(!file_exists($file_path))
 			throw new FileNotFoundException($file_path);
 		$this->file_path = realpath($file_path);
