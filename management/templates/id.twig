@@ -1,2 +1,6 @@
-<label for="{{release.date}}">ID:</label>
-<input type="text" name="release[{{release.date}}][value]" id="{{release.date}}">
+<span class="release_id">
+    <label for="{{ release.date }}">ID:</label>
+    <input type="text" name="release[{{ release.date }}][value]" id="{{ release.date }}" class="release_id">
+    <a id="link_{{ release.date }}" class="link">Show</a>
+    <img alt="Tooltip" class="tooltip" id="tooltip_{{ release.date }}" src="" style="position: absolute">
+</span>
