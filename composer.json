@@ -4,7 +4,7 @@
     "type": "project",
     "require": {
         "php": ">=8.0",
-        "twig/twig": "^2.11",
+        "twig/twig": "^2.11|^3",
         "datagutten/tools": "^1.9",
         "datagutten/comics-tools": "^1.0.1",
         "ext-pdo": "*",
