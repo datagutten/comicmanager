@@ -37,7 +37,7 @@ class Maintenance
     function propagateCategories(): array
     {
         if (!$this->comicmanager->info->has_categories)
-            throw new exceptions\InvalidMaintenanceTool(sprintf('Comic do not have categories'));
+            throw new exceptions\InvalidMaintenanceTool(sprintf('%s does not have categories', $this->comic->name));
         $output = [];
         $comic = $this->comicmanager->info;
         $table = $this->comicmanager->info->id;
@@ -125,8 +125,8 @@ class Maintenance
     {
         $output = [];
 
-        if ($this->comic->key_field == 'id')
-            throw new exceptions\InvalidMaintenanceTool('This tool is only useful for comics using an alternate key field');
+        if (!in_array('customid', $this->comic->possible_key_fields) || !in_array('id', $this->comic->possible_key_fields))
+            throw new exceptions\InvalidMaintenanceTool('This tool is only useful for comics using customid');
 
         $st = $this->queries->idNotLikeCustomId($this->comic);
         $releases = elements\Releases::from_query($this->comicmanager, $st);
