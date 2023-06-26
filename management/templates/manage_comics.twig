@@ -14,7 +14,9 @@
         {% if release.title is defined %}
             Title: {{ release.title }}<br />
         {% endif %}
-        {% include 'image.twig' %}<br />
+            {% if release.image is defined %}
+                {% include 'image.twig' %}<br/>
+            {% endif %}
         {% if mode == 'category' %}
             {{ include ('category.twig', {'name': 'release['~release.date~'][value]', 'id': release.date}) }}
         {% else %}
