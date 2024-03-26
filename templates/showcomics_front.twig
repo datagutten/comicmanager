@@ -70,7 +70,7 @@
         <h2>Category</h2>
         <ul>
         {% for id,category in categories %}
-            <li><a href="{{ root }}/showcomics.php?comic={{ comic.id }}&category={{ id }}">{{ category }}</li>
+            <li><a href="{{ root }}/showcomics.php?comic={{ comic.id }}&category={{ id }}">{{ category }}</a></li>
         {% endfor %}
         </ul>
     </div>
