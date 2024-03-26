@@ -10,8 +10,14 @@
     <br/>
 {% endif %}
 {% if not release.image_error %}
-    <a href="{{ release.image.url }}"><img src="{{ release.image.url }}" alt="{{ release.date }} - {{ release.site }}"
-                                           class="{{ mode|default("id") }}"/></a>
+    {% if no_link is defined %}
+        <img src="{{ release.image.url }}" alt="{{ release.date }} - {{ release.site }}"
+             class="{{ mode|default("id") }}"/>
+    {% else %}
+        <a href="{{ release.image.url }}"><img src="{{ release.image.url }}"
+                                               alt="{{ release.date }} - {{ release.site }}"
+                                               class="{{ mode|default("id") }}"/></a>
+    {% endif %}
 {% else %}
     {% include 'exception_base.twig' with {'e': release.image_error.e_file} %}
     {% include 'exception_base.twig' with {'e': release.image_error.e_comics} %}
