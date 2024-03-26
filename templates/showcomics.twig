@@ -2,9 +2,15 @@
 
 {% block content %}
     {% for key, release in releases %}
-        <p>
-            {% include 'image.twig' %}
-        </p>
+        {% if release.error is defined %}
+            <p>{{ release.error }}</p>
+        {% else %}
+            <p>
+                {% if release.image is defined %}
+                    {% include 'image.twig' %}
+                {% endif %}
+            </p>
+        {% endif %}
     {% endfor %}
 
 {% endblock %}
