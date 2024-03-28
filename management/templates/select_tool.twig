@@ -1,9 +1,8 @@
-{% extends 'base.twig' %}
+{% extends 'base5.twig' %}
 
 {% block content %}
-    <h1>{{ header }}</h1>
+    <h2>{{ header }}</h2>
     {% for file,name in tools %}
-        <a href="?comic={{ comic.id }}&tool={{ file }}">{{ name }}</a><br />
+        <a class="btn btn-primary" href="?comic={{ comic.id }}&tool={{ file }}">{{ name }}</a><br/>
     {% endfor %}
-
 {% endblock %}

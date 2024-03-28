@@ -1,0 +1,12 @@
+{% if comic is defined and comic is not empty %}
+    {# <li class="nav-item"><a class="nav-link" href="{{ root }}">Change comic</a></li> #}
+    <li class="nav-item"><a class="nav-link" href="{{ root }}/?comic={{ comic.id }}">Show {{ comic.name }}</a></li>
+    <li class="nav-item"><a class="nav-link"
+                            href="{{ root }}/management/index.php?comic={{ comic.id }}">Manage {{ comic.name }}</a></li>
+    <li class="nav-item"><a class="nav-link"
+                            href="{{ root }}/maintenance/index.php?comic={{ comic.id }}">Maintain {{ comic.name }}</a>
+    </li>
+{% else %}
+    <li class="nav-item"><a class="nav-link" href="{{ root }}">Select comic</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ root }}/management/addcomic.php">Add comic</a></li>
+{% endif %}

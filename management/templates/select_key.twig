@@ -1,4 +1,4 @@
-{% extends 'base.twig' %}
+{% extends 'base5.twig' %}
 
 {% block content %}
     <form method="get" id="form">
@@ -6,5 +6,5 @@
         {% include 'includes/select_key_field.twig' %}
         <label for="key"></label>
         <input type="text" id="key" name="key" />
-        <input type="submit" /></form>
+        <input type="submit" class="btn btn-primary" /></form>
 {% endblock %}

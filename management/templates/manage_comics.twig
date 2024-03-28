@@ -1,5 +1,9 @@
-{% extends 'base.twig' %}
-
+{% extends 'base5.twig' %}
+{% block head %}
+    <script src="{{ root }}/static/manage_comics.js"></script>
+    <script src="{{ root }}/static/id_link.js"></script>
+    <link href="{{ root }}/static/manage_comics.css" rel="stylesheet">
+{% endblock %}
 {% block content %}
 <form method="post" action="{{ root }}/management/managecomics_process.php">
     <input type="hidden" name="comic" id="comic" value="{{comic.id}}">

@@ -1,11 +1,10 @@
-{% extends 'base.twig' %}
+{% extends 'base5.twig' %}
 
 {% block content %}
     {% if comic is defined and comic is not empty %}
         <p>Comic successfully added</p>
         <p><a href="{{ root }}/management/?comic={{ comic.id }}">Manage {{ comic.name }}</a></p>
     {% endif %}
-    <h1>Add comic</h1>
     <form id="form1" name="form1" method="post">
         <p>
             <label for="comic">Comic id:</label>
