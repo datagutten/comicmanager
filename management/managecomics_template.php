@@ -10,12 +10,22 @@ use datagutten\comicmanager\elements\Release;
 use datagutten\comicmanager\web;
 use datagutten\comicmanager\exceptions;
 
-switch($_GET['mode'])
+switch ($_GET['mode'])
 {
-    case 'id': $sortmode='id'; break;
-    case 'category': $sortmode='category'; break;
-    case 'original_date': $sortmode='original_date'; break;
-    default: $error_text='Invalid mode: '.$_GET['mode'];
+    case 'id':
+        $sortmode = 'id';
+        $image_class = 'comic_full_size';
+        break;
+    case 'category':
+        $sortmode = 'category';
+        $image_class = 'comic';
+        break;
+    case 'original_date':
+        $sortmode = 'original_date';
+        $image_class = 'comic_full_size';
+        break;
+    default:
+        $error_text = 'Invalid mode: ' . $_GET['mode'];
 }
 
 
@@ -135,6 +145,7 @@ else {
         'source' => $source,
         'releases' => $releases,
         'mode' => $_GET['mode'],
+        'image_class' => $image_class,
         'root' => $comicmanager->root,
         'categories' => $categories,
         'js' => $js,
