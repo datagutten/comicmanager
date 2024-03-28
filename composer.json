@@ -5,8 +5,8 @@
     "require": {
         "php": ">=8.0",
         "twig/twig": "^2.11|^3",
-        "datagutten/tools": "^1.9",
-        "datagutten/comics-tools": "^1.0.1",
+        "datagutten/tools": "^1.12",
+        "datagutten/comics-tools": "v1.2",
         "ext-pdo": "*",
         "ext-json": "*",
         "ext-gd": "*",
@@ -26,11 +26,11 @@
     "autoload": {
         "psr-4": {
             "datagutten\\comicmanager\\": "comicmanager",
+            "datagutten\\comicmanager\\vsdif\\": "vsdif",
             "datagutten\\comicmanager\\tests\\": "tests"
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^9",
-        "symfony/filesystem": "^5.3"
+        "phpunit/phpunit": "^9"
     }
 }
