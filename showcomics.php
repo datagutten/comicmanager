@@ -96,10 +96,17 @@ if (!empty($comic))
         {
             foreach ($strips as $strip)
             {
-                if (!$show_duplicates)
-                    $releases[] = $strip->latest();
-                else
-                    $releases = array_merge($releases, $strip->releases());
+                try
+                {
+                    if (!$show_duplicates)
+                        $releases[] = $strip->latest();
+                    else
+                        $releases = array_merge($releases, $strip->releases());
+                }
+                catch (exceptions\StripNotFound $e)
+                {
+                    continue;
+                }
             }
         }
     }
