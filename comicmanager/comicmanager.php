@@ -50,6 +50,11 @@ class comicmanager extends core
     public $web_image_root;
 
     /**
+     * @var Lists List parser class
+     */
+    public Lists $lists;
+
+    /**
      * comicmanager constructor.
      * @param ?array $config
      * @throws FileNotFoundException File path not found
@@ -75,6 +80,12 @@ class comicmanager extends core
         {
         	$this->files = new files($this->config['file_path']);
             $this->sources['file']='Local files';
+        }
+
+        if(isset($this->config['list_path']))
+        {
+            $this->lists = new Lists($this->config['list_path']);
+            $this->lists->comicmanager = $this;
         }
 
         $this->web_root = $config['web_root'] ?? '/comicmanager';

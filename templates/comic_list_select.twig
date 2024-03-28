@@ -1,9 +1,0 @@
-{% extends 'base.twig' %}
-
-{% block content %}
-    <h2>Select list:</h2>
-    {% for list in lists %}
-        <p><a href="?list={{ list }}">{{ list }}</a></p>
-    {% endfor %}
-
-{% endblock %}

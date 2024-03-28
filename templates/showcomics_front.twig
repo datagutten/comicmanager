@@ -75,4 +75,35 @@
         </ul>
     </div>
     {% endif %}
+    {% if lists is not empty %}
+        <h2>Lists</h2>
+        {% if list_folder %}
+            <h3>{{ list_folder }}</h3>
+        {% endif %}
+        <ul>
+            {% for list in lists %}
+                {% if not list_folder is defined %}
+                    <li><a href="?comic={{ comic.id }}&list={{ list }}">{{ list }}</a></li>
+                {% else %}
+                    <li><a href="?comic={{ comic.id }}&list_folder={{ list_folder }}&list={{ list }}">{{ list }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            {% for folder in list_folders %}
+                <li><a href="?comic={{ comic.id }}&list_folder={{ folder }}">{{ folder }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <form method="get" action="{{ root }}/date_check.php">
+        <input type="hidden" name="comic" value="{{ comic.id }}"/>
+        <label>Start year
+            <input name="start" size="5">
+        </label>
+        <label>End year
+            <input name="end" size="5">
+        </label>
+        <label>Date printed
+            <input name="date"></label>
+        <input type="submit" value="Show">
+    </form>
 {% endblock %}
