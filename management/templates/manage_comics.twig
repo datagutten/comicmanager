@@ -26,7 +26,7 @@
                 {% endif %}
             {% endif %}
         {% if mode == 'category' %}
-            {{ include ('category.twig', {'name': 'release['~release.date~'][value]', 'id': release.date}) }}
+            {{ include ('includes/select_category.twig', {'name': 'release['~key~'][value]', 'id': key}) }}
         {% else %}
             {% include mode ~ '.twig' %}
         {% endif %}

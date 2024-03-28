@@ -1,0 +1,11 @@
+<label for="{{id|default('category')}}">Category:</label>
+<select name="{{ name|default('category') }}" id="{{ id|default('category') }}">
+    <option value="">Select category</option>
+    {% for category in categories %}
+        {% if release.category|default()==category.id %}
+            <option value="{{category.id}}" selected="selected">{{category.name}}</option>
+        {% else %}
+            <option value="{{category.id}}">{{category.name}}</option>
+        {% endif %}
+    {% endfor %}
+</select>

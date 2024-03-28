@@ -13,7 +13,7 @@
             {% include 'image.twig' with {'release': first_release} %}
         {% endif %}
             {% if comic.has_categories %}
-                <p>{% include 'category.twig' %}</p>
+                <p>{% include 'includes/select_category.twig' %}</p>
             {% endif %}
             <table>
             <tr>
