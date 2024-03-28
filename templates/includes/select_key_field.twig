@@ -1,0 +1,10 @@
+<label for="key_field">Key field:</label>
+<select name="key_field" id="key_field">
+    {% for field in key_fields ?? comic.possible_key_fields %}
+        {% if field==comic.key_field %}
+            <option value="{{ field }}" selected="selected">{{ field }}</option>
+        {% else %}
+            <option value="{{ field }}">{{ field }}</option>
+        {% endif %}
+    {% endfor %}
+</select>

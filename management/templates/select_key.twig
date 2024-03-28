@@ -3,12 +3,7 @@
 {% block content %}
     <form method="get" id="form">
         <input name="comic" type="hidden" value="{{ comic.id }}" />
-        <label for="keyfield">Key field:</label>
-        <select name="keyfield" id="keyfield">
-            {% for keyfield in key_fields %}
-                <option>{{ keyfield }}</option>
-            {% endfor %}
-        </select>
+        {% include 'includes/select_key_field.twig' %}
         <label for="key"></label>
         <input type="text" id="key" name="key" />
         <input type="submit" /></form>

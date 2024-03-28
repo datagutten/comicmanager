@@ -1,25 +1,29 @@
 {% extends 'base.twig' %}
 {% set first = true %}
-
+{% block head %}
+    <script src="{{ root }}/static/edit_release.js"></script>
+{% endblock %}
 {% block content %}
     {{ errors }}
     <form method="post">
     {% for release in releases %}
         {% if first %}
             {% set first = false %}
+        {% if first_release.image is defined %}
             {% include 'image.twig' with {'release': first_release} %}
+        {% endif %}
             {% if comic.has_categories %}
                 <p>{% include 'category.twig' %}</p>
             {% endif %}
             <table>
             <tr>
-                {% for key, value in release %}
+                {% for key in release.comic.fields %}
                     <th>{{ key }}</th>
                 {% endfor %}
             </tr>
         {% endif %}
             <tr>
-                {% for key, value in release %}
+                {% for key, value in release.values %}
                     <td><input type="text" name="release[{{ release.uid }}][{{ key }}]" value="{{ value }}" class="input_{{ key }}" /></td>
                 {% endfor %}
             </tr>
@@ -27,5 +31,5 @@
     </table>
         <input type="submit" name="submit" value="Save" />
     </form>
-    <a href="?comic=pondus">Edit other release</a>
+    <a href="?comic={{ comic.id }}">Edit other release</a>
 {% endblock %}
