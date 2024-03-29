@@ -22,9 +22,9 @@
 </head>
 <body>
 {% include 'includes/navbar5.html' %}
-<div class="container py-5">
+<div class="{{ container_size|default('container-xl') }} py-5">
     <div class="row">
-        <main class="col-sm-9 ml-sm-auto col-md-10 pt-3" role="main">
+        <main class="pt-3" role="main">
             {% if title %}
                 <h1>{{ title }}</h1>
             {% endif %}

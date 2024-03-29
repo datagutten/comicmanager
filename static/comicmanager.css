@@ -9,5 +9,15 @@ img.comic {
 }
 
 img.comic_full_size {
-    max-width: 100vw;;
+    max-width: 100%;
+}
+
+@media (max-width: 900px) {
+    img.comic {
+        max-width: 100%;
+    }
+
+    img.comic_full_size {
+        max-width: 100%;
+    }
 }
