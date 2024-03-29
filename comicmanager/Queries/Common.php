@@ -114,13 +114,23 @@ class Common
      * Remove invalid fields
      * @param array $valid_fields Valid fields
      * @param array $values Key/value pairs
+     * @param bool $allow_empty Set empty values to null instead of removing them
      * @return array Values of $values with keys in $valid_fields
      * @throws exceptions\ComicInvalidArgumentException No valid fields
      */
-    public static function filterFields(array $valid_fields, array $values): array
+    public static function filterFields(array $valid_fields, array $values, bool $allow_empty = false): array
     {
         $fields = array_intersect_key($values, array_combine($valid_fields, $valid_fields));
-        $fields = array_filter($fields);
+        if (!$allow_empty)
+            $fields = array_filter($fields);
+        else
+        {
+            foreach ($fields as $key => $field)
+            {
+                if (empty($field))
+                    $fields[$key] = null;
+            }
+        }
         if (empty($fields))
             throw new exceptions\ComicInvalidArgumentException('No valid fields');
         return $fields;
