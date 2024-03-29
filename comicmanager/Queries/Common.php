@@ -31,10 +31,10 @@ class Common
             'database' => $db_config['db_name'],
             'username' => $db_config['db_user'],
             'password' => $db_config['db_password'],
+            'host' => $db_config['db_host'],
         ]);
         $this->connection = new Database\Connection([
             'driver' => $driver,
-            'host' => $db_config['db_host'],
         ]);
 
         $this->schemaDialect = $this->connection->getDriver()->schemaDialect();
