@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnhandledExceptionInspection */
 
 namespace datagutten\comicmanager\tests;
 
@@ -14,6 +15,8 @@ class comicsTest extends TestCase
     public function setUp(): void
     {
         $config = require 'test_config.php';
+        if (empty($config['comics']['secret_key']))
+            $this->markTestSkipped('Missing comics secret key');
         $this->comics = new ComicsAPI($config['comics']);
     }
 
