@@ -10,6 +10,7 @@ use datagutten\comicmanager\exceptions;
 use datagutten\comicmanager\tests\Setup;
 use datagutten\tools\files\files;
 
+
 class ReleaseTest extends Setup
 {
     /**
@@ -134,6 +135,9 @@ class ReleaseTest extends Setup
 
     function testFromComics()
     {
+        if (empty($this->comicmanager->comics))
+            $this->markTestSkipped('Comics not initialized');
+
         $release_comics = $this->comicmanager->comics->releases_date('pondusadressa', '2021-07-18');
         $release = Release::from_comics($this->comicmanager, $release_comics[0], 'pondusadressa');
         $this->assertStringContainsString('/media/pondusadressa/9/9766c598b5f7b1037e5ade94fc21877b9e07ab2518aabd5ecd0f5cfd1c8961b3.jpg', $release->image_url);
@@ -141,6 +145,9 @@ class ReleaseTest extends Setup
 
     function testFromComicsInvalidDate()
     {
+        if (empty($this->comicmanager->comics))
+            $this->markTestSkipped('Comics not initialized');
+
         $this->expectException(exceptions\comicManagerException::class);
         $this->expectExceptionMessage('Invalid date: 2021-07-32');
         Release::from_comics($this->comicmanager, ['pub_date' => '2021-07-32'], 'pondusadressa');

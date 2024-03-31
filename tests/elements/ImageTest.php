@@ -92,6 +92,9 @@ class ImageTest extends Setup
 
     public function testFromComicsDate()
     {
+        if (empty($this->comicmanager->comics))
+            $this->markTestSkipped('Comics not initialized');
+
         $this->assertNotEmpty($this->comicmanager->comics, 'Comics not set, missing environment variables?');
         $image = Image::from_date('pondusbt', '20150519 ', $this->comicmanager);
         $this->assertStringContainsString('/media/pondusbt/5/58f4787f06c3e7381ecb7ca2e204d71856edcac75fb73356b95f8e190c452e41.gif', $image->url);
