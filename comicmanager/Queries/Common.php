@@ -153,6 +153,11 @@ class Common
         return $values_set;
     }
 
+    protected function selectQuery(elements\Comic $comic, $fields = '*'): Database\Query
+    {
+        return $this->connection->selectQuery($fields, $comic->id);
+    }
+
     /**
      * A wrapper for query with custom exception
      * @param string $sql SQL query string
@@ -163,7 +168,7 @@ class Common
     {
         try
         {
-            return $this->connection->query($sql);
+            return $this->connection->execute($sql);
         }
         catch (PDOException $e)
         {

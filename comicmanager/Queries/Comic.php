@@ -59,8 +59,7 @@ class Comic extends Common
      */
     function sites(elements\Comic $comic): Database\StatementInterface
     {
-        $query = $this->connection->newQuery()
-            ->select('site')->distinct('site')->from($comic->id)->order('site');
+        $query = $this->connection->selectQuery('site', $comic->id)->distinct('site')->order('site');
         return $this->execute($query);
     }
 
@@ -126,10 +125,7 @@ class Comic extends Common
      */
     function addCategory(elements\Comic $comic, string $category_name, bool $visible): Database\StatementInterface
     {
-        $query = $this->connection->newQuery()
-            ->insert(['name', 'visible'])
-            ->values(['name' => $category_name, 'visible' => $visible ? 1 : 0])
-            ->into(self::categoryTable($comic));
+        $query = $this->connection->insertQuery(self::categoryTable($comic), ['name' => $category_name, 'visible' => $visible ? 1 : 0]);
         return $this->execute($query);
     }
 
@@ -141,7 +137,7 @@ class Comic extends Common
      */
     protected function updateCategoryQuery(elements\Comic $comic, int $id): Database\Query
     {
-        return $this->connection->newQuery()->update(self::categoryTable($comic))->where(['id' => $id]);
+        return $this->connection->updateQuery(self::categoryTable($comic), ['id' => $id]);
     }
 
     /**
@@ -181,7 +177,7 @@ class Comic extends Common
      */
     function deleteCategory(elements\Comic $comic, int $id): Database\StatementInterface
     {
-        $query = $this->connection->newQuery()->delete(self::categoryTable($comic))->where(['id' => $id]);
+        $query = $this->connection->deleteQuery(self::categoryTable($comic), ['id' => $id]);
         return $this->execute($query);
     }
 }

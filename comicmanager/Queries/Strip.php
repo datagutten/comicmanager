@@ -15,9 +15,7 @@ class Strip extends Common
         if (empty($key_field))
             $key_field = $comic->key_field;
 
-        $query = $this->connection->newQuery()
-            ->select($key_field)
-            ->from($comic->id)
+        $query = $this->connection->selectQuery($key_field, $comic->id)
             ->where([
                 $key_field . ' >=' => $from,
                 $key_field . ' <=' => $to
@@ -31,9 +29,8 @@ class Strip extends Common
         if (empty($key_field))
             $key_field = $comic->key_field;
 
-        $query = $this->connection->newQuery()
-            ->select('*')
-            ->from($comic->id)
+        $query = $this->connection
+            ->selectQuery('*', $comic->id)
             ->where([$key_field => $key])
             ->order(['date' => 'DESC'])
             ->limit(1);
@@ -46,16 +43,15 @@ class Strip extends Common
         if (empty($key_field))
             $key_field = $comic->key_field;
 
-        $query = $this->connection->newQuery()
-            ->select('*')
-            ->from($comic->id)
+        $query = $this->connection
+            ->selectQuery('*', $comic->id)
             ->where([$key_field => $key,]);
         return $this->execute($query);
     }
 
     /**
-     * Get highest and lowest value for a field
-     * @param elements\Comic $comic
+     * Get the highest and lowest value for the specified key field or the comics default key field if not specified
+     * @param elements\Comic $comic Comic object
      * @param ?string $key_field Key field
      * @return array
      */
@@ -64,7 +60,7 @@ class Strip extends Common
         if (empty($key_field))
             $key_field = $comic->key_field;
 
-        $query = $this->connection->newQuery()->from($comic->id);
+        $query = $this->connection->selectQuery(table: $comic->id);
         $func = $query->func();
 
         $st = $query->select(['min' => $func->min($key_field), 'max' => $func->max($key_field)])->execute();

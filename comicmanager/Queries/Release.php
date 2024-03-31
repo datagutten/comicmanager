@@ -37,11 +37,6 @@ class Release extends Common
             throw new exceptions\ComicInvalidArgumentException('No valid field combination found');
     }
 
-    protected function selectQuery(elements\Comic $comic): Database\Query
-    {
-        return $this->connection->newQuery()->select('*')->from($comic->id);
-    }
-
     /**
      * Get release information from database
      * @param elements\Release $release
@@ -51,7 +46,7 @@ class Release extends Common
      */
     public function get(elements\Release $release): Database\StatementInterface
     {
-        $query = $this->connection->newQuery()->select('*')->from($release->comic->id);
+        $query = $this->selectQuery($release->comic);
         if (!empty($release->uid))
             $query = $query->where(['uid' => $release->uid]);
         else
@@ -72,35 +67,34 @@ class Release extends Common
     public function get_uid(elements\Release $release): ?int
     {
         $query_fields = self::get_query_fields($release);
-        $query = $this->selectQuery($release->comic)->where($query_fields);
+        $query = $this->selectQuery($release->comic, 'uid')->where($query_fields);
         $st = $this->execute($query);
         if ($st->rowCount() == 0)
             return null;
-        $row = $st->fetch(PDO::FETCH_ASSOC);
-        return $row['uid'];
+        return $st->fetchColumn(0);
     }
 
     public function insert(elements\Release $release): Database\StatementInterface
     {
         $fields = self::filterFields($release->comic->fields, (array)$release);
-        $query = $this->connection->newQuery()->into($release->comic->id)->insert(array_keys($fields))->values($fields);
+        $query = $this->connection->insertQuery($release->comic->id)->insert(array_keys($fields))->values($fields);
         return $this->execute($query);
     }
 
     /**
      * Update release information in database
      * @param elements\Release $release Release object
+     * @param bool $allow_empty
      * @return Database\StatementInterface|null
      * @throws exceptions\DatabaseException Database error
      * @throws exceptions\ComicInvalidArgumentException No valid fields
      */
-    public function update(elements\Release $release): ?Database\StatementInterface
+    public function update(elements\Release $release, bool $allow_empty = false): ?Database\StatementInterface
     {
-        $fields = self::filterFields($release->comic->fields, (array)$release);
-        $query = $this->connection->newQuery()->update($release->comic->id)->where(['uid' => $release->uid]);
-        $in_db = $this->connection->newQuery()
-            ->select(array_keys($fields))
-            ->from($release->comic->id)
+        $fields = self::filterFields($release->comic->fields, (array)$release, $allow_empty);
+        $query = $this->connection->updateQuery($release->comic->id)->where(['uid' => $release->uid]);
+        $in_db = $this->connection
+            ->selectQuery(array_keys($fields), $release->comic->id)
             ->where(['uid' => $release->uid])
             ->execute()
             ->fetch(PDO::FETCH_ASSOC);
@@ -126,9 +120,7 @@ class Release extends Common
      */
     public function category(Comic $comic, int $category): Database\StatementInterface
     {
-        $query = $this->connection->newQuery()
-            ->from($comic->id)
-            ->select($comic->key_field)
+        $query = $this->connection->selectQuery($comic->key_field, $comic->id)
             ->distinct($comic->key_field)
             ->whereNotNull($comic->key_field)
             ->where(['category' => $category])
@@ -145,9 +137,7 @@ class Release extends Common
      */
     public function category_keyless(Comic $comic, int $category): Database\StatementInterface
     {
-        $query = $this->connection->newQuery()
-            ->from($comic->id)
-            ->select('*')
+        $query = $this->selectQuery($comic)
             ->whereNull($comic->key_field)
             ->where(['category' => $category]);
 

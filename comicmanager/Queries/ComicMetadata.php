@@ -6,7 +6,6 @@ namespace datagutten\comicmanager\Queries;
 use Cake\Database;
 use datagutten\comicmanager\elements;
 use datagutten\comicmanager\exceptions;
-use PDO;
 
 class ComicMetadata extends Common
 {
@@ -29,8 +28,7 @@ class ComicMetadata extends Common
      */
     public function info(elements\Comic $comic): Database\StatementInterface
     {
-        $query = $this->connection->newQuery()
-            ->select('*')->from('comic_info')->where(['id' => $comic->id]);
+        $query = $this->connection->selectQuery('*', 'comic_info')->where(['id' => $comic->id]);
         return $this->execute($query);
     }
 
@@ -58,7 +56,7 @@ class ComicMetadata extends Common
     public function insert(elements\Comic $comic)
     {
         $fields = $this->values_to_db($comic);
-        $query = $this->connection->newQuery()->insert(array_keys($fields))->into('comic_info')->values($fields);
+        $query = $this->connection->insertQuery('comic_info')->insert(array_keys($fields))->values($fields);
         $this->execute($query);
     }
 
@@ -71,10 +69,8 @@ class ComicMetadata extends Common
     public function update(elements\Comic $comic): Database\StatementInterface
     {
         $fields = $this->values_to_db($comic);
-        $query = $this->connection->newQuery()->update('comic_info')->where(['id' => $comic->id]);
-        $in_db = $this->connection->newQuery()
-            ->select('*')
-            ->from('comic_info')
+        $query = $this->connection->updateQuery('comic_info', conditions: ['id' => $comic->id]);
+        $in_db = $this->connection->selectQuery('*', 'comic_info')
             ->where(['id' => $comic->id])
             ->execute()
             ->fetch('assoc');
