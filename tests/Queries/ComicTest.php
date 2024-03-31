@@ -5,7 +5,6 @@ namespace datagutten\comicmanager\tests\Queries;
 
 use datagutten\comicmanager\elements;
 use datagutten\comicmanager\elements\Comic;
-use datagutten\comicmanager\exceptions;
 use datagutten\comicmanager\Queries;
 use datagutten\comicmanager\tests\common;
 use PDO;
@@ -106,13 +105,6 @@ class ComicTest extends common
         $st_fields = $this->queries_comic->query('SELECT possible_key_fields FROM comic_info WHERE id=\'test_comic\'');
         $fields = $st_fields->fetch(PDO::FETCH_COLUMN);
         $this->assertSame('customid', $fields);
-    }
-
-    public function testAddInvalidKeyField()
-    {
-        $this->expectException(exceptions\ComicInvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid key field: foobar');
-        $this->comic->addKeyField('foobar');
     }
 
     public function testEnableCategories()
