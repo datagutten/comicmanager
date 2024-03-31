@@ -257,7 +257,7 @@ class Comic extends DatabaseObject
 
     /**
      * Check if a field is allowed for the current comic and return its description text
-     * @param string $key_field Field to be validate
+     * @param string $key_field Field to be validated
      * @return string Field description
      * @throws exceptions\ComicInvalidArgumentException Field is not valid
      */
@@ -271,7 +271,7 @@ class Comic extends DatabaseObject
 
     /**
      * Check if a field is valid and return its description text
-     * @param string $key_field Field to be validate
+     * @param string $key_field Field to be validated
      * @return string Field description
      * @throws exceptions\ComicInvalidArgumentException Field is not valid
      */
@@ -294,7 +294,7 @@ class Comic extends DatabaseObject
         $this->key_field = $key_field;
     }
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         if($offset==='keyfield')
             return $this->key_field;
@@ -306,7 +306,7 @@ class Comic extends DatabaseObject
      * @param mixed $value
      * @throws exceptions\ComicInvalidArgumentException
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if($offset==='key_field' && !isset(self::$key_fields[$value]))
             throw new exceptions\ComicInvalidArgumentException('Invalid key field: '.$value);
