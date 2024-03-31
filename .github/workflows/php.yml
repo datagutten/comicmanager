@@ -58,7 +58,7 @@ jobs:
           COMICS_SITE: ${{ secrets.COMICS_SITE }}
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
 
   prefer_lowest:
     name: 'Prefer lowest dependency versions'
