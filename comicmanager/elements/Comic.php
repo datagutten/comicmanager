@@ -192,12 +192,32 @@ class Comic extends DatabaseObject
      * @throws exceptions\ComicInvalidArgumentException Comic does not have categories
      * @throws exceptions\DatabaseException Database error
      */
-    public function addCategory(string $name, bool$visible = true): Database\StatementInterface
+    public function addCategory(string $name, bool $visible = true): Database\StatementInterface
     {
         if (!$this->has_categories)
             throw new exceptions\ComicInvalidArgumentException('Comic does not have categories');
         return $this->queries->addCategory($this, $name, $visible);
     }
+
+    /**
+     * Delete a category from the comic
+     * @param int $id Category id
+     * @return Database\StatementInterface
+     * @throws exceptions\ComicInvalidArgumentException Comic does not have categories
+     * @throws exceptions\DatabaseException Database error
+     */
+    public function deleteCategory(int $id): Database\StatementInterface
+    {
+        if (!$this->has_categories)
+            throw new exceptions\ComicInvalidArgumentException('Comic does not have categories');
+        return $this->queries->deleteCategory($this, $id);
+    }
+
+    /*
+    public function editCategory($id, $name, $visible)
+    {
+
+    }*/
 
     /**
      * Parse a comma separated string with possible key fields
