@@ -7,7 +7,6 @@ namespace datagutten\comicmanager\elements;
 use ArrayAccess;
 use Cake\Database;
 use datagutten\comicmanager\comicmanager;
-use datagutten\comicmanager\Queries;
 
 abstract class DatabaseObject implements ArrayAccess
 {
@@ -35,26 +34,26 @@ abstract class DatabaseObject implements ArrayAccess
 
     /**
      * Load data from the database to the object
-     * @return mixed
+     * @return void
      */
-    abstract function load_db();
+    abstract function load_db(): void;
 
     public function offsetExists($offset): bool
     {
         return !empty($this->$offset);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->$offset;
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->$offset = $value;
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->$offset);
     }

@@ -55,11 +55,10 @@ class Comic extends DatabaseObject
 
     /**
      * Load comic metadata from the database
-     * @return self
      * @throws exceptions\ComicNotFound Metadata not found
      * @throws exceptions\DatabaseException
      */
-    public function load_db(): self
+    public function load_db(): void
     {
         $st = $this->queries_metadata->info($this);
         if ($st->rowCount() === 0)
@@ -73,7 +72,6 @@ class Comic extends DatabaseObject
         $this->has_categories = $values['has_categories'] == 1;
         $this->possible_key_fields = self::parsePossibleKeyFields($values['possible_key_fields']);
         $this->fields = $this->queries_metadata->fields($this);
-        return $this;
     }
 
     /**

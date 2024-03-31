@@ -211,7 +211,7 @@ class Release extends DatabaseObject
     /**
      * @throws exceptions\ReleaseNotFound|comicManagerException
      */
-    public function load_db()
+    public function load_db(): void
     {
         $st = $this->queries->get($this);
         if ($st->rowCount() > 1)
