@@ -2,10 +2,9 @@
 
 namespace datagutten\comicmanager\tests\elements;
 
-use datagutten\comicmanager\elements\Comic;
 use datagutten\comicmanager\elements;
-use datagutten\comicmanager\tests\Setup;
 use datagutten\comicmanager\exceptions;
+use datagutten\comicmanager\tests\Setup;
 
 class ComicTest extends Setup
 {
@@ -102,5 +101,25 @@ class ComicTest extends Setup
         $comic->create();
         $this->expectExceptionMessage('Comic does not have categories');
         $comic->categories();
+    }
+
+    public function testAddCategory()
+    {
+        $this->assertEmpty($this->comic->categories());
+        $this->comic->addCategory('test category');
+        $this->assertContains('test category', $this->comic->categories());
+
+        $this->comic->addCategory('test hidden', false);
+        $this->assertContains('test hidden', $this->comic->categories());
+        $this->assertNotContains('test hidden', $this->comic->categories(true));
+    }
+
+    public function testDeleteCategory()
+    {
+        $this->assertEmpty($this->comic->categories());
+        $this->comic->addCategory('delete me');
+        $this->assertContains('delete me', $this->comic->categories());
+        $this->comic->deleteCategory(1);
+        $this->assertNotContains('delete me', $this->comic->categories());
     }
 }

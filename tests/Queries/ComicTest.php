@@ -126,19 +126,6 @@ class ComicTest extends common
         $this->assertTrue($this->comic->has_categories);
     }
 
-    public function testAddCategory()
-    {
-        $this->comic->create();
-        $this->comic->enableCategories();
-        $this->assertEmpty($this->comic->categories());
-        $this->comic->addCategory('test category');
-        $this->assertContains('test category', $this->comic->categories());
-
-        $this->comic->addCategory('test hidden', false);
-        $this->assertContains('test hidden', $this->comic->categories());
-        $this->assertNotContains('test hidden', $this->comic->categories(true));
-    }
-
     public function testCharset()
     {
         $this->comic->name = 'test æøå';
