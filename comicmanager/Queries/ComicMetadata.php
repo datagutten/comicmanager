@@ -112,33 +112,6 @@ class ComicMetadata extends Common
     }
 
     /**
-     * Get comic categories
-     * @param elements\Comic $comic Comic object
-     * @param bool $only_visible Show only categories marked as visible
-     * @param bool $return_object Return statement object
-     * @return array|Database\StatementInterface
-     * @throws exceptions\DatabaseException Database error
-     */
-    function categories(elements\Comic $comic, $only_visible = false, $return_object = false)
-    {
-        $query = $this->connection->newQuery()->from($comic->id . '_categories')->order('name');
-        if ($return_object)
-            $query = $query->select('*');
-        else
-            $query = $query->select(['id', 'name']);
-
-        if ($only_visible)
-            $query = $query->where(['visible' => 1]);
-
-        $st = $this->execute($query);
-
-        if ($return_object)
-            return $st;
-        else
-            return $st->fetchAll(PDO::FETCH_KEY_PAIR);
-    }
-
-    /**
      * Create comic metadata table
      * @throws exceptions\DatabaseException Database error
      */

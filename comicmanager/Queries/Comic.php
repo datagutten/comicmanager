@@ -99,6 +99,24 @@ class Comic extends Common
     }
 
     /**
+     * Get comic categories
+     * @param elements\Comic $comic Comic object
+     * @param bool $only_visible Show only categories marked as visible
+     * @param string|array $fields Fields to fetch
+     * @return Database\StatementInterface
+     * @throws exceptions\DatabaseException Database error
+     */
+    function categories(elements\Comic $comic, bool $only_visible, string|array $fields): Database\StatementInterface
+    {
+        $query = $this->connection->selectQuery($fields, self::categoryTable($comic))->order('name');
+
+        if ($only_visible)
+            $query = $query->where(['visible' => 1]);
+
+        return $this->execute($query);
+    }
+
+    /**
      * Add a category
      * @param elements\Comic $comic
      * @param string $category_name

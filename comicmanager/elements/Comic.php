@@ -143,12 +143,17 @@ class Comic extends DatabaseObject
      * @throws exceptions\ComicInvalidArgumentException Comic does not have categories
      * @throws exceptions\DatabaseException Database error
      */
-    public function categories($only_visible=false, $return_object=false)
+    public function categories(bool $only_visible = false, bool $return_object = false): array|Database\StatementInterface
     {
-        if(!$this->has_categories)
+        if (!$this->has_categories)
             throw new exceptions\ComicInvalidArgumentException('Comic does not have categories');
-
-        return $this->queries_metadata->categories($this, $only_visible, $return_object);
+        if ($return_object)
+            return $this->queries->categories($this, $only_visible, '*');
+        else
+        {
+            $st = $this->queries->categories($this, $only_visible, ['id', 'name']);
+            return $st->fetchAll(PDO::FETCH_KEY_PAIR);
+        }
     }
 
     /**
