@@ -4,6 +4,7 @@ namespace datagutten\comicmanager\tests\elements;
 
 use datagutten\comicmanager\elements;
 use datagutten\comicmanager\exceptions;
+use datagutten\comicmanager\Queries;
 use datagutten\comicmanager\tests\Setup;
 
 class ComicTest extends Setup
@@ -121,5 +122,23 @@ class ComicTest extends Setup
         $this->assertContains('delete me', $this->comic->categories());
         $this->comic->deleteCategory(1);
         $this->assertNotContains('delete me', $this->comic->categories());
+    }
+
+    public function testRenameCategory()
+    {
+        $queries_comic = new Queries\Comic($this->config['db']);
+        $this->assertNotContains('renamed category', $this->comic->categories());
+        $this->comic->addCategory('rename me');
+        $queries_comic->updateCategoryName($this->comic, 1, 'renamed category');
+        $this->assertContains('renamed category', $this->comic->categories());
+    }
+
+    public function testHideCategory()
+    {
+        $queries_comic = new Queries\Comic($this->config['db']);
+        $this->comic->addCategory('test hidden');
+        $queries_comic->updateCategoryVisibility($this->comic, 1, false);
+        $this->assertContains('test hidden', $this->comic->categories());
+        $this->assertNotContains('test hidden', $this->comic->categories(true));
     }
 }
