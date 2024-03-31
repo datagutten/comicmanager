@@ -12,8 +12,8 @@
         "ext-gd": "*",
         "ext-curl": "*",
         "ext-simplexml": "*",
-        "cakephp/database": "^4.2",
-        "cakephp/core": "^4.2",
+        "cakephp/database": "^4.5",
+        "cakephp/core": "^4.5",
         "symfony/filesystem": "^6.0"
     },
     "license": "GPL-3.0-or-later",
