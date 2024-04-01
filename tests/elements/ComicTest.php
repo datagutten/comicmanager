@@ -134,8 +134,11 @@ class ComicTest extends Setup
     public function testHideCategory()
     {
         $this->comic->addCategory('test hidden');
+        $this->comic->addCategory('test no change');
         $this->comic->setCategoryVisibility(1, false);
         $this->assertContains('test hidden', $this->comic->categories());
         $this->assertNotContains('test hidden', $this->comic->categories(true));
+        $this->assertContains('test no change', $this->comic->categories());
+        $this->assertContains('test no change', $this->comic->categories(true));
     }
 }

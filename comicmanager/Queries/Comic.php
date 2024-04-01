@@ -137,7 +137,7 @@ class Comic extends Common
      */
     protected function updateCategoryQuery(elements\Comic $comic, int $id): Database\Query
     {
-        return $this->connection->updateQuery(self::categoryTable($comic), ['id' => $id]);
+        return $this->connection->updateQuery(self::categoryTable($comic), conditions: ['id' => $id]);
     }
 
     /**
