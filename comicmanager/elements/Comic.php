@@ -213,11 +213,28 @@ class Comic extends DatabaseObject
         return $this->queries->deleteCategory($this, $id);
     }
 
-    /*
-    public function editCategory($id, $name, $visible)
+    /**
+     * Change visibility of a category
+     * @param int $id Category id
+     * @param bool $visible
+     * @return Database\StatementInterface
+     * @throws exceptions\DatabaseException Database error
+     */
+    public function setCategoryVisibility(int $id, bool $visible): Database\StatementInterface
     {
+        return $this->queries->updateCategoryVisibility($this, $id, $visible);
+    }
 
-    }*/
+    /**
+     * @param int $id Category id
+     * @param string $name New name
+     * @return Database\StatementInterface
+     * @throws exceptions\DatabaseException Database error
+     */
+    public function renameCategory(int $id, string $name): Database\StatementInterface
+    {
+        return $this->queries->updateCategoryName($this, $id, $name);
+    }
 
     /**
      * Parse a comma separated string with possible key fields
