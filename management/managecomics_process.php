@@ -30,7 +30,7 @@ foreach($_POST['release'] as $date=>$release)
         $args['uid'] = $release['uid'];
 
     try {
-        $comicmanager->add_or_update($args, 'key');
+        $comicmanager->releases->save($args);
     }
     catch (Exception $e)
     {

@@ -100,7 +100,7 @@ class Releases extends ElementManager
      * @return Release
      * @throws exceptions\comicManagerException
      */
-    public function save(array $fields, $mode = null): Release
+    public function save(array $fields): Release
     {
         $release = $this->release($fields, false);
         $release->save();
