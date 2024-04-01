@@ -188,15 +188,16 @@ class Comic extends DatabaseObject
      * Add a category to the comic
      * @param string $name Category name
      * @param bool $visible Should the category be visible?
-     * @return Database\StatementInterface
+     * @return int Added category id
      * @throws exceptions\ComicInvalidArgumentException Comic does not have categories
      * @throws exceptions\DatabaseException Database error
      */
-    public function addCategory(string $name, bool $visible = true): Database\StatementInterface
+    public function addCategory(string $name, bool $visible = true): int
     {
         if (!$this->has_categories)
             throw new exceptions\ComicInvalidArgumentException('Comic does not have categories');
-        return $this->queries->addCategory($this, $name, $visible);
+        $st = $this->queries->addCategory($this, $name, $visible);
+        return $st->lastInsertId();
     }
 
     /**

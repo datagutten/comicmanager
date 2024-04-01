@@ -106,8 +106,9 @@ class ComicTest extends Setup
     public function testAddCategory()
     {
         $this->assertEmpty($this->comic->categories());
-        $this->comic->addCategory('test category');
+        $id = $this->comic->addCategory('test category');
         $this->assertContains('test category', $this->comic->categories());
+        $this->assertEquals(1, $id);
 
         $this->comic->addCategory('test hidden', false);
         $this->assertContains('test hidden', $this->comic->categories());
@@ -117,25 +118,25 @@ class ComicTest extends Setup
     public function testDeleteCategory()
     {
         $this->assertEmpty($this->comic->categories());
-        $this->comic->addCategory('delete me');
+        $id = $this->comic->addCategory('delete me');
         $this->assertContains('delete me', $this->comic->categories());
-        $this->comic->deleteCategory(1);
+        $this->comic->deleteCategory($id);
         $this->assertNotContains('delete me', $this->comic->categories());
     }
 
     public function testRenameCategory()
     {
         $this->assertNotContains('renamed category', $this->comic->categories());
-        $this->comic->addCategory('rename me');
-        $this->comic->renameCategory(1, 'renamed category');
+        $id = $this->comic->addCategory('rename me');
+        $this->comic->renameCategory($id, 'renamed category');
         $this->assertContains('renamed category', $this->comic->categories());
     }
 
     public function testHideCategory()
     {
-        $this->comic->addCategory('test hidden');
+        $id = $this->comic->addCategory('test hidden');
         $this->comic->addCategory('test no change');
-        $this->comic->setCategoryVisibility(1, false);
+        $this->comic->setCategoryVisibility($id, false);
         $this->assertContains('test hidden', $this->comic->categories());
         $this->assertNotContains('test hidden', $this->comic->categories(true));
         $this->assertContains('test no change', $this->comic->categories());
