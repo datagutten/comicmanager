@@ -108,14 +108,15 @@ class Releases extends ElementManager
     }
 
     /**
-     * @param string $site
-     * @param string $date
-     * @return Release[]
+     * Get releases using wildcard for date and/or site
+     * @param string $site Site slug with wildcards
+     * @param string $date Date string with wildcards (YMD format)
+     * @return Release[] Array with Release objects
      * @throws exceptions\comicManagerException
      */
-    public function date_wildcard(string $site, string $date): array
+    public function wildcard(string $site, string $date): array
     {
-        $st = $this->queries_cake->date_wildcard($this->comic, $site, $date);
+        $st = $this->queries_cake->wildcard($this->comic, $site, $date);
         return $this->from_query($this->comicmanager, $st);
     }
 }

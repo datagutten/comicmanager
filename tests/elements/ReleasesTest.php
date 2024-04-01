@@ -38,4 +38,25 @@ class ReleasesTest extends Setup
         $strips = $this->releases->category(2);
         $this->assertCount(2, $strips);
     }
+
+    public function testWildcard()
+    {
+        $this->comicmanager->releases->save(['customid' => 4350, 'id' => 4350, 'site' => 'pondus', 'date' => '20140424']);
+        $this->comicmanager->releases->save(['customid' => 4350, 'id' => 4350, 'site' => 'pondusvg', 'date' => '20190813']);
+        $this->comicmanager->releases->save(['customid' => 4351, 'id' => 4351, 'site' => 'pondusadressa', 'date' => '20190814']);
+        $this->comicmanager->releases->save(['customid' => 4352, 'id' => 4352, 'site' => 'pondusadressa', 'date' => '20190815']);
+        $releases = $this->comicmanager->releases->wildcard('pondusadressa', '201908%');
+        $this->assertCount(2, $releases);
+        $this->assertEquals('20190814', $releases[0]->date);
+
+        $releases = $this->comicmanager->releases->wildcard('pondus%', '201908%');
+        $this->assertCount(3, $releases);
+        $this->assertEquals('20190813', $releases[0]->date);
+        $this->assertEquals('pondusvg', $releases[0]->site);
+
+        $releases = $this->comicmanager->releases->wildcard('pondus%', '20190813');
+        $this->assertCount(1, $releases);
+        $this->assertEquals('20190813', $releases[0]->date);
+        $this->assertEquals('pondusvg', $releases[0]->site);
+    }
 }

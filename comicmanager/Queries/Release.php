@@ -145,19 +145,29 @@ class Release extends Common
     }
 
     /**
-     * Get releases with wildcard date
+     * Get releases using wildcard for date and/or site
      * @param elements\Comic $comic Comic object
-     * @param string $site Site slug
+     * @param string $site Site slug with wildcards
      * @param string $date Date string with wildcards (YMD format)
      * @return Database\StatementInterface
      * @throws exceptions\DatabaseException Database error
      */
-    public function date_wildcard(elements\Comic $comic, string $site, string $date): Database\StatementInterface
+    public function wildcard(elements\Comic $comic, string $site, string $date): Database\StatementInterface
     {
-        $query = $this->connection->newQuery()
-            ->from($comic->id)
-            ->select('*')
-            ->where(['site' => $site, 'date LIKE' => $date]);
+        $query = $this->selectQuery($comic);
+
+        if (str_contains($site, '%'))
+            $query = $query->where(['site LIKE' => $site]);
+        else
+            $query = $query->where(['site' => $site]);
+
+
+        if (str_contains($date, '%'))
+            $query = $query->where(['date LIKE' => $date]);
+        else
+            $query = $query->where(['date' => $date]);
+
+        $query = $query->order('date');
 
         return $this->execute($query);
     }

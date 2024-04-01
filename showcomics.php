@@ -56,8 +56,8 @@ if (!empty($comic))
     {
         try
         {
-            if (strpos($_GET['date'], '%') !== false)
-                $releases = $comic_manager->releases->date_wildcard($_GET['site'], $_GET['date']);
+            if (str_contains($_GET['date'], '%') || str_contains($_GET['site'],'%'))
+                $releases = $comic_manager->releases->wildcard($_GET['site'], $_GET['date']);
             else
                 $releases = [Release::from_date($comic_manager, $_GET['site'], $_GET['date'])];
         }
