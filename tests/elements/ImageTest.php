@@ -7,6 +7,7 @@ use datagutten\comicmanager\elements\Image;
 use datagutten\comicmanager\exceptions\ImageNotFound;
 use datagutten\comicmanager\tests\Setup;
 use datagutten\tools\files\files;
+use DateTime;
 use Symfony\Component\Filesystem\Filesystem;
 
 class ImageTest extends Setup
@@ -86,7 +87,7 @@ class ImageTest extends Setup
         $file = files::path_join($this->comicmanager->files->file_path, 'pondusvg', '201908', '20190813.jpg');
         mkdir(files::path_join($this->comicmanager->files->file_path, 'pondusvg', '201908'), 0777, true);
         touch($file);
-        $image = Image::from_date('pondusvg', '20190813', $this->comicmanager);
+        $image = Image::from_date('pondusvg', new DateTime('20190813'), $this->comicmanager);
         $this->assertSame($this->comicmanager->web_image_root . '/pondusvg/201908/20190813.jpg', $image->url);
     }
 
@@ -96,13 +97,7 @@ class ImageTest extends Setup
             $this->markTestSkipped('Comics not initialized');
 
         $this->assertNotEmpty($this->comicmanager->comics, 'Comics not set, missing environment variables?');
-        $image = Image::from_date('pondusbt', '20150519 ', $this->comicmanager);
+        $image = Image::from_date('pondusbt', new DateTime('20150519'), $this->comicmanager);
         $this->assertStringContainsString('/media/pondusbt/5/58f4787f06c3e7381ecb7ca2e204d71856edcac75fb73356b95f8e190c452e41.gif', $image->url);
-    }
-
-    public function testFromInvalidDate()
-    {
-        $this->expectException(ImageNotFound::class);
-        Image::from_date('pondusbt', '20150532 ', $this->comicmanager);
     }
 }

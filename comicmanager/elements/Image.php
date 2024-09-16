@@ -9,6 +9,7 @@ use datagutten\comicmanager\exceptions;
 use datagutten\comicmanager\files;
 use datagutten\comics_tools\comics_api_client as comics;
 use datagutten\tools\files\files as file_tools;
+use DateTime;
 
 class Image
 {
@@ -85,13 +86,12 @@ class Image
     /**
      * Create image object from date
      * @param string $site Release site slug
-     * @param string $date Date in YMD format
+     * @param DateTime $date Date as DateTime object
      * @param comicmanager $comicmanager
      * @return Image
      * @throws exceptions\ImageNotFound
-     * @throws exceptions\ComicInvalidArgumentException Invalid date
      */
-    public static function from_date(string $site, string $date, comicmanager $comicmanager): Image
+    public static function from_date(string $site, DateTime $date, comicmanager $comicmanager): Image
     {
         if(!empty($comicmanager->comics))
         {
@@ -150,29 +150,27 @@ class Image
      * Check if the strip is found on comics
      * @param comics\ComicsAPICache $comics
      * @param string $site
-     * @param string $date
+     * @param DateTime $date
      * @return string Image URL
      * @throws comics\exceptions\HTTPError HTTP error
      * @throws comics\exceptions\NoResultsException No release found
      * @throws comics\exceptions\ComicsException
      */
-    public static function comics_lookup(comics\ComicsAPICache $comics, string $site, string $date): string
+    public static function comics_lookup(comics\ComicsAPICache $comics, string $site, DateTime $date): string
     {
-        $comics_date = preg_replace('/([0-9]{4})([0-9]{2})([0-9]{2})/', '$1-$2-$3', $date); //Rewrite date for comics
-        $release = $comics->releases_date_cache($site, $comics_date);
+        $release = $comics->releases_date_cache($site, $date->format('Y-m-d'));
         return $release['file'];
     }
 
     /**
      * Get local file by site and date
      * @param files $files
-     * @param $site
-     * @param $date
+     * @param string $site
+     * @param DateTime $date
      * @return string Local image file
      * @throws exceptions\ImageNotFound File not found
-     * @throws exceptions\ComicInvalidArgumentException Invalid date
      */
-    public static function date_file(files $files, string $site, string $date): string
+    public static function date_file(files $files, string $site, DateTime $date): string
     {
         $path =  $files->filename($site, $date);
         return files::typecheck($path);

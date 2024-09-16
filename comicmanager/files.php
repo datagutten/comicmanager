@@ -6,6 +6,7 @@ namespace datagutten\comicmanager;
 
 use datagutten\comicmanager\exceptions\ImageNotFound;
 use datagutten\tools\files\files as file_tools;
+use DateTime;
 use FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -117,21 +118,17 @@ class files
     /**
      * Get file name
      * @param string $site Site slug
-     * @param string $date Date
+     * @param DateTime $date Date
      * @param false $create_dir Create folder if not exists
      * @return string File path and name without extension
-     * @throws exceptions\ComicInvalidArgumentException Invalid or empty date
      */
-    function filename(string $site, string $date, $create_dir = false): string
+    function filename(string $site, DateTime $date, bool $create_dir = false): string
     {
 		//Files are stored in [filepath]/site/month/date
-		if(empty($date) || !preg_match('/[0-9]{8}/', $date))
-			throw new exceptions\ComicInvalidArgumentException('Invalid or empty date');
-
-		$dir=$this->file_path.'/'.$site.'/'.substr($date,0,6);
+        $dir = file_tools::path_join($this->file_path, $site, $date->format('Ym'));
 
 		if($create_dir!==false && !file_exists($dir))
-			mkdir($dir,0777,true);
-		return $dir.'/'.$date;
+			mkdir($dir,0777,true); //TODO: Use symfony/filesystem
+		return $dir.'/'.$date->format('Ymd');
 	}
 }
