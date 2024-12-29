@@ -35,7 +35,7 @@ class comicmanager extends core
     /**
      * @var string Web site root path
      */
-    public $web_root;
+    public string $web_root;
     /**
      * @var elements\Releases Release manager class
      */
@@ -88,8 +88,8 @@ class comicmanager extends core
             $this->lists->comicmanager = $this;
         }
 
-        $this->web_root = $config['web_root'] ?? '/comicmanager';
-        $this->web_image_root = $config['web_image_root'] ?? $this->web_root . '/images';
+        $this->web_root = $this->config['web_root'] ?? '/comicmanager';
+        $this->web_image_root = $this->config['web_image_root'] ?? $this->web_root . '/images';
     }
 
     /**
