@@ -103,11 +103,21 @@ class files
 
 			foreach ($month_dir as $file)
 			{
+                if (str_ends_with($file, 'txt'))
+                    continue;
                 if (preg_match('#^(\d{8})\.\w+#', $file, $matches_date)) //Get date from file name
 				{
-                    $file_info['date'] = $matches_date[1];
-                    $file_info['image_file'] = file_tools::path_join($month, $file);
-					$releases[]=$file_info;
+                    $title_file = file_tools::path_join($base_path, $month, $matches_date[1] . '.txt');
+                    if (file_exists($title_file))
+                        $title = file_get_contents($title_file);
+                    else
+                        $title = null;
+
+                    $releases[] = [
+                        'date' => $matches_date[1],
+                        'image_file' => file_tools::path_join($month, $file),
+                        'title' => $title,
+                    ];
 				}
 			}
 		}

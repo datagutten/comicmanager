@@ -84,6 +84,7 @@ else
                     'site' => $site,
                     'date' => $release['date'],
                     'image_file' => $release['image_file'],
+                    'title' => $release['title'],
                 ]);
             }
         }
