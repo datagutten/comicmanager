@@ -80,7 +80,11 @@ else
             $releases=$comicmanager->files->releases_file_date($site,$filter_year,$filter_month);
             foreach($releases as $key=>$release)
             {
-                $releases[$key] = new Release($comicmanager, ['site'=>$site, 'date'=>$release['date'], 'image_file'=>$release['file']]);
+                $releases[$key] = new Release($comicmanager, [
+                    'site' => $site,
+                    'date' => $release['date'],
+                    'image_file' => $release['image_file'],
+                ]);
             }
         }
         catch (Exception $e) {

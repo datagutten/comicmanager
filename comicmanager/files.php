@@ -103,10 +103,10 @@ class files
 
 			foreach ($month_dir as $file)
 			{
-				if(preg_match('^[0-9]+^',$file,$date)) //Get date from file name
+                if (preg_match('#^(\d{8})\.\w+#', $file, $matches_date)) //Get date from file name
 				{
-					$file_info['date']=$date[0];
-					$file_info['file']=$base_path.'/'.$month.'/'.$file;
+                    $file_info['date'] = $matches_date[1];
+                    $file_info['image_file'] = file_tools::path_join($month, $file);
 					$releases[]=$file_info;
 				}
 			}
