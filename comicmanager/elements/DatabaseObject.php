@@ -21,7 +21,7 @@ abstract class DatabaseObject implements ArrayAccess
     {
         foreach ($fields as $field => $value)
         {
-            if (!empty($field))
+            if (!empty($value))
                 $this->$field = $value;
         }
     }
