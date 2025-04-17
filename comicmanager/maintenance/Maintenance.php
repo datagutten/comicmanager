@@ -126,7 +126,7 @@ class Maintenance
         $output = [];
 
         if (!in_array('customid', $this->comic->possible_key_fields) || !in_array('id', $this->comic->possible_key_fields))
-            throw new exceptions\InvalidMaintenanceTool('This tool is only useful for comics using customid');
+            throw new exceptions\InvalidMaintenanceTool('This tool is only useful for comics using customid with id as possible key');
 
         $st = $this->queries->idNotLikeCustomId($this->comic);
         $releases = elements\Releases::from_query($this->comicmanager, $st);
