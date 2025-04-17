@@ -43,9 +43,7 @@ class Strip extends Common
         if (empty($key_field))
             $key_field = $comic->key_field;
 
-        $query = $this->connection
-            ->selectQuery('*', $comic->id)
-            ->where([$key_field => $key,]);
+        $query = $this->selectQuery($comic)->where([$key_field => $key]);
         return $this->execute($query);
     }
 

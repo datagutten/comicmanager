@@ -93,8 +93,7 @@ class Release extends Common
     {
         $fields = self::filterFields($release->comic->fields, (array)$release, $allow_empty);
         $query = $this->connection->updateQuery($release->comic->id)->where(['uid' => $release->uid]);
-        $in_db = $this->connection
-            ->selectQuery(array_keys($fields), $release->comic->id)
+        $in_db = $this->selectQuery($release->comic, array_keys($fields))
             ->where(['uid' => $release->uid])
             ->execute()
             ->fetch(PDO::FETCH_ASSOC);
@@ -120,7 +119,7 @@ class Release extends Common
      */
     public function category(Comic $comic, int $category): Database\StatementInterface
     {
-        $query = $this->connection->selectQuery($comic->key_field, $comic->id)
+        $query = $this->selectQuery($comic, $comic->key_field)
             ->distinct($comic->key_field)
             ->whereNotNull($comic->key_field)
             ->where(['category' => $category])
