@@ -67,7 +67,11 @@ class comicmanager extends core
         {
             try
             {
-                $this->comics = new comics\ComicsAPICache($this->config['comics']);
+                $this->comics = new comics\ComicsAPICache([
+                    'db' => $this->config['db'],
+                    'site_url' => $this->config['comics']['site_url'],
+                    'secret_key' => $this->config['comics']['secret_key'],
+                ]);
                 $this->sources['comics']='Jodal comics';
             }
             catch (ComicsException $e)
