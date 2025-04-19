@@ -21,7 +21,7 @@ abstract class DatabaseObject implements ArrayAccess
     {
         foreach ($fields as $field => $value)
         {
-            if (!empty($value))
+            if ($value !== '') //Allow bool false and null but not empty strings
                 $this->$field = $value;
         }
     }
