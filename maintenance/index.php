@@ -1,5 +1,6 @@
 <?Php
 
+use datagutten\comicmanager\exceptions;
 use datagutten\comicmanager\maintenance\Maintenance;
 use datagutten\comicmanager\web;
 
@@ -10,12 +11,12 @@ $comicmanager=new web;
 $tools=array(
     'id_to_customid'=>'Set id as customid',
     'propagate_categories'=>"Propagate category to all copies of a strip",
-    'multiple_categories.php'=>'Find strips with multiple categories',
+    'multiple_categories' => 'Find strips with multiple categories',
     'propagate_id'=>"Propagate id to all copies of a strip",
     );
 
 $comicinfo=$comicmanager->comicinfo_get();
-$maintenance = new Maintenance($comicmanager);
+$maintenance = new Maintenance($comicmanager, true);
 if($comicinfo!==false)
 {
 	$comic=$comicinfo['id'];
@@ -29,32 +30,32 @@ if($comicinfo!==false)
 	            'title'=>'Maintain '.$comicinfo['name'],
                 'tools'=>$tools,
                 'header'=>'Tools for maintaining the database'));
-	}
-	elseif($_GET['tool']=='propagate_categories')
-        $output = $maintenance->propagateCategories();
-	elseif($_GET['tool']=='id_to_customid')
-        $output = $maintenance->idToCustomId();
-    elseif($_GET['tool']=='propagate_id')
-        $output = $maintenance->propagateId();
-	elseif(isset($tools[$_GET['tool']]))
-	{
-	    ob_start();
-        /** @noinspection PhpIncludeInspection */
-	    require $_GET['tool'];
-	    $output = ob_get_clean();
-	    echo $comicmanager->render('tool_output.twig', array(
-	            'tool'=>$tools[$_GET['tool']],
-                'output'=>$output));
-		//echo "<h3>{$_GET['tool']}</h3>\n";
-		//echo "<p><a href=\"?comic=$comic\">Back to tool selection</a></p>\n";
-	}
-	else
-		echo "Invalid tool: {$_GET['tool']}";
+    }
+    else
+    {
+        try
+        {
+            if ($_GET['tool'] == 'propagate_categories')
+                $output = $maintenance->propagateCategories();
+            elseif ($_GET['tool'] == 'id_to_customid')
+                $output = $maintenance->idToCustomId();
+            elseif ($_GET['tool'] == 'propagate_id')
+                $output = $maintenance->propagateId();
+            elseif ($_GET['tool'] == 'multiple_categories')
+                $output = $maintenance->multipleCategories();
+            else
+                echo "Invalid tool: {$_GET['tool']}";
+        }
+        catch (exceptions\InvalidMaintenanceTool $e)
+        {
+            die($comicmanager->render_error($e->getMessage()));
+        }
+    }
 
     if (isset($output))
     {
         echo $comicmanager->render('tool_output.twig', array(
-            'tool' => $tools[$_GET['tool']],
-            'output' => implode('<br />', $output)));
+            'title' => sprintf('%s: %s', $comicinfo->name, $tools[$_GET['tool']]),
+            'output' => nl2br(implode('<br />', $output))));
     }
 }

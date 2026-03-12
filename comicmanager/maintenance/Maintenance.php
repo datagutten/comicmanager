@@ -21,12 +21,17 @@ class Maintenance
      * @var Queries\Maintenance
      */
     private Queries\Maintenance $queries;
+    /**
+     * @var bool Is web?
+     */
+    public bool $web;
 
-    function __construct(comicmanager $comicmanager)
+    function __construct(comicmanager $comicmanager, $web=false)
     {
         $this->comicmanager = $comicmanager;
         $this->comic = $this->comicmanager->info;
         $this->queries = new Queries\Maintenance($this->comicmanager->config['db']);
+        $this->web = $web;
     }
 
     /**
@@ -172,6 +177,40 @@ class Maintenance
             }
         }
 
+        return $output;
+    }
+
+    public function multipleCategories(): array
+    {
+        if (!$this->comic->has_categories)
+            throw new exceptions\InvalidMaintenanceTool('This tool is only useful for comics with categories');
+
+        $st_releases = $this->queries->releasesWithKeyAndCategories($this->comic);
+        $category_names = $this->comic->categories();
+
+        $output = [];
+        foreach ($st_releases->fetchAll(PDO::FETCH_COLUMN | PDO::FETCH_GROUP) as $key => $categories)
+        {
+            if (count(array_unique($categories)) == 1)
+                continue;
+            if (empty($key))
+                continue;
+            if(!$this->web)
+                $output[] = sprintf('Release with %s %s has multiple categories:', $this->comic->key_field, $key);
+            else
+            {
+                $url = sprintf('../showcomics.php?comic=%s&key_field=%s&key=%s', $this->comic->id, $this->comic->key_field, $key);
+                $edit_url = sprintf('../management/edit_release.php?comic=%s&key_field=%s&key=%s', $this->comic->id, $this->comic->key_field, $key);
+                $output[] = sprintf(
+                    '<strong>Release with %s <a href="%s">%s</a> has multiple categories:</strong> <a href="%s">(edit)</a>',
+                    $this->comic->key_field, $url, $key, $edit_url);
+            }
+            foreach (array_unique($categories) as $category)
+            {
+                $output[] = $category_names[$category];
+            }
+            $output[] = '';
+        }
         return $output;
     }
 }
