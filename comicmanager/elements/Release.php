@@ -114,7 +114,7 @@ class Release extends DatabaseObject
                 return Image::from_file($this->image_file, $comicmanager);
             list($key_field, $key) = $this->find_key();
             if(!empty($this->site) && !empty($this->date))
-                return Image::from_date($this->site, $this->date, $comicmanager);
+                return Image::from_date($this->site, $this->date_obj, $comicmanager);
             elseif(!empty($key))
             {
                 return Image::from_key(
